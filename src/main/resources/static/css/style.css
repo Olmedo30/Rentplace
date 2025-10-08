@@ -1,0 +1,83 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  background-color: #f8f4e9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: #4a453e;
+}
+
+form {
+  background: #fdfcf6;
+  padding: 2.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(74, 69, 62, 0.08);
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid #eae3d4;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #4a453e;
+  letter-spacing: 0.5px;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid #c8b8a3;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+  background-color: #fffefb;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #6b5f4f;
+  box-shadow: 0 0 0 2px rgba(107, 95, 79, 0.15);
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #6b5f4f;
+  color: #fdfcf6;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #5a4f40;
+}
+
+.error-message {
+  color: #b55b45;
+  background-color: #fdf8f5;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1.25rem;
+  font-weight: 500;
+  text-align: center;
+  border: 1px solid #f0e0d6;
+  font-size: 0.95rem;
+}
+
+p {
+  margin: 0 0 1rem 0;
+}
