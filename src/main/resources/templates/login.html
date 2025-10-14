@@ -6,17 +6,26 @@
   <link th:href="@{/css/style.css}" rel="stylesheet" />
 </head>
 <body>
-  <form th:action="@{/login}" method="post">
-    <p>
-      <label>Usuario:</label>
-      <input type="text" name="username" required />
-    </p>
-    <p>
-      <label>Contraseña:</label>
-      <input type="password" name="password" required />
-    </p>
-    <p th:if="${error}" th:text="${error}" class="error-message"></p>
-    <button type="submit">Entrar</button>
-  </form>
+	<div class="login-container">
+		<h2>Inicio de sesión</h2>
+		<div class="dec">
+			<hr>
+		</div>
+		<hr>
+		<div class="inlogin-container">
+			<form action="/login" method="post">
+				<p>
+					<label>Nombre de usuario:</label> <input type="text"
+						name="username" required />
+				</p>
+				<p>
+					<label>Contraseña:</label> <input type="password" name="password"
+						required />
+				</p>
+				<p th:if="${error}" th:text="${error}" class="error-message"></p>
+				<button type="submit">Entrar</button>
+			</form>
+		</div>
+	</div>
 </body>
 </html>
