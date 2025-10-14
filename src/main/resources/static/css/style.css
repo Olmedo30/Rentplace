@@ -17,8 +17,8 @@ body {
 .dec {
 	margin-top: 0px;
 	margin-bottom: 0px;
-	margin-left: 20%;
-	margin-right: 20%;
+	margin-left: 17%;
+	margin-right: 17%;
 }
 hr {
 	border: 0.3rex solid #ffd0b5;
@@ -28,7 +28,7 @@ hr {
 
 .login-container {
 	background-color: rgba(245, 242, 237, 0.9);
-	border-radius: 75px;
+	border-radius: 70px;
 	width: 100%;
 	max-width: 400px;
 	border:0.5rex solid #ffd0b5;
@@ -40,11 +40,14 @@ hr {
 	padding-right: 50px;
 }
 
-h2 {
+h1 {
+	font-family: 'price', Georgia, serif;
 	text-align: center;
 	color: #8c7a6e;
 	font-weight: 550;
-	margin-bottom: 0px;
+	font-size: 2.5rem;
+	margin-top: 20px;
+	margin-bottom: 2px;
 	letter-spacing: 0px;
 }
 
@@ -112,4 +115,12 @@ button[type="submit"]:hover {
 
 p {
 	margin: 0 0 1rem 0;
+}
+
+@font-face {
+  font-family: 'price';
+  src: url('../fonts/Pricedown.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
