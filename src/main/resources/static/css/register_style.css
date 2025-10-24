@@ -8,40 +8,84 @@ body {
 	align-items: center;
 	min-height: 100vh;
 	color: #4a453e;
-	background-image: url('/assets/background.png');
+	background-image: url('../assets/background.png');
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	background-position: center;
 }
+
 .dec {
 	margin-top: 0px;
 	margin-bottom: 0px;
 	margin-left: 17%;
 	margin-right: 17%;
+	width: 40%;
+	z-index: 2;
 }
+
 hr {
-	border: 0.3rex solid #ffd0b5;
+	border: 2px solid #ffd0b5;
 	margin-top: 1%;
 	margin-bottom: 1%;
+	position: relative;
+	z-index: 2;
+	width: 75%;
+	margin-left: 0;
+	margin-right: 0;
 }
 
-.login-container {
-	background-color: rgba(245, 242, 237, 0.9);
-	border-radius: 70px;
+.register-container {
+	position: relative;
+	display: flex;
+	flex-direction: column;
 	width: 100%;
 	max-width: 400px;
-	border:0.5rex solid #ffd0b5;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+	border-radius: 70px;
 }
 
-.inlogin-container {
+.register-container::before {
+	content: '';
+	position: absolute;
+	width: 290px;
+	height: 250%;
+	background-image: linear-gradient(180deg, #ff6200, #ffa4a4);
+	animation: animate 14s linear infinite;
+	transform-origin: center;
+	z-index: -1;
+}
+
+.register-container::after {
+	content: '';
+	position: absolute;
+	inset: 5px;
+	background: #f5f2ed;
+	border-radius: 65px;
+	z-index: 0;
+}
+
+@keyframes animate {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.inregister-container {
 	margin: 30px;
 	padding-left: 50px;
 	padding-right: 50px;
+	position: relative;
+	z-index: 1;
 }
 
 h1 {
-	font-family: 'price', Georgia, serif;
+	font-family: 'zelda', Georgia, serif;
 	text-align: center;
 	color: #8c7a6e;
 	font-weight: 550;
@@ -49,6 +93,8 @@ h1 {
 	margin-top: 20px;
 	margin-bottom: 2px;
 	letter-spacing: 0px;
+	position: relative;
+	z-index: 2;
 }
 
 label {
@@ -58,6 +104,8 @@ label {
 	color: #8c7a6e;
 	letter-spacing: 0.5px;
 	text-align: center;
+	position: relative;
+	z-index: 2;
 }
 
 input[type="text"],
@@ -68,11 +116,13 @@ input[type="password"] {
 	border-radius: 8px;
 	font-size: 1rem;
 	font-family: inherit;
-	background-color: #d1b9a3; /* Fondo marrón claro como en la imagen */
+	background-color: #d1b9a3;
 	color: #4a453e;
 	box-sizing: border-box;
 	box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 	transition: background-color 0.2s ease;
+	position: relative;
+	z-index: 2;
 }
 
 input:focus {
@@ -95,6 +145,8 @@ button[type="submit"] {
 	transition: background-color 0.2s ease;
 	margin-bottom: 55px;
 	margin-top: 10%;
+	position: relative;
+	z-index: 2;
 }
 
 button[type="submit"]:hover {
@@ -106,21 +158,48 @@ button[type="submit"]:hover {
 	background-color: #fdf8f5;
 	padding: 0.75rem;
 	border-radius: 8px;
-	margin-bottom: 1.25rem;
 	font-weight: 500;
 	text-align: center;
 	border: 1px solid #f0e0d6;
 	font-size: 0.95rem;
+	position: relative;
+	z-index: 2;
+}
+
+.success-message {
+	color: #4f7b3f;
+	background-color: #f2f8f2;
+	padding: 0.75rem;
+	border-radius: 8px;
+	font-weight: 500;
+	text-align: center;
+	border: 1px solid #d3e7cf;
+	font-size: 0.95rem;
+	position: relative;
+	z-index: 2;
 }
 
 p {
 	margin: 0 0 1rem 0;
+	position: relative;
+	z-index: 2;
+}
+
+a {
+	color: #6b5f4f;
+	text-decoration: none;
+	font-weight: 600;
+	margin-top: 0px;
+}
+
+a:hover {
+	text-decoration: underline;
 }
 
 @font-face {
-  font-family: 'price';
-  src: url('../fonts/Pricedown.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
+	font-family: 'zelda';
+	src: url('../fonts/Pricedown.otf') format('opentype');
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
 }
