@@ -1,44 +1,47 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Registro</title>
-  <link rel="stylesheet" href="../css/register_style.css">
+<meta charset="UTF-8">
+<title>Registro</title>
+<link rel="stylesheet" href="../css/register_style.css">
+<link rel="shortcut icon" href="../assets/logo.png" />
 </head>
 <body>
-  <div class="register-container">
-    <h1><b>Crear cuenta</b></h1>
-    <hr>
-    <hr class="dec">
+	<div class="register-container">
+		<h1>
+			<b>Crear cuenta</b>
+		</h1>
+		<hr>
+		<hr class="dec">
 
-    <div class="inregister-container">
-      <form action="/register" method="post">
-        <p>
-          <label>Nombre de usuario</label>
-          <input type="text" name="username" required />
-        </p>
+		<div class="inregister-container">
+			<form action="/register" method="post">
+				<p>
+					<label>Nombre de usuario</label> <input type="text" name="username"
+						required />
+				</p>
 
-        <p>
-          <label>Contraseña</label>
-          <input type="password" name="password" required />
-        </p>
+				<p>
+					<label>Contraseña</label> <input type="password" name="password"
+						required />
+				</p>
 
-        <p>
-          <label>Confirmar contraseña</label>
-          <input type="password" name="confirmPassword" required />
-        </p>
+				<p>
+					<label>Confirmar contraseña</label> <input type="password"
+						name="confirmPassword" required />
+				</p>
 
-        <button type="submit">Registrarse</button>
-      </form>
+				<button type="submit">Registrarse</button>
+			</form>
 
-      <p th:if="${error}" th:text="${error}" class="error-message"></p>
-      
-      <p th:if="${message}" th:text="${message}" class="success-message"></p>
+			<p th:if="${error}" th:text="${error}" class="error-message"></p>
 
-      <p style="text-align:center;">
-        ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
-      </p>
-    </div>
-  </div>
+			<p th:if="${message}" th:text="${message}" class="success-message"></p>
+
+			<p style="text-align: center;">
+				¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
+			</p>
+		</div>
+	</div>
 </body>
 </html>

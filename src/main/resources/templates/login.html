@@ -1,36 +1,39 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Login</title>
-  <link rel="stylesheet" href="../css/login_style.css">
+<meta charset="UTF-8">
+<title>Login</title>
+<link rel="stylesheet" href="../css/login_style.css">
+<link rel="shortcut icon" href="../assets/logo.png" />
 </head>
 <body>
-  <div class="login-container">
-    <h1><b>Inicio de sesión</b></h1>
-    <hr>
-    <hr class="dec">
+	<div class="login-container">
+		<h1>
+			<b>Inicio de sesión</b>
+		</h1>
+		<hr>
+		<hr class="dec">
 
-    <div class="inlogin-container">
-      <form action="/login" method="post">
-        <p>
-          <label>Nombre de usuario</label>
-          <input type="text" name="username" required />
-        </p>
-        <p>
-          <label>Contraseña</label>
-          <input type="password" name="password" required />
-        </p>
+		<div class="inlogin-container">
+			<form action="/login" method="post">
+				<p>
+					<label>Nombre de usuario</label> <input type="text" name="username"
+						required />
+				</p>
+				<p>
+					<label>Contraseña</label> <input type="password" name="password"
+						required />
+				</p>
 
-        <button type="submit">Entrar</button>
-      </form>
+				<button type="submit">Entrar</button>
+			</form>
 
-      <p th:if="${error}" th:text="${error}" class="error-message"></p>
+			<p th:if="${error}" th:text="${error}" class="error-message"></p>
 
-      <p style="text-align:center;">
-        ¿No tienes cuenta? <a href="/register">Regístrate aquí</a>
-      </p>
-    </div>
-  </div>
+			<p style="text-align: center;">
+				¿No tienes cuenta? <a href="/register">Regístrate aquí</a>
+			</p>
+		</div>
+	</div>
 </body>
 </html>
