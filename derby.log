@@ -1,0 +1,19 @@
+----------------------------------------------------------------
+Sat Oct 25 23:19:03 CEST 2025:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.16.1.1 - (1901046): instance a816c00e-019a-1d3d-37d3-0000015f4c70 
+on database directory C:\Users\pablo\Rentplace\rentplaceDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@33909752 
+Loaded from file:/C:/Users/pablo/.m2/repository/org/apache/derby/derby/10.16.1.1/derby-10.16.1.1.jar
+java.vendor=Eclipse Adoptium
+java.runtime.version=21.0.8+9-LTS
+user.dir=C:\Users\pablo\Rentplace
+os.name=Windows 11
+os.arch=amd64
+os.version=10.0
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Sat Oct 25 23:22:18 CEST 2025: Shutting down Derby engine
+----------------------------------------------------------------
+Sat Oct 25 23:22:18 CEST 2025:
+Shutting down instance a816c00e-019a-1d3d-37d3-0000015f4c70 on database directory C:\Users\pablo\Rentplace\rentplaceDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@33909752 
+----------------------------------------------------------------
