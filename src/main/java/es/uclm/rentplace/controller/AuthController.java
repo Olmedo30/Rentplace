@@ -33,10 +33,26 @@ public class AuthController {
     public String register(
             @RequestParam String username,
             @RequestParam String password,
+            @RequestParam String confirmPassword,
             @RequestParam String email,
             @RequestParam String telefono,
             Model model) {
-
+    	
+    	// Validar que las contraseñas coincidan
+        if (!password.equals(confirmPassword)) {
+            model.addAttribute("error", "Las contraseñas no coinciden.");
+            return "register"; // vuelve al formulario
+        }
+        // Validar que el usuario o email no existan
+        if (usuarioPersistence.existsByUsername(username)) {
+            model.addAttribute("error", "El nombre de usuario ya está en uso.");
+            return "register";
+        }
+        if (usuarioPersistence.existsByEmail(email)) {
+            model.addAttribute("error", "El correo electrónico ya está registrado.");
+            return "register";
+        }
+        
         Usuario nuevo = new Usuario(username, password, email, telefono);
         Usuario guardado = usuarioPersistence.save(nuevo);
         log.info("Usuario guardado: {}", guardado);
