@@ -1,7 +1,12 @@
 package es.uclm.rentplace.entity;
 
+// Importamos las anotaciones JPA necesarias para mapear la clase a la base de datos
 import jakarta.persistence.*;
+
+// Importamos BigDecimal para poder manejar dinero de forma precisa
 import java.math.BigDecimal;
+
+// Impostamos LocalDateTime para guardar la fecha en el que se crea la propiedad
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,14 +17,15 @@ public class Propiedad {
 	@Column(name = "propiedades_id")
 	private Long id;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	// // Relación N:1 con Usuario: un propietario puede tener varias propiedades)
+	@ManyToOne(fetch = FetchType.LAZY)// LAZY evita cargar el usuario hasta que se necesite
     @JoinColumn(name = "propietario_id", nullable = false)
     private Usuario propietario;
 	
-	@Column(name = "titulo", length = 150, nullable = false)
+	@Column(name = "titulo", length = 150, nullable = false)// "nullable = false" campo obligatorio
     private String titulo;
 	
-	@Lob
+	@Lob // Indica que es un texto largo (Large Object)
 	@Column(name = "descripcion", columnDefinition = "TEXT")
 	private String descripcion;
 	
@@ -39,7 +45,7 @@ public class Propiedad {
     private Integer capacidad;
 
     @Column(name = "precio_noche", precision = 10, scale = 2)
-    private BigDecimal precioNoche;
+    private BigDecimal precioNoche; // BigDecimal es la opción correcta para que los precios sean de forma precisa
     
     @Column(name = "politica cancelación", length = 60)
     private String politicaCancelacion;
@@ -53,8 +59,10 @@ public class Propiedad {
     @Column(name = "activo")
     private Boolean activo;
     
+    // Es necesario crear un constructor vacío para que JPA pueda crear objetos
     public Propiedad() {}
     
+    // Constructor con parámetros
     public Propiedad(Usuario propietario, String titulo, String descripcion, String direccion,
             String ciudad, String tipoInmueble, Integer habitaciones, Integer capacidad,
             BigDecimal precioNoche, String politicaCancelacion, Boolean permiteReservaInmediata,
@@ -74,7 +82,7 @@ public class Propiedad {
     	this.activo = activo;
     }
     
-    
+    // Getters y setters
     public Long getId() {
     	return id; 	
     }
@@ -173,18 +181,19 @@ public class Propiedad {
     	this.activo = activo; 
     }
     
+    // Este método se ejecuta de forma automática antes de insertar la entidad en la BD
     @PrePersist
     
     protected void onCreate() {
     	if(this.fechaAlta == null) {
-    		this.fechaAlta = LocalDateTime.now();
+    		this.fechaAlta = LocalDateTime.now();// Fecha actual de creación
     	}
     	if(this.activo == null) {
-    		this.activo = true;
+    		this.activo = true; // Las propiedades nuevas empiezan activas
     		
     	}
     }
-    
+    // Representación de los atributos
     @Override
     public String toString() {
     	return String.format("Propiedad[id=%d, titulo='%s', ciudad='%s', precio=%s, activo=%s]",
