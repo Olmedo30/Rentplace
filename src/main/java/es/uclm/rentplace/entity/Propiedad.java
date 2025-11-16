@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 // Importamos BigDecimal para poder manejar dinero de forma precisa
 import java.math.BigDecimal;
 
-// Impostamos LocalDateTime para guardar la fecha en el que se crea la propiedad
+// Importamos LocalDateTime para guardar la fecha en el que se crea la propiedad
 import java.time.LocalDateTime;
 
 @Entity
