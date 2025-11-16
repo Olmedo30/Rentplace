@@ -76,7 +76,7 @@ public class Propiedad {
     	this.habitaciones = habitaciones;
     	this.capacidad = capacidad;
     	this.precioNoche = precioNoche;
-    	this.politicaCancelacion = this.politicaCancelacion;
+    	this.politicaCancelacion = politicaCancelacion;
     	this.permiteReservaInmediata = permiteReservaInmediata;
     	this.fechaAlta = fechaAlta;
     	this.activo = activo;
