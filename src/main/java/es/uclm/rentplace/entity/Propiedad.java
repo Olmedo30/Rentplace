@@ -54,8 +54,28 @@ public class Propiedad {
     @Column(name = "activo")
     private Boolean activo;
     
+    public Propiedad() {}
     
-	
-	
-
-}
+    public Propiedad(Usuario propietario, String titulo, String descripcion, String direccion,
+            String ciudad, String tipoInmueble, Integer habitaciones, Integer capacidad,
+            BigDecimal precioNoche, String politicaCancelacion, Boolean permiteReservaInmediata,
+            LocalDateTime fechaAlta, Boolean activo) {
+    	this.propietario = propietario;
+    	this.titulo = titulo;
+    	this.descripcion = descripcion;
+    	this.direccion = direccion;
+    	this.ciudad = ciudad; 
+    	this.tipoInmueble = tipoInmueble;
+    	this.habitaciones = habitaciones;
+    	this.capacidad = capacidad;
+    	this.precioNoche = precioNoche;
+    	this.politicaCancelacion = this.politicaCancelacion;
+    	this.permiteReservaInmediata = permiteReservaInmediata;
+    	this.fechaAlta = fechaAlta;
+    	this.activo = activo;
+    }
+    
+    	
+    }
+    
+ 
