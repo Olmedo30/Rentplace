@@ -41,6 +41,20 @@ public class Propiedad {
 
     @Column(name = "precio_noche", precision = 10, scale = 2)
     private BigDecimal precioNoche;
+    
+    @Column(name = "politica cancelación", length = 60)
+    private String politicaCancelacion;
+    
+    @Column(name = "permite_reserva_inmediata")
+    private Boolean permiteReservaInmediata;
+    
+    @Column(name = "fecha_alta")
+    private LocalDateTime fechaAlta;
+    
+    @Column(name = "activo")
+    private Boolean activo;
+    
+    
 	
 	
 
