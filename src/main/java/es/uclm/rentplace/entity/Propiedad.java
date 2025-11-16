@@ -29,7 +29,6 @@ public class Propiedad {
 	@Column(name = "ciudad", length = 80)
     private String ciudad;
 	
-
     @Column(name = "tipo_inmueble", length = 50)
     private String tipoInmueble;
 
@@ -74,6 +73,109 @@ public class Propiedad {
     	this.fechaAlta = fechaAlta;
     	this.activo = activo;
     }
+    
+    
+    public Long getId() {
+    	return id; 	
+    }
+    public void setId(Long id) { 
+    	this.id = id; 
+    }
+    
+    public Usuario getPropietario() {
+    	return propietario;
+    }
+    public void setPropietario(Usuario propietario) { 
+    	this.propietario = propietario; 
+    }
+    
+    public String getTitulo() { 
+    	return titulo; 
+    }
+    public void setTitulo(String titulo) {
+    	this.titulo = titulo;
+    }
+    
+    public String getDescripcion() { 
+    	return descripcion;
+    }
+    public void setDescripcion(String descripcion) {
+    	this.descripcion = descripcion;
+    }
+    
+    public String getDireccion() {
+    	return direccion;
+    }
+    public void setDireccion(String direccion) {
+    	this.direccion = direccion;
+    }
+    
+    public String getCiudad() {
+    	return ciudad;
+    }
+    public void setCiudad(String ciudad) {
+    	this.ciudad = ciudad;
+    }
+    
+    public String getTipoInmueble() {
+    	return tipoInmueble;
+    }
+    public void setTipoInmueble(String tipoInmueble) {
+    	this.tipoInmueble = tipoInmueble;
+    }
+    
+    public Integer getHabitaciones() {
+    	return habitaciones;
+    }
+    public void setHabitaciones(Integer habitaciones) {
+    	this.habitaciones = habitaciones;
+    }
+    
+    public Integer getCapacidad() { 
+    	return capacidad; 
+    }
+    public void setCapacidad(Integer capacidad) { 
+    	this.capacidad = capacidad; 
+    }
+
+    public BigDecimal getPrecioNoche() { 
+    	return precioNoche; 
+    }
+    public void setPrecioNoche(BigDecimal precioNoche) {
+    	this.precioNoche = precioNoche; 
+    }
+
+    public String getPoliticaCancelacion() { 
+    	return politicaCancelacion; 
+    }
+    public void setPoliticaCancelacion(String politicaCancelacion) {
+    	this.politicaCancelacion = politicaCancelacion; 
+    }
+
+    public Boolean getPermiteReservaInmediata() { 
+    	return permiteReservaInmediata; 
+    }
+    public void setPermiteReservaInmediata(Boolean permiteReservaInmediata) { 
+    	this.permiteReservaInmediata = permiteReservaInmediata; 
+    }
+
+    public LocalDateTime getFechaAlta() { 
+    	return fechaAlta; 
+    }
+    public void setFechaAlta(LocalDateTime fechaAlta) { 
+    	this.fechaAlta = fechaAlta; 
+    }
+
+    public Boolean getActivo() { 
+    	return activo; 
+    }
+    public void setActivo(Boolean activo) { 
+    	this.activo = activo; 
+    }
+    
+    
+    
+    
     
     	
     }
