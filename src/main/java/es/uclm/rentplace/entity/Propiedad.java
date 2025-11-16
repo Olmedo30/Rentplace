@@ -173,10 +173,23 @@ public class Propiedad {
     	this.activo = activo; 
     }
     
+    @PrePersist
     
+    protected void onCreate() {
+    	if(this.fechaAlta == null) {
+    		this.fechaAlta = LocalDateTime.now();
+    	}
+    	if(this.activo == null) {
+    		this.activo = true;
+    		
+    	}
+    }
     
-    
-    
+    @Override
+    public String toString() {
+    	return String.format("Propiedad[id=%d, titulo='%s', ciudad='%s', precio=%s, activo=%s]",
+    			id, titulo, ciudad, precioNoche, activo);
+    	}
     	
     }
     
