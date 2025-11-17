@@ -53,6 +53,18 @@ public class PropiedadService {
 			return propiedadPersistence.findByActivoTrue();
 		}
 		
+		public List<Propiedad> buscarPorCiudad(String ciudad) {
+		    return propiedadPersistence.findByCiudad(ciudad);
+		}
+		
+		 public List<Propiedad> buscarPorTipo(String tipo) {
+		    return propiedadPersistence.findByTipoInmueble(tipo);
+		 }
+		 
+		 public List<Propiedad> buscarPorPrecioMaximo(BigDecimal precioMax) {
+		    return propiedadPersistence.findByPrecioNocheLessThanEqual(precioMax);
+		 }
+		
 	}
 
 
