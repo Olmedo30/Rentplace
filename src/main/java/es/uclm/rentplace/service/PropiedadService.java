@@ -65,6 +65,16 @@ public class PropiedadService {
 		    return propiedadPersistence.findByPrecioNocheLessThanEqual(precioMax);
 		 }
 		
+		 public boolean desactivarPropiedad(Long id) {
+			 Propiedad propiedad = propiedadPersistence.findById(id).orElse(null);
+			 if(propiedad == null) {
+				 return false;
+			 }
+			 propiedad.setActivo(false);
+			 propiedadPersistence.save(propiedad);
+			 return true;
+			 
+		 }
 	}
 
 
