@@ -37,5 +37,12 @@ public class PropiedadService {
 		propiedadPersistence.save(propiedad);
 		return true;
 	}
+		
+		public Propiedad obtenerPorId(Long id) {
+			return propiedadPersistence.findById(id).orElse(null);
+		}
+		
+		
+	}
 
-}
+
