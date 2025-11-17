@@ -15,7 +15,7 @@ public class PropiedadService {
 	@Autowired
 	private PropiedadDAO propiedadPersistence;
 	
-	public boolean registrarPropiedad(String titulo, String ciudad, String tipoInmueble, BigDecimal precioNoche, Usuario propietario) {
+	public boolean registrarPropiedad(String titulo, String ciudad, String tipoInmueble, BigDecimal precioNoche, Propietario propietario) {
 		
 		if (propietario == null) {
 			return false;
@@ -26,6 +26,16 @@ public class PropiedadService {
 		if (precioNoche == null || precioNoche.signum() < 0) {
 			return false;
 		}
+		
+		Propiedad propiedad = new Propiedad();
+		propiedad.setTitulo(titulo);
+		propiedad.setCiudad(ciudad);
+		propiedad.setPrecioNoche(precioNoche);
+		propiedad.setPropietario(propietario);
+		propiedad.setActivo(true);
+		
+		propiedadPersistence.save(propiedad);
+		return true;
 	}
 
 }
