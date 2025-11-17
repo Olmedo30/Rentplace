@@ -42,6 +42,13 @@ public class PropiedadService {
 			return propiedadPersistence.findById(id).orElse(null);
 		}
 		
+		public List<Propiedad> obtenerPropiedadesDePropietario(Propietario propietario) {
+		    if (propietario == null) {
+		        return List.of();
+		    }
+		    return propiedadPersistence.findByPropietarioId(propietario.getId());
+		}
+
 		
 	}
 
