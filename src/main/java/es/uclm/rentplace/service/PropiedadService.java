@@ -48,7 +48,10 @@ public class PropiedadService {
 		    }
 		    return propiedadPersistence.findByPropietarioId(propietario.getId());
 		}
-
+		
+		public List<Propiedad> listarActivas() {
+			return propiedadPersistence.findByActivoTrue();
+		}
 		
 	}
 
