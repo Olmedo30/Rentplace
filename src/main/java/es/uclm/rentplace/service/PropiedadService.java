@@ -75,6 +75,16 @@ public class PropiedadService {
 			 return true;
 			 
 		 }
+		 
+		 public boolean activarPropiedad(Long id ) {
+			 Propiedad propiedad = propiedadPersistence.findById(id).orElse(null);
+			 if (propiedad == null) {
+				 return false;
+			 }
+			 propiedad.setActivo(true);
+			 propiedadPersistence.save(propiedad);
+			 return true;
+		 }
 	}
 
 
