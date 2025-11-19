@@ -29,5 +29,68 @@
 </head>
 <body>
 
+<div class="center-page">
+<div class="card">
+<div class="card-body p4- p-md-5">
+
+<h4 class="card-title mb-3">Añadir vivienda</h4>
+
+<form id="addPropiedadForm" action="/propiedades" method="post" class="row g-3">
+
+<div class="col-12">
+  <label for="titulo" class="form-label">Título *</label>
+  <input id="titulo" name="titulo" type="text" class="form-control" required placeholder="Ej. Apartamento centro">
+</div>
+
+<div class="col-md-6">
+  <label for="ciudad" class="form-label">Ciudad</label>
+  <input id="ciudad" name="ciudad" type="text" class="form-control" placeholder="Madrid">
+</div>
+
+<div class="col-md-6">
+  <label for="tipoInmueble" class="form-label">Tipo de inmueble</label>
+  <select id="tipoInmueble" name="tipoInmueble" class="form-select">
+    <option value="">Selecciona...</option>
+    <option>Apartamento</option>
+    <option>Casa</option>
+    <option>Chalet</option>
+    <option>Estudio</option>
+   </select>
+</div>
+  
+<div class="col-md-4">
+  <label for="capacidad" class="form-label">Capacidad (personas)</label>
+  <input id="capacidad" name="capacidad" type="number" class="form-control" min="1">
+</div>
+  
+<div class="col-md-4">
+  <label for="precioNoche" class="form-label">Precio por noche (€) *</label>
+  <input id="precioNoche" name="precioNoche" type="number" step="0.01" min="0" class="form-control" required>
+</div>
+  
+<div class="col-12">
+   <label for="direccion" class="form-label">Dirección</label>
+   <input id="direccion" name="direccion" type="text" class="form-control">
+</div>
+
+<div class="col-12">
+  <label for="descripcion" class="form-label">Descripción</label>
+  <textarea id="descripcion" name="descripcion" class="form-control" rows="4" placeholder="Describe la vivienda..."></textarea>
+ </div>
+ 
+<div class="col-md-8">
+  <label for="politica" class="form-label">Política de cancelación</label>
+  <input id="politica" name="politica_cancelacion" type="text" class="form-control" placeholder="Flexible, moderada...">
+</div>
+
+<div class="col-12 d-flex align-items-center gap-3">
+ <div class="form-check">
+    <input id="reservaInmediata" name="permite_reserva_inmediata" class="form-check-input" type="checkbox">
+    <label for="reservaInmediata" class="form-check-label">Permitir reserva inmediata</label>
+ </div>
+     <small class="text-muted">Los campos marcados con * son obligatorios.</small>
+</div>
+  
+
 </body>
 </html>
