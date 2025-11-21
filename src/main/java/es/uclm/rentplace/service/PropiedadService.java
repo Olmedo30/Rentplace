@@ -1,7 +1,7 @@
 package es.uclm.rentplace.service;
 
 import es.uclm.rentplace.entity.Propiedad;
-//import es.uclm.rentplace.entity.Propietario;
+import es.uclm.rentplace.entity.Propietario;
 import es.uclm.rentplace.persistence.PropiedadDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

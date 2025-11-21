@@ -1,9 +1,9 @@
 package es.uclm.rentplace.controller;
 
 import es.uclm.rentplace.entity.Propiedad;
-//import es.uclm.rentplace.entity.Propietario;
+import es.uclm.rentplace.entity.Propietario;
 import es.uclm.rentplace.entity.Usuario;
-//import es.uclm.rentplace.persistence.PropietarioDAO;
+import es.uclm.rentplace.persistence.PropietarioDAO;
 import es.uclm.rentplace.service.PropiedadService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
