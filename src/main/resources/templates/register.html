@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<title>Registro</title>
-<link rel="stylesheet" href="../css/register_style.css">
-<link rel="shortcut icon" href="../assets/logo.png" />
+	<meta charset="UTF-8">
+	<title>Registro</title>
+	<link rel="stylesheet" href="../css/register_style.css">
+	<link rel="shortcut icon" href="../assets/logo.png" />
 </head>
+
 <body>
 	<div class="register-container">
 		<h1>
@@ -18,25 +20,27 @@
 			<form action="/register" method="post">
 				<p>
 					<label>Nombre de usuario</label>
-					<input type="text" name="username" required/>
+					<input type="text" name="username" required />
 				</p>
 
 				<p>
 					<label>Contraseña</label>
-					<input type="password" name="password" minlength="10" title="Mínimo 10 caracteres, con al menos un número"required/>
+					<input type="password" name="password" minlength="10"
+						title="Mínimo 10 caracteres, con al menos un número" required />
 				</p>
 
 				<p>
 					<label>Confirmar contraseña</label>
-					<input type="password" name="confirmPassword" required/>
+					<input type="password" name="confirmPassword" required />
 				</p>
 				<p>
 					<label>Teléfono</label>
-					<input type="tel" name="telefono" pattern="\d{7,15}" title="Solo números, entre 7 y 15 dígitos" required/>
+					<input type="tel" name="telefono" pattern="\d{7,15}" title="Solo números, entre 7 y 15 dígitos"
+						required />
 				</p>
 				<p>
 					<label>Correo electrónico</label>
-					<input type="email" name="email" required/>
+					<input type="email" name="email" required />
 				</p>
 
 				<button type="submit">Registrarse</button>
@@ -52,40 +56,41 @@
 		</div>
 	</div>
 	<script>
-document.getElementById('registerForm').addEventListener('submit', function(e) {
-    const pass = document.querySelector('input[name="password"]').value.trim();
-    const confirm = document.querySelector('input[name="confirmPassword"]').value.trim();
-    const phone = document.querySelector('input[name="telefono"]').value.trim();
+		document.getElementById('registerForm').addEventListener('submit', function (e) {
+			const pass = document.querySelector('input[name="password"]').value.trim();
+			const confirm = document.querySelector('input[name="confirmPassword"]').value.trim();
+			const phone = document.querySelector('input[name="telefono"]').value.trim();
 
-    if (pass !== confirm) {
-        alert("Las contraseñas no coinciden.");
-        e.preventDefault();
-        return;
-    }
+			if (pass !== confirm) {
+				alert("Las contraseñas no coinciden.");
+				e.preventDefault();
+				return;
+			}
 
-    if (pass.length < 10) {
-        alert("La contraseña debe tener al menos 10 caracteres.");
-        e.preventDefault();
-        return;
-    }
+			if (pass.length < 10) {
+				alert("La contraseña debe tener al menos 10 caracteres.");
+				e.preventDefault();
+				return;
+			}
 
-    if (!/\d/.test(pass)) {
-        alert("La contraseña debe contener al menos un número.");
-        e.preventDefault();
-        return;
-    }
+			if (!/\d/.test(pass)) {
+				alert("La contraseña debe contener al menos un número.");
+				e.preventDefault();
+				return;
+			}
 
-    if (!/[^a-zA-Z0-9]/.test(pass)) {
-        alert("La contraseña debe contener al menos un símbolo.");
-        e.preventDefault();
-        return;
-    }
+			if (!/[^a-zA-Z0-9]/.test(pass)) {
+				alert("La contraseña debe contener al menos un símbolo.");
+				e.preventDefault();
+				return;
+			}
 
-    if (!/^\d{7,15}$/.test(phone)) {
-        alert("El teléfono debe tener entre 7 y 15 dígitos numéricos.");
-        e.preventDefault();
-    }
-});
-</script>
+			if (!/^\d{7,15}$/.test(phone)) {
+				alert("El teléfono debe tener entre 7 y 15 dígitos numéricos.");
+				e.preventDefault();
+			}
+		});
+	</script>
 </body>
+
 </html>

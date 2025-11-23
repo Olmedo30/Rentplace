@@ -12,9 +12,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping("/inquilino")
 public class InquilinoController {
 
     private static final Logger log = LoggerFactory.getLogger(InquilinoController.class);
@@ -25,47 +26,20 @@ public class InquilinoController {
     @Autowired
     private usuarioDAO usuarioDAO;
 
-    // Mostrar formulario para convertirse en inquilino
-    @GetMapping("/become-inquilino")
-    public String showBecomeInquilino(HttpSession session, Model model) {
+    // Convertir usuario actual en inquilino
+    @PostMapping("/convertir")
+    public String convertirAInquilino(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
-            model.addAttribute("error", "Debes iniciar sesión para convertirte en inquilino.");
+            model.addAttribute("error", "Debes iniciar sesión.");
             return "login";
         }
 
-        // Verificar si ya es inquilino
         if (inquilinoDAO.existsByUsuarioId(userId)) {
-            model.addAttribute("error", "Ya eres inquilino.");
+            model.addAttribute("message", "Ya eres inquilino.");
             return "home";
         }
 
-        model.addAttribute("inquilino", new Inquilino());
-        return "become-inquilino";
-    }
-
-    // Procesar la solicitud de convertirse en inquilino
-    @PostMapping("/become-inquilino")
-    public String registerInquilino(
-            @RequestParam String nombre,
-            @RequestParam String email,
-            @RequestParam String telefono,
-            HttpSession session,
-            Model model) {
-
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            model.addAttribute("error", "Sesión expirada. Inicia sesión de nuevo.");
-            return "login";
-        }
-
-        // Verificar si ya es inquilino
-        if (inquilinoDAO.existsByUsuarioId(userId)) {
-            model.addAttribute("error", "Ya eres inquilino.");
-            return "home";
-        }
-
-        // Obtener el usuario desde la sesión
         var usuarioOpt = usuarioDAO.findById(userId);
         if (usuarioOpt.isEmpty()) {
             model.addAttribute("error", "Usuario no encontrado.");
@@ -73,14 +47,22 @@ public class InquilinoController {
         }
 
         Usuario usuario = usuarioOpt.get();
-
-        // Crear y guardar el inquilino
-        Inquilino inquilino = new Inquilino(nombre, email, telefono, usuario);
+        Inquilino inquilino = new Inquilino(usuario);
         inquilinoDAO.save(inquilino);
 
-        log.info("Inquilino registrado: {}", inquilino);
-
-        model.addAttribute("message", "Te has convertido en inquilino exitosamente.");
+        log.info("Usuario {} convertido en inquilino", usuario.getUsername());
+        model.addAttribute("message", "Ahora eres inquilino. ¡Puedes buscar viviendas!");
         return "home";
+    }
+
+    // Vista opcional: página de inquilino
+    @GetMapping("/perfil")
+    public String verPerfilInquilino(HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null || !inquilinoDAO.existsByUsuarioId(userId)) {
+            model.addAttribute("error", "Solo los inquilinos pueden acceder.");
+            return "home";
+        }
+        return "perfil-inquilino"; // Puedes crear esta vista después
     }
 }
