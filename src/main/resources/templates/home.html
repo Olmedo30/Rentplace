@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rent Place</title>
-<link rel="stylesheet" href="../css/home_style.css">
-<link rel="shortcut icon" href="../assets/logo.png" />
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Rent Place</title>
+	<link rel="stylesheet" href="../css/home_style.css">
+	<link rel="shortcut icon" href="../assets/logo.png" />
 </head>
+
 <body>
 	<header>
 		<div class="header-container">
@@ -17,8 +19,7 @@
 				<div class="logo-text">Rent Place</div>
 			</div>
 			<nav>
-				<a href="home">Inicio</a> <a href="register">Crear Cuenta</a> <a
-					href="login">Iniciar Sesión</a>
+				<a href="home">Inicio</a> <a href="register">Crear Cuenta</a> <a href="login">Iniciar Sesión</a> <a href="/become-propietario">Convertirse en Propietario</a>
 			</nav>
 			<div class="header-icons">
 				<button>
@@ -28,6 +29,11 @@
 					<i class="fas fa-bars"></i>
 				</button>
 			</div>
+			<p style="text-align: center;">
+    			<form action="/inquilino/convertir" method="post">
+        			<button type="submit">Convertirme en Inquilino</button>
+    			</form>
+			</p>
 		</div>
 	</header>
 	<main class="main-content">
@@ -48,8 +54,8 @@
 					<div class="circle circle-3"></div>
 					<div class="arrow">
 						<svg width="20" height="20" fill="#f97316" viewBox="0 0 20 20">
-                            <path d="M10 0 L15 5 L10 10 L5 5 Z" />
-                        </svg>
+							<path d="M10 0 L15 5 L10 10 L5 5 Z" />
+						</svg>
 						<div class="explore-image-content">
 							<img src="../assets/cloud.png" alt="Nubes">
 						</div>
@@ -69,19 +75,16 @@
 					<h2>Explora alrededor del mundo</h2>
 					<p>Si tienes un destino en mente, busca el sitio y te enseñamos
 						todas las opciones</p>
-					<input type="text" placeholder="¿Dónde quieres ir?"
-						class="search-input">
+					<input type="text" placeholder="¿Dónde quieres ir?" class="search-input">
 				</div>
 				<div class="explore-image">
 					<div class="circle circle-1 explore-circle-1"></div>
 					<div class="circle circle-2 explore-circle-2"></div>
 					<div class="explore-arrow">
 						<svg width="20" height="20" fill="white" viewBox="0 0 20 20">
-                            <circle cx="10" cy="10" r="8" fill="none"
-								stroke="currentColor" stroke-width="2" />
-                            <circle cx="10" cy="10" r="3"
-								fill="currentColor" />
-                        </svg>
+							<circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="2" />
+							<circle cx="10" cy="10" r="3" fill="currentColor" />
+						</svg>
 					</div>
 				</div>
 			</div>
@@ -158,4 +161,5 @@
 		</div>
 	</footer>
 </body>
+
 </html>
