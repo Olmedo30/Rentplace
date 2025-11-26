@@ -7,6 +7,8 @@
 	<title>Rent Place</title>
 	<link rel="stylesheet" href="../css/home_style.css">
 	<link rel="shortcut icon" href="../assets/logo.png" />
+	<!-- Agregado Font Awesome para iconos -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
@@ -14,29 +16,43 @@
 		<div class="header-container">
 			<div class="logo">
 				<div class="logo-icon">
-					<img src="../assets/logo.png" alt="hola" width="55" height="55">
+					<img src="../assets/logo.png" alt="Rent Place" width="55" height="55">
 				</div>
 				<div class="logo-text">Rent Place</div>
 			</div>
-			<nav>
-				<a href="home">Inicio</a> <a href="register">Crear Cuenta</a> <a href="login">Iniciar Sesión</a> <a href="/become-propietario">Convertirse en Propietario</a>
+			
+			<!-- Menú para propietarios autenticados -->
+			<nav class="owner-nav">
+				<a href="home">Inicio</a>
+				<a href="/add-property" class="add-property-btn"> 
+					<i class="fas fa-home"></i> Añadir Propiedad
+				</a>
+				<a href="/my-properties">Mis Propiedades</a>
+				<a href="/profile">Mi Cuenta</a>
 			</nav>
+			
 			<div class="header-icons">
-				<button>
+				<button aria-label="Buscar alojamientos">
 					<i class="fas fa-search"></i>
 				</button>
-				<button>
+				<button aria-label="Menú">
 					<i class="fas fa-bars"></i>
 				</button>
 			</div>
-			<p style="text-align: center;">
-    			<form action="/inquilino/convertir" method="post">
-        			<button type="submit">Convertirme en Inquilino</button>
-    			</form>
-			</p>
+			
+			<div class="auth-actions">
+				<form action="/inquilino/convertir" method="post">
+					<button type="submit" class="tenant-btn">
+						<i class="fas fa-user"></i> Convertirme en Inquilino
+					</button>
+				</form>
+				<a href="/logout" class="logout-btn">Cerrar Sesión</a>
+			</div>
 		</div>
 	</header>
+	
 	<main class="main-content">
+		<!-- El resto del contenido permanece igual -->
 		<section class="hero-content-section">
 			<div class="hero-content-container">
 				<div class="hero-content">
@@ -66,7 +82,6 @@
 				</div>
 			</div>
 		</section>
-
 
 		<!-- Explore Section -->
 		<section class="explore">
@@ -152,7 +167,7 @@
 		<div class="footer-container">
 			<div class="footer-logo">
 				<div class="logo-icon">
-					<img src="../assets/logo.png" alt="hola" width="45" height="45">
+					<img src="../assets/logo.png" alt="Rent Place" width="45" height="45">
 				</div>
 				<span>Rent Place</span>
 			</div>

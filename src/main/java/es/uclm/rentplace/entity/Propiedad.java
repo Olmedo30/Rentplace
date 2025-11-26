@@ -20,7 +20,7 @@ public class Propiedad {
 	// // Relación N:1 con Usuario: un propietario puede tener varias propiedades)
 	@ManyToOne(fetch = FetchType.LAZY)// LAZY evita cargar el usuario hasta que se necesite
     @JoinColumn(name = "propietario_id", nullable = false)
-    private Usuario propietario;
+    private Propietario propietario;
 	
 	@Column(name = "titulo", length = 150, nullable = false)// "nullable = false" campo obligatorio
     private String titulo;
@@ -63,7 +63,7 @@ public class Propiedad {
     public Propiedad() {}
     
     // Constructor con parámetros
-    public Propiedad(Usuario propietario, String titulo, String descripcion, String direccion,
+    public Propiedad(Propietario propietario, String titulo, String descripcion, String direccion,
             String ciudad, String tipoInmueble, Integer habitaciones, Integer capacidad,
             BigDecimal precioNoche, String politicaCancelacion, Boolean permiteReservaInmediata,
             LocalDateTime fechaAlta, Boolean activo) {
@@ -90,10 +90,10 @@ public class Propiedad {
     	this.id = id; 
     }
     
-    public Usuario getPropietario() {
+    public Propietario getPropietario() {
     	return propietario;
     }
-    public void setPropietario(Usuario propietario) { 
+    public void setPropietario(Propietario propietario) { 
     	this.propietario = propietario; 
     }
     
@@ -196,9 +196,9 @@ public class Propiedad {
     // Representación de los atributos
     @Override
     public String toString() {
-    	return String.format("Propiedad[id=%d, titulo='%s', ciudad='%s', precio=%s, activo=%s]",
-    			id, titulo, ciudad, precioNoche, activo);
-    	}
+        return String.format("Propiedad[id=%d, titulo='%s', ciudad='%s', precio=%s, activo=%s]",
+                id, titulo, ciudad, precioNoche, activo);
+    }
     	
     }
     
