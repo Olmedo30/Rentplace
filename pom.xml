@@ -29,6 +29,7 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<sonar.organization>olmedo30</sonar.organization>
 	</properties>
 	<dependencies>
 		<!-- Spring Boot + Thymeleaf -->

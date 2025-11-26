@@ -1,5 +1,8 @@
 package es.uclm.rentplace.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -19,17 +22,17 @@ public class Propietario {
     @Column(nullable = false)
     private String telefono;
 
-    @OneToOne
-    @JoinColumn(name = "usuario_id", unique = true)
-    private Usuario usuario;
+    @OneToMany(mappedBy = "propietario", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+ private List<Propiedad> propiedades = new ArrayList<>();
 
     public Propietario() {}
 
-    public Propietario(String nombre, String email, String telefono, Usuario usuario) {
+    public Propietario(String nombre, String email, String telefono) {
         this.nombre = nombre;
         this.email = email;
         this.telefono = telefono;
-        this.usuario = usuario;
+      
     }
 
     // Getters y setters
@@ -45,12 +48,29 @@ public class Propietario {
     public String getTelefono() { return telefono; }
     public void setTelefono(String telefono) { this.telefono = telefono; }
 
-    public Usuario getUsuario() { return usuario; }
-    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+    public List<Propiedad> getPropiedades() { 
+    	return propiedades; 
+    	}
+    public void setPropiedades(List<Propiedad> propiedades) {
+        this.propiedades = propiedades != null ? propiedades : new ArrayList<>();
+        }
+    
+    // Helpers para mantener la relación bidireccional consistente
+    public void addPropiedad(Propiedad propiedad) {
+        propiedades.add(propiedad);
+        propiedad.setPropietario(this);
+    }
+
+    public void removePropiedad(Propiedad propiedad) {
+        propiedades.remove(propiedad);
+        propiedad.setPropietario(null);
+    }
 
     @Override
     public String toString() {
-        return String.format("Propietario[id=%d, nombre='%s', email='%s', telefono='%s', usuario='%s']",
-                id, nombre, email, telefono, usuario != null ? usuario.getUsername() : "sin usuario");
+        return String.format("Propietario[id=%d, nombre='%s', email='%s', telefono='%s', propiedades=%d]",
+                id, nombre, email, telefono, propiedades == null ? 0 : propiedades.size());
     }
-}
+
+    
+    }
