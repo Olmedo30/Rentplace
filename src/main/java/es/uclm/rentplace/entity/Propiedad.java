@@ -17,7 +17,7 @@ public class Propiedad {
 	@Column(name = "propiedades_id")
 	private Long id;
 	
-	// // Relación N:1 con Usuario: un propietario puede tener varias propiedades)
+	// Relación N:1 con Usuario: un propietario puede tener varias propiedades)
 	@ManyToOne(fetch = FetchType.LAZY)// LAZY evita cargar el usuario hasta que se necesite
     @JoinColumn(name = "propietario_id", nullable = false)
     private Propietario propietario;
@@ -25,8 +25,7 @@ public class Propiedad {
 	@Column(name = "titulo", length = 150, nullable = false)// "nullable = false" campo obligatorio
     private String titulo;
 	
-	@Lob // Indica que es un texto largo (Large Object)
-	@Column(name = "descripcion", columnDefinition = "TEXT")
+	@Column(name = "descripcion", length = 5000)
 	private String descripcion;
 	
 	@Column(name = "direccion", length = 200)
