@@ -1,68 +1,120 @@
 package es.uclm.rentplace.service;
 
-import es.uclm.rentplace.entity.Reserva;
-import es.uclm.rentplace.persistence.ReservaDAO;
+import es.uclm.rentplace.entity.*;
+import es.uclm.rentplace.persistence.PagoDAO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PagoService {
-
-    @Value("${dominio.url}")
-    private String domainUrl;
-
+    
+    private final PagoDAO pagoDAO;
+    private final ReservaService reservaService;
+    private final NotificacionService notificacionService;
+    
     @Autowired
-    private ReservaDAO reservaDAO;
-
-    /**
-     * SIMULACIÓN: Simula la creación de una sesión de pago y devuelve la URL 
-     * de redireccionamiento al endpoint de éxito.
-     * @param reserva La reserva a pagar.
-     * @return URL de redireccionamiento al éxito con un 'mock_session_id'.
-     */
-    public String createCheckoutSession(Reserva reserva) {
-        
-        // SIMULACIÓN: mock_session_id con el ID de la reserva
-        String mockSessionId = "mock_sess_" + reserva.getId();
-        
-        // Redirige al endpoint de éxito en PagoController
-        String successUrl = domainUrl + "/pago/exito?session_id=" + mockSessionId;
-
-        System.out.println("SIMULACIÓN: Generada URL de éxito para Reserva ID: " + reserva.getId());
-        return successUrl; 
+    public PagoService(PagoDAO pagoDAO, ReservaService reservaService, NotificacionService notificacionService) {
+        this.pagoDAO = pagoDAO;
+        this.reservaService = reservaService;
+        this.notificacionService = notificacionService;
     }
-
-    /**
-     * SIMULACIÓN: Asume que el pago fue exitoso y actualiza el estado de la reserva.
-     * @param sessionId El ID de la sesión de pago (que contiene el ID de la reserva en la simulación).
-     * @return ID de la Reserva si el pago fue 'confirmado' y se actualizó a PAGADA.
-     */
+    
+    @Transactional
+    public Pago crearPago(Reserva reserva, BigDecimal monto, Pago.MetodoPago metodoPago) {
+        if (reserva.getPago() != null) {
+            return reserva.getPago();
+        }
+        
+        Pago pago = new Pago();
+        pago.setReserva(reserva);
+        pago.setMonto(monto);
+        pago.setMetodoPago(metodoPago);
+        pago.setFechaPago(LocalDateTime.now());
+        pago.setReferencia(UUID.randomUUID().toString());
+        pago.setCompletado(false);
+        
+        return pagoDAO.save(pago);
+    }
+    
+    @Transactional
+    public void completarPago(Long pagoId) {
+        Pago pago = pagoDAO.findById(pagoId).orElse(null);
+        if (pago == null) {
+            throw new IllegalArgumentException("Pago no encontrado");
+        }
+        
+        if (pago.getCompletado()) {
+            return;
+        }
+        
+        pago.setCompletado(true);
+        pagoDAO.save(pago);
+        
+        // Actualizar estado de la reserva
+        Reserva reserva = pago.getReserva();
+        reserva.setPagado(true);
+        reservaService.actualizarReserva(reserva);
+    }
+    
+    @Transactional
+    public void reembolsarPago(Long pagoId) {
+        Pago pago = pagoDAO.findById(pagoId).orElse(null);
+        if (pago == null) {
+            throw new IllegalArgumentException("Pago no encontrado");
+        }
+        
+        if (!pago.getCompletado()) {
+            return;
+        }
+        
+        pago.setCompletado(false);
+        pagoDAO.save(pago);
+        
+        // Actualizar estado de la reserva
+        Reserva reserva = pago.getReserva();
+        reserva.setPagado(false);
+        reservaService.actualizarReserva(reserva);
+    }
+    
+    @Transactional
     public Long confirmPaymentAndReserva(String sessionId) {
-        
-        // SIMULACIÓN: Extrae el ID de la mock_session_id
-        if (sessionId == null || !sessionId.startsWith("mock_sess_")) {
-            System.err.println("SIMULACIÓN FALLIDA: Session ID no válido.");
-            return null;
+        Reserva reserva = reservaService.obtenerReservaPorSesion(sessionId);
+        if (reserva == null) {
+            throw new IllegalArgumentException("Reserva no encontrada para la sesión: " + sessionId);
         }
         
-        Long reservaId;
-        try {
-            // Extraer el número después de "mock_sess_"
-            reservaId = Long.parseLong(sessionId.substring("mock_sess_".length()));
-        } catch (NumberFormatException e) {
-             System.err.println("SIMULACIÓN FALLIDA: ID de reserva no numérico.");
-            return null;
+        // Completar el pago
+        Pago pago = crearPago(reserva, calcularTotalReserva(reserva), Pago.MetodoPago.TARJETA_CREDITO);
+        completarPago(pago.getId());
+        
+        // Confirmar la reserva si es inmediata
+        if (reserva.getPropiedad().getPermiteReservaInmediata()) {
+            reservaService.confirmarReserva(reserva.getId());
         }
-
-        return reservaDAO.findById(reservaId).map(reserva -> {
-            // SIMULACIÓN: Asume que el pago fue confirmado.
-            if ("PENDIENTE".equals(reserva.getEstado())) {
-                reserva.setEstado("PAGADA");
-                reservaDAO.save(reserva);
-                System.out.println("SIMULACIÓN EXITOSA: Reserva " + reservaId + " pagada y confirmada.");
-            }
-            return reservaId;
-        }).orElse(null);
+        
+        return reserva.getId();
+    }
+    
+    public Pago obtenerPagoPorId(Long pagoId) {
+        return pagoDAO.findById(pagoId).orElse(null);
+    }
+    
+    public List<Pago> obtenerPagosDeInquilino(Long inquilinoId) {
+        return pagoDAO.findByReservaInquilinoId(inquilinoId);
+    }
+    
+    public List<Pago> obtenerPagosDePropietario(Long propietarioId) {
+        return pagoDAO.findByReservaPropiedadPropietarioId(propietarioId);
+    }
+    
+    public BigDecimal calcularTotalReserva(Reserva reserva) {
+        long dias = java.time.Duration.between(reserva.getFechaEntrada(), reserva.getFechaSalida()).toDays();
+        return reserva.getPropiedad().getPrecioNoche().multiply(BigDecimal.valueOf(dias));
     }
 }

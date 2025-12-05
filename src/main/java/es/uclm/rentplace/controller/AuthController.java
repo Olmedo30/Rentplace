@@ -1,8 +1,9 @@
+// src/main/java/es/uclm/rentplace/controller/AuthController.java
 package es.uclm.rentplace.controller;
 
 import es.uclm.rentplace.entity.Usuario;
-import jakarta.servlet.http.HttpSession;
 import es.uclm.rentplace.persistence.usuarioDAO;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,6 @@ public class AuthController {
     @GetMapping("/register")
     public String showSignup(Model model) {
         model.addAttribute("usuario", new Usuario());
-        log.info("Usuarios existentes: {}", usuarioPersistence.findAll());
         return "register";
     }
 
@@ -36,41 +36,19 @@ public class AuthController {
             @RequestParam String confirmPassword,
             @RequestParam String email,
             @RequestParam String telefono,
+            @RequestParam String nombre,
+            @RequestParam String apellidos,
+            @RequestParam String direccion,
+            @RequestParam String rol,
             Model model) {
-    	
-    	  // Limpiar espacios en blanco al inicio y final (no los del medio)
-        password = password.trim();
-        confirmPassword = confirmPassword.trim();
-        telefono = telefono.trim();
-    	
-    	// Validar que las contraseñas coincidan
+
+        // Validar contraseñas
         if (!password.equals(confirmPassword)) {
             model.addAttribute("error", "Las contraseñas no coinciden.");
-            return "register"; // vuelve al formulario
-        }
-        
-        // Validar longitud mínima de la contraseña (10 caracteres)
-        if (password.length() < 10) {
-            model.addAttribute("error", "La contraseña debe tener al menos 10 caracteres.");
-            return "register";
-        } else if (password.length() > 30) {
-            model.addAttribute("error", "La contraseña es demasiado larga.");
             return "register";
         }
-        
-        // Validar longitud del teléfono: entre 7 y 15 dígitos (solo números)
-        if (!telefono.matches("\\d{7,15}")) {
-            model.addAttribute("error", "El teléfono debe contener entre 7 y 15 dígitos numéricos (sin espacios ni guiones).");
-            return "register";
-        }
-        
-        // Validar que la contraseña contenga al menos un número
-        if (!password.matches(".*\\d.*")) {
-            model.addAttribute("error", "La contraseña debe contener al menos un número.");
-            return "register";
-        }
-        
-        // Validar que el usuario o email no existan
+
+        // Validar existencia
         if (usuarioPersistence.existsByUsername(username)) {
             model.addAttribute("error", "El nombre de usuario ya está en uso.");
             return "register";
@@ -79,11 +57,21 @@ public class AuthController {
             model.addAttribute("error", "El correo electrónico ya está registrado.");
             return "register";
         }
-        
-        Usuario nuevo = new Usuario(username, password, email, telefono);
-        Usuario guardado = usuarioPersistence.save(nuevo);
-        log.info("Usuario guardado: {}", guardado);
-        model.addAttribute("mensaje", "Registro exitoso.");
+
+        // Convertir rol
+        Usuario.Rol rolEnum;
+        try {
+            rolEnum = Usuario.Rol.valueOf(rol);
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", "Rol inválido.");
+            return "register";
+        }
+
+        // Crear y guardar usuario
+        Usuario nuevo = new Usuario(username, password, email, telefono, nombre, apellidos, direccion, rolEnum);
+        usuarioPersistence.save(nuevo);
+        log.info("Usuario guardado: {}", nuevo);
+        model.addAttribute("message", "Registro exitoso. Ahora puedes iniciar sesión.");
         return "login";
     }
 
@@ -93,28 +81,34 @@ public class AuthController {
         return "login";
     }
 
-    // Procesar login (versión simple sin autenticación real por ahora)
+    // Procesar login
     @PostMapping("/login")
     public String doLogin(
             @RequestParam String username,
             @RequestParam String password,
-            Model model, HttpSession session) {
-    	// Buscar al usuario por nombre de usuario
+            Model model,
+            HttpSession session) {
+
         var usuarioOpt = usuarioPersistence.findByUsername(username);
 
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
-            // Comparar contraseñas en texto plano (solo para desarrollo)
             if (password.equals(usuario.getPassword())) {
-                // Inicio de sesión exitoso: guardar en sesión
                 session.setAttribute("username", usuario.getUsername());
                 session.setAttribute("userId", usuario.getId());
+                session.setAttribute("rol", usuario.getRol().name());
                 return "redirect:/home";
             }
         }
 
-        // Credenciales incorrectas
         model.addAttribute("error", "Nombre de usuario o contraseña incorrectos.");
         return "login";
+    }
+    
+    // Cerrar sesión
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login";
     }
 }
