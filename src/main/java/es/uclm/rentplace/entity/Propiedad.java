@@ -29,7 +29,7 @@ public class Propiedad {
     private String titulo;
 	
 	@Lob
-    @Column(name = "descripcion", columnDefinition = "TEXT")
+    @Column(name = "descripcion")
     private String descripcion;
 	
     @Column(name = "direccion", length = 200, nullable = false)

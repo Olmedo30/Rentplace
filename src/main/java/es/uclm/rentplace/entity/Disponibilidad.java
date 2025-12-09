@@ -18,10 +18,10 @@ public class Disponibilidad {
     @JoinColumn(name = "propiedad_id", nullable = false)
     private Propiedad propiedad;
 
-    @Column(name = "fecha_inicio", columnDefinition = "DATE")
+    @Column(name = "fecha_inicio")
     private LocalDate fechaInicio;
 
-    @Column(name = "fecha_fin", columnDefinition = "DATE")
+    @Column(name = "fecha_fin")
     private LocalDate fechaFin;
 
     @Column(name = "disponible")

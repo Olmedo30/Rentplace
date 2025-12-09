@@ -18,7 +18,7 @@ public class Notificacion {
     @Column(name = "titulo", length = 100, nullable = false)
     private String titulo;
     
-    @Column(name = "mensaje", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "mensaje", nullable = false)
     private String mensaje;
     
     @Column(name = "fecha_envio", nullable = false)
