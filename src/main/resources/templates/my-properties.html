@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Propiedades</title>
+    <link rel="stylesheet" href="../css/home_style.css">
+    <link rel="shortcut icon" href="../assets/logo.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <img src="../assets/logo.png" alt="Rent Place" width="55" height="55">
+                </div>
+                <div class="logo-text">Rent Place</div>
+            </div>
+            
+            <!-- Menú para propietarios autenticados -->
+            <nav class="owner-nav">
+                <a href="/home">Inicio</a>
+                <a href="/propiedades/listado">Ver Propiedades</a>
+                <a href="/propiedades/nueva" class="add-property-btn"> 
+                    <i class="fas fa-home"></i> Añadir Propiedad
+                </a>
+                <a href="/propiedades/my-properties">Mis Propiedades</a>
+                <a href="/profile">Mi Cuenta</a>
+            </nav>
+            
+            <div class="header-icons">
+                <button aria-label="Buscar alojamientos">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button aria-label="Menú">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div class="auth-actions">
+                <form action="/inquilino/convertir" method="post">
+                    <button type="submit" class="tenant-btn">
+                        <i class="fas fa-user"></i> Convertirme en Inquilino
+                    </button>
+                </form>
+                <a href="/logout" class="logout-btn">Cerrar Sesión</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="accommodation">
+            <div class="accommodation-container">
+                <div class="accommodation-header">
+                    <h2 class="accommodation-title">Mis Propiedades</h2>
+                </div>
+                
+                <div th:if="${error}" class="error-message">
+                    <p th:text="${error}"></p>
+                </div>
+
+                <div th:if="${misPropiedades.isEmpty()}" class="empty-results-message">
+                    <p>No tienes propiedades registradas todavía. <a href="/propiedades/nueva" class="add-property-link">¡Añade una ahora!</a></p>
+                </div>
+                
+                <div class="categories">
+                    <div class="category" th:each="propiedad : ${misPropiedades}">
+                        <div class="category-image">
+                            <img th:src="@{/assets/casa.png}" alt="Imagen propiedad">
+                        </div>
+                        <div class="property-details">
+                            <div class="category-name" th:text="${propiedad.titulo}">Título de la casa</div>
+                            <p class="property-location">
+                                <i class="fas fa-map-marker-alt"></i> 
+                                <span th:text="${propiedad.ciudad}">Ciudad</span> 
+                                <span th:if="${propiedad.tipoInmueble}" th:text="'• ' + ${propiedad.tipoInmueble}"></span>
+                            </p>
+                            <p class="property-description" th:text="${propiedad.descripcion}">Descripción...</p>
+                            <div class="property-price">
+                                <span th:text="${propiedad.precioNoche}">0</span> € <small>/noche</small>
+                            </div>
+                            <a th:href="@{/propiedades/{id}(id=${propiedad.id})}" class="details-button">
+                                Ver detalles
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-logo">
+                <div class="logo-icon">
+                    <img src="../assets/logo.png" alt="Rent Place" width="45" height="45">
+                </div>
+                <span>Rent Place</span>
+            </div>
+            <div class="footer-copyright">© 2025 Rent Place. Todos los derechos reservados.</div>
+        </div>
+    </footer>
+</body>
+</html>

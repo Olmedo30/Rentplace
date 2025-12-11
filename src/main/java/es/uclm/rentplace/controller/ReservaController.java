@@ -59,7 +59,7 @@ public class ReservaController {
 
         try {
             // 3. Iniciar el proceso de pago simulado
-            String paymentUrl = pagoService.createCheckoutSession(savedReserva); // Uso del servicio renombrado
+            String paymentUrl = pagoService.createCheckoutSession(savedReserva);
             
             // 4. Redirigir al usuario a la página de pago simulada (successUrl)
             return "redirect:" + paymentUrl;

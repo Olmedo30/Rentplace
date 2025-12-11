@@ -17,15 +17,15 @@ public class Propiedad {
 	@Column(name = "propiedades_id")
 	private Long id;
 	
-	// // Relación N:1 con Usuario: un propietario puede tener varias propiedades)
-	@ManyToOne(fetch = FetchType.LAZY)// LAZY evita cargar el usuario hasta que se necesite
+	// Relación N:1 con Usuario: un propietario puede tener varias propiedades)
+	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "propietario_id", nullable = false)
     private Propietario propietario;
 	
-	@Column(name = "titulo", length = 150, nullable = false)// "nullable = false" campo obligatorio
+	@Column(name = "titulo", length = 150, nullable = false) // "nullable = false" -> oblogatorio
     private String titulo;
 	
-	@Lob // Indica que es un texto largo (Large Object)
+	@Lob // Indica que es un texto largo
 	@Column(name = "descripcion")
 	private String descripcion;
 	
@@ -199,7 +199,4 @@ public class Propiedad {
         return String.format("Propiedad[id=%d, titulo='%s', ciudad='%s', precio=%s, activo=%s]",
                 id, titulo, ciudad, precioNoche, activo);
     }
-    	
-    }
-    
- 
+}

@@ -79,12 +79,6 @@
 				return;
 			}
 
-			if (!/[^a-zA-Z0-9]/.test(pass)) {
-				alert("La contraseña debe contener al menos un símbolo.");
-				e.preventDefault();
-				return;
-			}
-
 			if (!/^\d{7,15}$/.test(phone)) {
 				alert("El teléfono debe tener entre 7 y 15 dígitos numéricos.");
 				e.preventDefault();

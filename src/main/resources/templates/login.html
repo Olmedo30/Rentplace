@@ -29,6 +29,9 @@
 			</form>
 
 			<p th:if="${error}" th:text="${error}" class="error-message"></p>
+			<div th:if="${mensaje}" class="success-message" style="color: green; text-align: center; margin-top: 10px;">
+				<p th:text="${mensaje}"></p>
+			</div>
 
 			<p style="text-align: center;">
 				¿No tienes cuenta? <a href="/register">Regístrate aquí</a>

@@ -1,6 +1,8 @@
 package es.uclm.rentplace.controller;
 
 import es.uclm.rentplace.entity.Propietario;
+import es.uclm.rentplace.entity.Usuario; // Import Usuario
+import es.uclm.rentplace.persistence.usuarioDAO; // Import usuarioDAO
 import es.uclm.rentplace.service.PropietarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,6 +15,9 @@ public class PropietarioController {
 
     @Autowired
     private PropietarioService propietarioService;
+
+    @Autowired
+    private usuarioDAO usuarioPersistence;
 
     // Mostrar formulario de registro de propietario
     @GetMapping("/register")
@@ -28,12 +33,20 @@ public class PropietarioController {
                            @RequestParam String telefono,
                            Model model) {
 
-        if (propietarioService.existsByEmail(email)) {
-            model.addAttribute("error", "Email ya registrado como propietario.");
+        if (usuarioPersistence.findByEmail(email).isPresent()) {
+            model.addAttribute("error", "Email ya registrado.");
             return "register-propietario";
         }
 
-        Propietario p = new Propietario(nombre, email, telefono);
+        Usuario nuevoUsuario = new Usuario();
+        nuevoUsuario.setUsername(nombre);
+        nuevoUsuario.setEmail(email);
+        nuevoUsuario.setTelefono(telefono);
+
+        usuarioPersistence.save(nuevoUsuario); // Save the new user
+
+        // Create Propietario linked to the new Usuario
+        Propietario p = new Propietario(nuevoUsuario);
         propietarioService.crearPropietario(p);
         model.addAttribute("mensaje", "Registro de propietario completado.");
         return "login"; // o página específica

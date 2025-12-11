@@ -12,8 +12,8 @@ public class PagoController {
 
     @Autowired
     private PagoService pagoService;
- 
-    // Endpoint al que el servicio simulado redirige después de un PAGO EXITOSO
+
+    // Endpoint al que el servicio simulado redirige después de un pago exitoso
     @GetMapping("/pago/exito")
     public String pagoSuccess(@RequestParam("session_id") String sessionId, Model model) {
         try {
@@ -34,9 +34,9 @@ public class PagoController {
         }
     }
 
-    // Endpoint al que el servicio simulado redirige si el usuario CANCELA el pago
+    // Endpoint al que el servicio simulado redirige si el usuario cancela el pago
     @GetMapping("/pago/cancelado")
-    public String pagoCancelled(@RequestParam Long reservaId, Model model) { // La reserva permanece en estado PENDIENTE.
+    public String pagoCancelled(@RequestParam Long reservaId, Model model) { // La reserva permanece en estado pendiente.
         model.addAttribute("error", "El pago ha sido cancelado. Su reserva (ID: " + reservaId + ") sigue en estado pendiente y puede ser eliminada.");
         return "home";
     }

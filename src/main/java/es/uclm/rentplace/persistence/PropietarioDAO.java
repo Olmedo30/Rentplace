@@ -11,11 +11,14 @@ import java.util.Optional;
 public interface PropietarioDAO extends JpaRepository<Propietario, Long> {
 
     // Buscar por email 
-    Optional<Propietario> findByEmail(String email);
-    boolean existsByEmail(String email);
+    Optional<Propietario> findByUsuario_Email(String email);
+    boolean existsByUsuario_Email(String email);
 
     // Buscar por nombre 
-    List<Propietario> findByNombreContainingIgnoreCase(String nombre);
+    List<Propietario> findByUsuario_UsernameContainingIgnoreCase(String username);
+    
+    // Buscar propietario por el ID de usuario asociado
+    Optional<Propietario> findByUsuarioId(Long userId);
 
     // El método por id ya lo proporciona JpaRepository: findById(id)
 }

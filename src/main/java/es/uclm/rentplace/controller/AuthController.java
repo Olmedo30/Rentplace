@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
+
 @Controller
 public class AuthController {
 
@@ -19,6 +22,9 @@ public class AuthController {
 
     @Autowired
     private usuarioDAO usuarioPersistence;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // Mostrar formulario de registro
     @GetMapping("/register")
@@ -30,6 +36,7 @@ public class AuthController {
 
     // Procesar registro
     @PostMapping("/register")
+    @Transactional
     public String register(
             @RequestParam String username,
             @RequestParam String password,
@@ -38,7 +45,7 @@ public class AuthController {
             @RequestParam String telefono,
             Model model) {
     	
-    	  // Limpiar espacios en blanco al inicio y final (no los del medio)
+    	// Limpiar espacios en blanco al inicio y final (no los del medio)
         password = password.trim();
         confirmPassword = confirmPassword.trim();
         telefono = telefono.trim();
@@ -80,11 +87,20 @@ public class AuthController {
             return "register";
         }
         
-        Usuario nuevo = new Usuario(username, password, email, telefono);
-        Usuario guardado = usuarioPersistence.save(nuevo);
-        log.info("Usuario guardado: {}", guardado);
-        model.addAttribute("mensaje", "Registro exitoso.");
-        return "login";
+        // Codificar la contraseña
+        String encodedPassword = passwordEncoder.encode(password);
+        
+        Usuario nuevo = new Usuario(username, encodedPassword, email, telefono);
+        try {
+            Usuario guardado = usuarioPersistence.save(nuevo);
+            log.info("Usuario guardado: {}", guardado);
+            model.addAttribute("mensaje", "Registro exitoso.");
+            return "login";
+        } catch (Exception e) {
+            log.error("Error al guardar el usuario: {}", e.getMessage(), e);
+            model.addAttribute("error", "Error al registrar el usuario: " + e.getMessage());
+            return "register";
+        }
     }
 
     // Mostrar login
@@ -104,8 +120,8 @@ public class AuthController {
 
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
-            // Comparar contraseñas en texto plano (solo para desarrollo)
-            if (password.equals(usuario.getPassword())) {
+            // Comparar contraseñas usando el PasswordEncoder
+            if (passwordEncoder.matches(password, usuario.getPassword())) {
                 // Inicio de sesión exitoso: guardar en sesión
                 session.setAttribute("username", usuario.getUsername());
                 session.setAttribute("userId", usuario.getId());

@@ -1,4 +1,3 @@
-// src/main/java/es/uclm/rentplace/service/UsuarioService.java
 package es.uclm.rentplace.service;
 
 import es.uclm.rentplace.entity.Usuario;

@@ -7,7 +7,9 @@
 body {
 	font-family: 'Arial', sans-serif;
 	background: linear-gradient(135deg, #ffedd5, #fed7aa);
-	min-height: 100%;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
 	overflow-x: hidden;
 }
 
@@ -19,9 +21,7 @@ header {
 	width: 100%;
 	z-index: 1000;
 	background: rgba(255, 106, 0, 0.4);
-	/* Orange with 15% opacity */
 	backdrop-filter: blur(10px);
-	/* Glass effect */
 	-webkit-backdrop-filter: blur(10px);
 	padding: 1rem 2rem;
 	border-bottom: 1px solid rgba(249, 115, 22, 0.2);
@@ -96,10 +96,8 @@ nav a:hover {
 /* Main Content */
 .main-content {
 	padding-top: 6rem;
-	/* Account for fixed header height */
 }
 
-/* Hero Content Section (replaces hero background) */
 .hero-content-section {
 	padding: 4rem 2rem 2rem;
 }
@@ -321,7 +319,7 @@ nav a:hover {
 	right: -160px;
 }
 
-/* Círculos para el apartado Explore - ahora blancos */
+/* Círculos para el apartado Explore */
 .explore-circle-1 {
 	width: 48px;
 	height: 48px;
@@ -329,7 +327,6 @@ nav a:hover {
 	left: -40px;
 	opacity: 0.5;
 	border-color: white;
-	/* Cambiado a blanco */
 }
 
 .explore-circle-2 {
@@ -339,10 +336,8 @@ nav a:hover {
 	right: 40px;
 	opacity: 0.5;
 	border-color: white;
-	/* Cambiado a blanco */
 }
 
-/* Nuevos círculos para el apartado Accommodation - naranjas */
 .accommodation-circle-1 {
 	position: absolute;
 	width: 48px;
@@ -427,7 +422,6 @@ nav a:hover {
 	object-fit: cover;
 	display: block;
 	image-rendering: crisp-edges;
-	/* Evita el suavizado, útil para iconos pixelados */
 }
 
 .accommodation-text h3 {
@@ -484,23 +478,51 @@ nav a:hover {
 	object-fit: cover;
 }
 
-.category-overlay {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
-	padding: 1rem;
-}
+
 
 .category-name {
-	color: white;
+	color: #1f2937;
 	font-weight: 600;
 	font-size: 1.125rem;
 }
 
+.property-details {
+    padding: 1rem;
+    color: #1f2937;
+}
+
+.property-details .category-name {
+    color: #1f2937;
+    font-weight: 600;
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+}
+
+.property-details .property-location,
+.property-details .property-description,
+.property-details .property-price {
+    color: #4b5563;
+    margin-bottom: 0.5rem;
+}
+
+.property-details .details-button {
+    /* Style for the "Ver detalles" button */
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: #f97316;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 1rem;
+}
+
+.property-details .details-button:hover {
+    background-color: #ea580c;
+}
+
 /* Footer */
 footer {
+	margin-top: auto;
 	background: #1f2937;
 	color: white;
 	padding: 2rem;
@@ -523,7 +545,6 @@ footer {
 		flex-direction: row;
 	}
 }
-
 
 .footer-copyright {
 	color: #9ca3af;

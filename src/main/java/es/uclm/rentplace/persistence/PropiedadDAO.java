@@ -20,25 +20,15 @@ public interface PropiedadDAO extends JpaRepository<Propiedad, Long> {
     List<Propiedad> findByPrecioNocheLessThanEqual(BigDecimal precioMaximo);
 
     // Buscamos por campos del propietario (Propiedad -> Propietario -> email/nombre)
-    List<Propiedad> findByPropietarioEmail(String email);
-    List<Propiedad> findByPropietarioNombre(String nombre);
+    List<Propiedad> findByPropietario_Usuario_Email(String email);
+    List<Propiedad> findByPropietario_Usuario_Username(String username);
 
-    /**
-     * Consulta nativa para obtener propiedades disponibles en el intervalo [start, end].
-     *
-     * IMPORTANTE (Derby):
-     *  - Si tu columna 'disponible' está definida como BOOLEAN en la BD, deja `d.disponible = true`.
-     *  - Si en Derby la columna 'disponible' es SMALLINT/INT (0/1), sustituye `d.disponible = true`
-     *    por `d.disponible = 1` (he incluido la alternativa comentada más abajo).
-     *
-     * También verifica el tipo y valores del campo 'estado' en la tabla 'reservas' (VARCHAR vs numérico).
-     */
     @Query(value = "" +
             "SELECT p.* FROM propiedades p " +
             "WHERE EXISTS ( " +
             "   SELECT 1 FROM disponibilidades d " +
             "   WHERE d.propiedad_id = p.propiedades_id " +
-            "     AND d.disponible = true " +                // <-- si es SMALLINT en Derby, cambiar a = 1
+            "     AND d.disponible = true " +
             "     AND d.fecha_inicio <= :start " +
             "     AND d.fecha_fin >= :end " +
             ") " +
@@ -52,5 +42,4 @@ public interface PropiedadDAO extends JpaRepository<Propiedad, Long> {
             nativeQuery = true)
     List<Propiedad> findAvailablePropertiesBetween(@Param("start") LocalDate start, @Param("end") LocalDate end);
 
- 
 }

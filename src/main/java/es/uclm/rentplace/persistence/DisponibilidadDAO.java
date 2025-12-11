@@ -18,7 +18,6 @@ public interface DisponibilidadDAO extends JpaRepository<Disponibilidad, Long> {
     List<Disponibilidad> findByPropiedadIdAndFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(
             Long propiedadId, LocalDate fechaInicio, LocalDate fechaFin);
 
-    // CORREGIDO: Añadimos la query explícita porque el nombre "Disponibilidades_Sopalan" no es estándar
     @Query("SELECT d FROM Disponibilidad d WHERE d.propiedad.id = :propiedadId " +
            "AND d.fechaInicio <= :fechaFin AND d.fechaFin >= :fechaInicio")
     List<Disponibilidad> Disponibilidades_Sopalan(

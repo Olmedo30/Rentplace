@@ -22,8 +22,8 @@ public class PropietarioService {
         return propietarioDAO.findById(id);
     }
 
-    public boolean existsByEmail(String email){
-        return propietarioDAO.existsByEmail(email);
+    public boolean existsByUsuario_Email(String email){
+        return propietarioDAO.existsByUsuario_Email(email);
     }
 
     public List<Propietario> listarTodos(){

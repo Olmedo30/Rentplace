@@ -1,75 +1,108 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alojamientos - RentPlace</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .card-img-top { height: 200px; object-fit: cover; }
-        .prop-card { transition: transform 0.2s; }
-        .prop-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .bg-gradient-primary { background: linear-gradient(45deg, #f97316, #eab308); }
-    </style>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Alojamientos - Rent Place</title>
+	<link rel="stylesheet" href="../css/home_style.css">
+	<link rel="shortcut icon" href="../assets/logo.png" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-light">
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <img src="../assets/logo.png" alt="Rent Place" width="55" height="55">
+                </div>
+                <div class="logo-text">Rent Place</div>
+            </div>
+            
+            <!-- Menú para propietarios autenticados -->
+            <nav class="owner-nav">
+                <a href="/home">Inicio</a>
+                <a href="/propiedades/listado">Ver Propiedades</a>
+                <a href="/propiedades/nueva" class="add-property-btn"> 
+                    <i class="fas fa-home"></i> Añadir Propiedad
+                </a>
+                <a href="/propiedades/my-properties">Mis Propiedades</a>
+                <a href="/profile">Mi Cuenta</a>
+            </nav>
+            
+            <div class="header-icons">
+                <button aria-label="Buscar alojamientos">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button aria-label="Menú">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div class="auth-actions">
+                <form action="/inquilino/convertir" method="post">
+                    <button type="submit" class="tenant-btn">
+                        <i class="fas fa-user"></i> Convertirme en Inquilino
+                    </button>
+                </form>
+                <a href="/logout" class="logout-btn">Cerrar Sesión</a>
+            </div>
+        </div>
+    </header>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-  <div class="container">
-    <a class="navbar-brand d-flex align-items-center gap-2" href="/home">
-         <img src="/assets/logo.png" width="30" height="30" alt="Logo"> RentPlace
-    </a>
-    <div class="d-flex">
-        <a href="/home" class="btn btn-outline-light btn-sm">Volver al Inicio</a>
-    </div>
-  </div>
-</nav>
+    <main class="main-content">
+<section class="accommodation">
+    <div class="accommodation-container">
+        <div class="accommodation-header">
+            <h2 class="accommodation-title">Alojamientos Disponibles</h2>
+            <form action="/propiedades/buscar" method="get" class="search-form">
+                <input type="text" name="ciudad" th:value="${ciudadBusqueda}" class="search-input" placeholder="Ciudad...">
+                <button type="submit" class="search-button"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+        
+        <div th:if="${propiedades.empty}" class="empty-results-message">
+            <h4 class="empty-results-heading"><i class="fas fa-search-minus"></i> Vaya...</h4>
+            <p>No hemos encontrado alojamientos que coincidan con tu búsqueda.</p>
+            <hr>
+            <a href="/propiedades/listado" class="all-properties-link">Ver todos los alojamientos</a>
+        </div>
 
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Alojamientos Disponibles</h2>
-        <form action="/propiedades/buscar" method="get" class="d-flex gap-2">
-            <input type="text" name="ciudad" th:value="${ciudadBusqueda}" class="form-control form-control-sm" placeholder="Ciudad...">
-            <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-search"></i></button>
-        </form>
-    </div>
-    
-    <div th:if="${propiedades.empty}" class="alert alert-warning text-center p-5">
-        <h4 class="alert-heading"><i class="fas fa-search-minus"></i> Vaya...</h4>
-        <p>No hemos encontrado alojamientos que coincidan con tu búsqueda.</p>
-        <hr>
-        <a href="/propiedades/listado" class="btn btn-outline-dark">Ver todos los alojamientos</a>
-    </div>
-
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        <div class="col" th:each="propiedad : ${propiedades}">
-            <div class="card h-100 prop-card border-0 shadow-sm">
-                <img src="/assets/casa.png" class="card-img-top bg-light" alt="Imagen propiedad">
-                
-                <div class="card-body">
-                    <h5 class="card-title text-truncate" th:text="${propiedad.titulo}">Título de la casa</h5>
-                    <p class="card-text text-muted small mb-2">
-                        <i class="fas fa-map-marker-alt text-danger"></i> 
+        <div class="categories">
+            <div class="category" th:each="propiedad : ${propiedades}">
+                <div class="category-image">
+                    <img th:src="@{/assets/casa.png}" alt="Imagen propiedad">
+                </div>
+                <div class="property-details">
+                    <div class="category-name" th:text="${propiedad.titulo}">Título de la casa</div>
+                    <p class="property-location">
+                        <i class="fas fa-map-marker-alt"></i> 
                         <span th:text="${propiedad.ciudad}">Ciudad</span> 
                         <span th:if="${propiedad.tipoInmueble}" th:text="'• ' + ${propiedad.tipoInmueble}"></span>
                     </p>
-                    <p class="card-text text-truncate" th:text="${propiedad.descripcion}">Descripción...</p>
-                    
-                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-                        <span class="fs-5 fw-bold text-primary">
-                            <span th:text="${propiedad.precioNoche}">0</span> € <small class="text-muted fs-6">/noche</small>
-                        </span>
-                        <a th:href="@{/propiedades/{id}(id=${propiedad.id})}" class="btn btn-primary btn-sm rounded-pill px-3">
-                            Ver detalles
-                        </a>
+                    <p class="property-description" th:text="${propiedad.descripcion}">Descripción...</p>
+                    <div class="property-price">
+                        <span th:text="${propiedad.precioNoche}">0</span> € <small>/noche</small>
                     </div>
+                    <a th:href="@{/propiedades/{id}(id=${propiedad.id})}" class="details-button">
+                        Ver detalles
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
+    </main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <footer>
+        <div class="footer-container">
+            <div class="footer-logo">
+                <div class="logo-icon">
+                    <img src="../assets/logo.png" alt="Rent Place" width="45" height="45">
+                </div>
+                <span>Rent Place</span>
+            </div>
+            <div class="footer-copyright">© 2025 Rent Place. Todos los
+                derechos reservados.</div>
+        </div>
+    </footer>
+</body></html>
