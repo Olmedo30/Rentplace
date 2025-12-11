@@ -26,7 +26,7 @@ public class Propiedad {
     private String titulo;
 	
 	@Lob // Indica que es un texto largo (Large Object)
-	@Column(name = "descripcion", columnDefinition = "TEXT")
+	@Column(name = "descripcion")
 	private String descripcion;
 	
 	@Column(name = "direccion", length = 200)

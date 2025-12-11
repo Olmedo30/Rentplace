@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -83,5 +84,12 @@ public class PropiedadController {
 
         log.info("Propiedad creada por propietarioId={} titulo={}", propietario.getId(), titulo);
         return "redirect:/propiedades/listado";
+    }
+
+    @GetMapping("/listado")
+    public String listarPropiedades(Model model) {
+        List<Propiedad> propiedades = propiedadService.listarActivas();
+        model.addAttribute("propiedades", propiedades);
+        return "propiedades-list";
     }
 }
