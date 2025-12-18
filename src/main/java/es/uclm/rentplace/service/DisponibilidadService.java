@@ -1,59 +1,44 @@
+// src/main/java/es/uclm/rentplace/service/DisponibilidadService.java
 package es.uclm.rentplace.service;
 
-import es.uclm.rentplace.entity.Disponibilidad;
 import es.uclm.rentplace.entity.Propiedad;
-import es.uclm.rentplace.persistence.DisponibilidadDAO;
+import es.uclm.rentplace.entity.Reserva;
+import es.uclm.rentplace.persistence.ReservaDAO;
 import es.uclm.rentplace.persistence.PropiedadDAO;
-//import es.uclm.rentplace.persistence.PropietarioDAO; // si lo necesitas
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class DisponibilidadService {
 
     @Autowired
-    private DisponibilidadDAO disponibilidadDAO;
-
+    private ReservaDAO reservaDAO;
+    
     @Autowired
     private PropiedadDAO propiedadDAO;
 
-    /**
-     * Añadir una disponibilidad a una propiedad
-     */
-    public Optional<Disponibilidad> addDisponibilidad(Long propiedadId, LocalDate inicio, LocalDate fin, Boolean disponible, BigDecimal precioEspecial) {
-        var propOpt = propiedadDAO.findById(propiedadId);
-        if (propOpt.isEmpty()) return Optional.empty();
-
-        Propiedad p = propOpt.get();
-        Disponibilidad d = new Disponibilidad(p, inicio, fin, disponible, precioEspecial);
-        return Optional.of(disponibilidadDAO.save(d));
+    public boolean verificarDisponibilidad(Long propiedadId, LocalDateTime fechaEntrada, LocalDateTime fechaSalida) {
+        Propiedad propiedad = propiedadDAO.findById(propiedadId).orElse(null);
+        if (propiedad == null || !propiedad.getActivo()) {
+            return false;
+        }
+        
+        List<Reserva> reservasSolapadas = reservaDAO.findSolapadas(propiedadId, fechaEntrada, fechaSalida);
+        
+        return reservasSolapadas.isEmpty();
     }
-
-    /**
-     * Listar disponibilidades de una propiedad
-     */
-    public List<Disponibilidad> listarDisponibilidades(Long propiedadId) {
-        return disponibilidadDAO.findByPropiedadId(propiedadId);
-    }
-
-    /**
-     * Buscar propiedades disponibles en un rango
-     */
-    public List<Propiedad> buscarPropiedadesDisponibles(LocalDate start, LocalDate end) {
-        return propiedadDAO.findAvailablePropertiesBetween(start, end);
-    }
-
-    /**
-     * Comprobar si una propiedad concreta está disponible en un rango
-     * (usa la consulta de propiedades disponibles filtrando por id)
-     */
-    public boolean isPropiedadDisponible(Long propiedadId, LocalDate start, LocalDate end) {
-        List<Propiedad> disponibles = propiedadDAO.findAvailablePropertiesBetween(start, end);
-        return disponibles.stream().anyMatch(p -> p.getId().equals(propiedadId));
+    
+    public List<Propiedad> buscarPropiedadesDisponibles(String ciudad, String tipoInmueble, 
+                                                       BigDecimal precioMax, 
+                                                       LocalDateTime fechaEntrada, 
+                                                       LocalDateTime fechaSalida) {
+        List<Propiedad> propiedades = propiedadDAO.buscarAvanzado(ciudad, tipoInmueble, precioMax, true);
+        return propiedades.stream()
+                .filter(p -> verificarDisponibilidad(p.getId(), fechaEntrada, fechaSalida))
+                .toList();
     }
 }

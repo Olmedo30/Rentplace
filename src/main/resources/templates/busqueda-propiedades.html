@@ -1,0 +1,177 @@
+<!-- src/main/resources/templates/buscar-propiedades.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar Alojamientos - Rentplace</title>
+    <link rel="stylesheet" href="/css/search-style.css">
+    <link rel="stylesheet" href="/css/home-style.css">
+    <link rel="shortcut icon" href="/assets/logo.png" />
+</head>
+<body>
+    <!-- Barra de navegación (igual que en home) -->
+    <header>
+        <div class="logo">
+            <img src="/assets/logo.png" alt="Rentplace Logo" class="logo-img">
+            <h1>Rentplace</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/home">Inicio</a></li>
+                <li><a href="/propiedades/listado">Explorar</a></li>
+                <li th:if="${username != null}">
+                    <a href="#" onclick="document.getElementById('logout-form').submit()">Cerrar sesión</a>
+                    <form id="logout-form" action="/logout" method="post" style="display: none;"></form>
+                </li>
+                <li th:if="${userId != null}">
+                    <a href="/notificaciones">
+                        Notificaciones 
+                        <span th:if="${notificacionesNoLeidas > 0}" th:text="${notificacionesNoLeidas}" class="badge"></span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Contenido principal -->
+    <div class="search-container">
+        <h1>🔍 Buscar Alojamientos</h1>
+        
+        <form action="/propiedades/buscar" method="get" class="search-form">
+            <div class="form-group">
+                <label for="ciudad">Ubicación:</label>
+                <input type="text" id="ciudad" name="ciudad" th:value="${criterios.ciudad}" placeholder="Ciudad, zona...">
+            </div>
+            
+            <div class="form-group">
+                <label for="tipoInmueble">Tipo de alojamiento:</label>
+                <select id="tipoInmueble" name="tipoInmueble">
+                    <option value="">Todos los tipos</option>
+                    <option value="apartamento" th:selected="${criterios.tipoInmueble == 'apartamento'}">Apartamento</option>
+                    <option value="casa" th:selected="${criterios.tipoInmueble == 'casa'}">Casa</option>
+                    <option value="habitacion" th:selected="${criterios.tipoInmueble == 'habitacion'}">Habitación</option>
+                    <option value="estudio" th:selected="${criterios.tipoInmueble == 'estudio'}">Estudio</option>
+                    <option value="chalet" th:selected="${criterios.tipoInmueble == 'chalet'}">Chalet</option>
+                </select>
+            </div>
+            
+            <div class="form-group date-group">
+                <div class="date-field">
+                    <label for="fechaEntrada">Fecha de entrada:</label>
+                    <input type="date" id="fechaEntrada" name="fechaEntrada" th:value="${criterios.fechaEntrada}">
+                </div>
+                <div class="date-field">
+                    <label for="fechaSalida">Fecha de salida:</label>
+                    <input type="date" id="fechaSalida" name="fechaSalida" th:value="${criterios.fechaSalida}">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="precioMaximo">Precio máximo por noche (€):</label>
+                <input type="number" id="precioMaximo" name="precioMaximo" th:value="${criterios.precioMaximo}" min="0" step="0.01">
+            </div>
+            
+            <button type="submit" class="btn-primary">🔍 Buscar alojamientos</button>
+        </form>
+    </div>
+    
+    <!-- Resultados de búsqueda -->
+    <div class="results-container" th:if="${!propiedades.empty}">
+        <h2 th:text="'Resultados de búsqueda (' + ${propiedades.size()} + ')'"></h2>
+        
+        <div class="properties-grid">
+            <div th:each="propiedad : ${propiedades}" class="property-card">
+                <div class="property-image">
+                    <div class="property-type" th:text="${propiedad.tipoInmueble}"></div>
+                </div>
+                
+                <div class="property-info">
+                    <h3 class="property-title" th:text="${propiedad.titulo}"></h3>
+                    <p class="property-location">
+                        <span class="location-icon">📍</span>
+                        <span th:text="${propiedad.ciudad}"></span>
+                    </p>
+                    
+                    <div class="property-details">
+                        <div class="detail">
+                            <span class="detail-icon">🛏️</span>
+                            <span th:text="${propiedad.habitaciones} + ' habitación(es)'"></span>
+                        </div>
+                        <div class="detail">
+                            <span class="detail-icon">👥</span>
+                            <span th:text="${propiedad.capacidad} + ' personas'"></span>
+                        </div>
+                        <div class="detail">
+                            <span class="detail-icon">💰</span>
+                            <span th:text="'€' + ${propiedad.precioNoche} + ' por noche'"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="property-actions">
+                        <a th:href="@{/propiedades/} + ${propiedad.id}" class="btn-detail">Ver detalles</a>
+                        <button class="btn-wishlist" 
+                                th:onclick="'addToWishlist(' + ${propiedad.id} + ')'">
+                            ❤️ 
+                            <span th:text="${enListaDeseos[propiedad.id]} ? 'En lista' : 'Lista de deseos'"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div th:if="${propiedades.empty}" class="no-results">
+            <p>❌ No se encontraron alojamientos con los criterios de búsqueda seleccionados.</p>
+            <button onclick="location.href='/propiedades/buscar'" class="btn-primary">Nueva búsqueda</button>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 Rentplace - Alquiler de viviendas</p>
+    </footer>
+    
+    <script>
+        function addToWishlist(propiedadId) {
+            fetch(`/lista-deseos/agregar/${propiedadId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    alert('✅ Propiedad agregada a tu lista de deseos');
+                    location.reload();
+                } else {
+                    alert('❌ ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('❌ Error al agregar a la lista de deseos: ' + error.message);
+            });
+        }
+        
+        // Validación de fechas
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const fechaEntrada = new Date(document.getElementById('fechaEntrada').value);
+            const fechaSalida = new Date(document.getElementById('fechaSalida').value);
+            const hoy = new Date();
+            hoy.setHours(0,0,0,0);
+            
+            if (fechaEntrada && fechaSalida) {
+                if (fechaEntrada < hoy) {
+                    e.preventDefault();
+                    alert('❌ La fecha de entrada no puede ser anterior a hoy');
+                    return;
+                }
+                
+                if (fechaSalida <= fechaEntrada) {
+                    e.preventDefault();
+                    alert('❌ La fecha de salida debe ser posterior a la fecha de entrada');
+                    return;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

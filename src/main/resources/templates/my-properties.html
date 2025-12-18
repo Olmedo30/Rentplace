@@ -1,0 +1,341 @@
+<!-- src/main/resources/templates/my-properties.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Propiedades - Rentplace</title>
+    <link rel="stylesheet" href="/css/properties-style.css">
+    <link rel="stylesheet" href="/css/home-style.css">
+    <link rel="shortcut icon" href="/assets/logo.png" />
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="/assets/logo.png" alt="Rentplace Logo" class="logo-img">
+            <h1>Rentplace</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/home">Inicio</a></li>
+                <li><a href="/propiedades/listado">Explorar</a></li>
+                <li><a href="/profile">Mi Cuenta</a></li>
+                <li th:if="${username != null}">
+                    <a href="#" onclick="document.getElementById('logout-form').submit()">Cerrar sesión</a>
+                    <form id="logout-form" action="/logout" method="post" style="display: none;"></form>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="properties-container">
+        <div class="header-section">
+            <h1>🏠 Mis Propiedades</h1>
+            <a href="/propiedades/add-property" class="btn-add">➕ Añadir Nueva Propiedad</a>
+        </div>
+
+        <div th:if="${error}" class="error-message">
+            <p th:text="${error}"></p>
+        </div>
+
+        <div th:if="${misPropiedades.empty}" class="no-properties">
+            <h3>⚠️ No tienes propiedades publicadas</h3>
+            <p>Comienza añadiendo tu primera vivienda a Rentplace</p>
+            <a href="/propiedades/add-property" class="btn-primary">Añadir Primera Propiedad</a>
+        </div>
+
+        <div class="properties-grid" th:unless="${misPropiedades.empty}">
+            <div th:each="propiedad : ${misPropiedades}" class="property-card">
+                <div class="property-image">
+                    <div class="property-type" th:text="${propiedad.tipoInmueble}"></div>
+                </div>
+                
+                <div class="property-info">
+                    <h3 class="property-title" th:text="${propiedad.titulo}"></h3>
+                    <p class="property-location">
+                        <span class="location-icon">📍</span>
+                        <span th:text="${propiedad.ciudad}"></span>
+                    </p>
+                    
+                    <div class="property-details">
+                        <div class="detail">
+                            <span class="detail-icon">🛏️</span>
+                            <span th:text="${propiedad.habitaciones} + ' habitación(es)'"></span>
+                        </div>
+                        <div class="detail">
+                            <span class="detail-icon">👥</span>
+                            <span th:text="${propiedad.capacidad} + ' personas'"></span>
+                        </div>
+                        <div class="detail">
+                            <span class="detail-icon">💰</span>
+                            <span th:text="'€' + ${propiedad.precioNoche} + ' por noche'"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="property-status">
+                        <span th:if="${propiedad.activo}" class="status-active">✅ Activa</span>
+                        <span th:if="${!propiedad.activo}" class="status-inactive">❌ Inactiva</span>
+                        <span th:if="${propiedad.permiteReservaInmediata}" class="status-instant">⚡ Reserva Inmediata</span>
+                    </div>
+                    
+                    <div class="property-actions">
+                        <a th:href="@{/propiedades/} + ${propiedad.id}" class="btn-detail">Ver detalles</a>
+                        <a th:href="@{/propiedades/editar/} + ${propiedad.id}" class="btn-edit">Editar</a>
+                        <button th:onclick="'togglePropiedad(' + ${propiedad.id} + ', ' + ${propiedad.activo} + ')'" 
+                                class="btn-toggle" 
+                                th:text="${propiedad.activo} ? 'Desactivar' : 'Activar'">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Rentplace - Alquiler de viviendas</p>
+    </footer>
+
+    <script>
+        function togglePropiedad(propiedadId, activo) {
+            if (activo) {
+                if (confirm('¿Estás seguro de que quieres desactivar esta propiedad?')) {
+                    window.location.href = '/propiedades/toggle-activo?id=' + propiedadId;
+                }
+            } else {
+                window.location.href = '/propiedades/toggle-activo?id=' + propiedadId;
+            }
+        }
+    </script>
+
+    <style>
+        .properties-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-section h1 {
+            color: #2c3e50;
+            font-size: 2em;
+        }
+
+        .btn-add {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+
+        .btn-add:hover {
+            background: #27ae60;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .no-properties {
+            text-align: center;
+            padding: 60px 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+
+        .no-properties h3 {
+            color: #e74c3c;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .no-properties p {
+            color: #6c757d;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .properties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .property-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .property-image {
+            height: 180px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .property-type {
+            background: rgba(255,255,255,0.9);
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .property-info {
+            padding: 20px;
+        }
+
+        .property-title {
+            font-size: 1.4em;
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+        }
+
+        .property-location {
+            color: #7f8c8d;
+            margin: 8px 0;
+            font-size: 1.05em;
+        }
+
+        .property-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .detail {
+            display: flex;
+            align-items: center;
+            font-size: 0.95em;
+        }
+
+        .detail-icon {
+            margin-right: 5px;
+            font-size: 1.1em;
+        }
+
+        .property-status {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .status-instant {
+            background: #cce5ff;
+            color: #004085;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .property-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-detail, .btn-edit, .btn-toggle {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+            border: 1px solid;
+        }
+
+        .btn-detail {
+            background: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+
+        .btn-detail:hover {
+            background: #2980b9;
+        }
+
+        .btn-edit {
+            background: #f39c12;
+            color: white;
+            border-color: #e67e22;
+        }
+
+        .btn-edit:hover {
+            background: #e67e22;
+        }
+
+        .btn-toggle {
+            background: #e74c3c;
+            color: white;
+            border-color: #c0392b;
+        }
+
+        .btn-toggle:hover {
+            background: #c0392b;
+        }
+
+        @media (max-width: 768px) {
+            .header-section {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .properties-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>

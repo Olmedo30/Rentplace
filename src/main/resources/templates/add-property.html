@@ -1,0 +1,321 @@
+<!-- src/main/resources/templates/add-property.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Añadir Propiedad - Rentplace</title>
+    <link rel="stylesheet" href="/css/add-property-style.css">
+    <link rel="stylesheet" href="/css/home-style.css">
+    <link rel="shortcut icon" href="/assets/logo.png" />
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="/assets/logo.png" alt="Rentplace Logo" class="logo-img">
+            <h1>Rentplace</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/home">Inicio</a></li>
+                <li><a href="/propiedades/listado">Explorar</a></li>
+                <li><a href="/profile">Mi Cuenta</a></li>
+                <li th:if="${username != null}">
+                    <a href="#" onclick="document.getElementById('logout-form').submit()">Cerrar sesión</a>
+                    <form id="logout-form" action="/logout" method="post" style="display: none;"></form>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="add-property-container">
+        <h1>➕ Añadir Nueva Propiedad</h1>
+        
+        <div th:if="${error}" class="error-message">
+            <p th:text="${error}"></p>
+        </div>
+        
+        <form action="/propiedades/add-property" method="post" enctype="multipart/form-data" class="property-form">
+            <div class="form-section">
+                <h2>Información Básica</h2>
+                
+                <div class="form-group">
+                    <label for="titulo">Título *</label>
+                    <input type="text" id="titulo" name="titulo" required maxlength="150">
+                    <small>Un título descriptivo para tu propiedad (máx. 150 caracteres)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="descripcion">Descripción</label>
+                    <textarea id="descripcion" name="descripcion" rows="4" maxlength="500"></textarea>
+                    <small>Describe las características de tu propiedad (máx. 500 caracteres)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="foto">Foto de la propiedad</label>
+                    <input type="file" id="foto" name="foto" accept="image/*">
+                    <small>Sube una imagen representativa de tu propiedad (opcional)</small>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>Ubicación</h2>
+                
+                <div class="form-group">
+                    <label for="direccion">Dirección *</label>
+                    <input type="text" id="direccion" name="direccion" required maxlength="200">
+                    <small>Dirección completa de la propiedad</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ciudad">Ciudad *</label>
+                    <input type="text" id="ciudad" name="ciudad" required maxlength="80">
+                    <small>Ciudad donde se encuentra la propiedad</small>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>Características</h2>
+                
+                <div class="form-group">
+                    <label for="tipoInmueble">Tipo de inmueble *</label>
+                    <select id="tipoInmueble" name="tipoInmueble" required>
+                        <option value="">Selecciona un tipo</option>
+                        <option value="apartamento">Apartamento</option>
+                        <option value="casa">Casa</option>
+                        <option value="habitacion">Habitación individual</option>
+                        <option value="chalet">Chalet</option>
+                        <option value="estudio">Estudio</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="habitaciones">Habitaciones *</label>
+                        <input type="number" id="habitaciones" name="habitaciones" min="1" max="10" required>
+                        <small>Número de habitaciones</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="capacidad">Capacidad *</label>
+                        <input type="number" id="capacidad" name="capacidad" min="1" max="20" required>
+                        <small>Número máximo de personas</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>Precios y Políticas</h2>
+                
+                <div class="form-group">
+                    <label for="precioNoche">Precio por noche (€) *</label>
+                    <input type="number" id="precioNoche" name="precioNoche" step="0.01" min="0" required>
+                    <small>Precio en euros por noche</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="politicaCancelacion">Política de cancelación *</label>
+                    <select id="politicaCancelacion" name="politicaCancelacion" required>
+                        <option value="">Selecciona una política</option>
+                        <option value="NO_REEMBOLSABLE">No reembolsable</option>
+                        <option value="REEMBOLSABLE">Reembolsable</option>
+                        <option value="REEMBOLSABLE_50_PER">Reembolsable 50%</option>
+                    </select>
+                </div>
+                
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="permiteReservaInmediata" name="permiteReservaInmediata" value="true">
+                    <label for="permiteReservaInmediata">Permitir reserva inmediata</label>
+                    <small>Los inquilinos podrán reservar directamente sin confirmación previa</small>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">✅ Publicar Propiedad</button>
+                <a href="/propiedades/my-properties" class="btn-cancel">❌ Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Rentplace - Alquiler de viviendas</p>
+    </footer>
+
+    <script>
+        // Validación del formulario
+        document.querySelector('.property-form').addEventListener('submit', function(e) {
+            const titulo = document.getElementById('titulo').value;
+            const precio = parseFloat(document.getElementById('precioNoche').value);
+            const habitaciones = parseInt(document.getElementById('habitaciones').value);
+            const capacidad = parseInt(document.getElementById('capacidad').value);
+            
+            if (titulo.trim().length < 5) {
+                e.preventDefault();
+                alert('El título debe tener al menos 5 caracteres');
+                return;
+            }
+            
+            if (precio <= 0) {
+                e.preventDefault();
+                alert('El precio debe ser mayor que 0');
+                return;
+            }
+            
+            if (habitaciones <= 0 || capacidad <= 0) {
+                e.preventDefault();
+                alert('Las habitaciones y capacidad deben ser mayores que 0');
+                return;
+            }
+        });
+    </script>
+
+    <style>
+        .add-property-container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .add-property-container h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .property-form {
+            margin-top: 20px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-section h2 {
+            color: #3498db;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .btn-submit, .btn-cancel {
+            padding: 14px 28px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-submit {
+            background: #2ecc71;
+            color: white;
+            border: none;
+        }
+
+        .btn-submit:hover {
+            background: #27ae60;
+        }
+
+        .btn-cancel {
+            background: #e74c3c;
+            color: white;
+            border: none;
+        }
+
+        .btn-cancel:hover {
+            background: #c0392b;
+        }
+
+        @media (max-width: 768px) {
+            .add-property-container {
+                margin: 20px;
+                padding: 20px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</body>
+</html>

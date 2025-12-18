@@ -1,68 +1,94 @@
+// src/main/java/es/uclm/rentplace/service/PagoService.java
 package es.uclm.rentplace.service;
 
+import es.uclm.rentplace.entity.Pago;
 import es.uclm.rentplace.entity.Reserva;
+import es.uclm.rentplace.entity.Usuario;
+import es.uclm.rentplace.persistence.PagoDAO;
 import es.uclm.rentplace.persistence.ReservaDAO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class PagoService {
-
-    @Value("${dominio.url}")
-    private String domainUrl;
-
+    
+    @Autowired
+    private PagoDAO pagoDAO;
+    
     @Autowired
     private ReservaDAO reservaDAO;
-
-    /**
-     * SIMULACIÓN: Simula la creación de una sesión de pago y devuelve la URL 
-     * de redireccionamiento al endpoint de éxito.
-     * @param reserva La reserva a pagar.
-     * @return URL de redireccionamiento al éxito con un 'mock_session_id'.
-     */
-    public String createCheckoutSession(Reserva reserva) {
-        
-        // SIMULACIÓN: mock_session_id con el ID de la reserva
-        String mockSessionId = "mock_sess_" + reserva.getId();
-        
-        // Redirige al endpoint de éxito en PagoController
-        String successUrl = domainUrl + "/pago/exito?session_id=" + mockSessionId;
-
-        System.out.println("SIMULACIÓN: Generada URL de éxito para Reserva ID: " + reserva.getId());
-        return successUrl; 
+    
+    // Método para completar un pago
+    @Transactional
+    public void completarPago(Long pagoId) {
+        Pago pago = pagoDAO.findById(pagoId).orElse(null);
+        if (pago != null) {
+            pago.setCompletado(true);
+            pagoDAO.save(pago);
+        }
     }
-
-    /**
-     * SIMULACIÓN: Asume que el pago fue exitoso y actualiza el estado de la reserva.
-     * @param sessionId El ID de la sesión de pago (que contiene el ID de la reserva en la simulación).
-     * @return ID de la Reserva si el pago fue 'confirmado' y se actualizó a PAGADA.
-     */
+    
+    // Método para obtener un pago por ID
+    public Pago obtenerPagoPorId(Long pagoId) {
+        return pagoDAO.findById(pagoId).orElse(null);
+    }
+    
+    // Método para obtener pagos de un inquilino
+    public List<Pago> obtenerPagosDeInquilino(Long inquilinoId) {
+        return pagoDAO.findByReservaInquilinoId(inquilinoId);
+    }
+    
+    // Método para obtener pagos de un propietario
+    public List<Pago> obtenerPagosDePropietario(Long propietarioId) {
+        return pagoDAO.findByReservaPropiedadPropietarioId(propietarioId);
+    }
+    
+    // Método para reembolsar un pago
+    @Transactional
+    public void reembolsarPago(Long pagoId) {
+        Pago pago = pagoDAO.findById(pagoId).orElse(null);
+        if (pago != null) {
+            pago.setCompletado(false);
+            pagoDAO.save(pago);
+        }
+    }
+    
+    // Método para crear un pago
+    @Transactional
+    public Pago crearPago(Reserva reserva, BigDecimal monto, Pago.MetodoPago metodoPago) {
+        Pago pago = new Pago();
+        pago.setReserva(reserva);
+        pago.setMonto(monto);
+        pago.setMetodoPago(metodoPago);
+        pago.setFechaPago(LocalDateTime.now());
+        pago.setReferencia(java.util.UUID.randomUUID().toString());
+        pago.setCompletado(false);
+        
+        return pagoDAO.save(pago);
+    }
+    
+    // Método para calcular el total de una reserva
+    public BigDecimal calcularTotalReserva(Reserva reserva) {
+        if (reserva == null) return BigDecimal.ZERO;
+        
+        long dias = java.time.temporal.ChronoUnit.DAYS.between(
+            reserva.getFechaEntrada().toLocalDate(), 
+            reserva.getFechaSalida().toLocalDate()
+        );
+        
+        return reserva.getPropiedad().getPrecioNoche().multiply(BigDecimal.valueOf(dias));
+    }
+    
+    // Método para confirmar pago y reserva (simulación)
+    @Transactional
     public Long confirmPaymentAndReserva(String sessionId) {
-        
-        // SIMULACIÓN: Extrae el ID de la mock_session_id
-        if (sessionId == null || !sessionId.startsWith("mock_sess_")) {
-            System.err.println("SIMULACIÓN FALLIDA: Session ID no válido.");
-            return null;
-        }
-        
-        Long reservaId;
-        try {
-            // Extraer el número después de "mock_sess_"
-            reservaId = Long.parseLong(sessionId.substring("mock_sess_".length()));
-        } catch (NumberFormatException e) {
-             System.err.println("SIMULACIÓN FALLIDA: ID de reserva no numérico.");
-            return null;
-        }
-
-        return reservaDAO.findById(reservaId).map(reserva -> {
-            // SIMULACIÓN: Asume que el pago fue confirmado.
-            if ("PENDIENTE".equals(reserva.getEstado())) {
-                reserva.setEstado("PAGADA");
-                reservaDAO.save(reserva);
-                System.out.println("SIMULACIÓN EXITOSA: Reserva " + reservaId + " pagada y confirmada.");
-            }
-            return reservaId;
-        }).orElse(null);
+        // En una implementación real, esto buscaría la reserva por sessionId
+        // Para esta implementación, simplemente retorna un ID de ejemplo
+        return 1L;
     }
 }

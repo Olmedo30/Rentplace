@@ -8,8 +8,11 @@ import java.math.BigDecimal;
 
 // Importamos LocalDateTime para guardar la fecha en el que se crea la propiedad
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@Table(name = "propiedades")
 public class Propiedad {
 	
 	@Id
@@ -17,53 +20,61 @@ public class Propiedad {
 	@Column(name = "propiedades_id")
 	private Long id;
 	
-	// // Relación N:1 con Usuario: un propietario puede tener varias propiedades)
+	// Relación N:1 con Usuario: un propietario puede tener varias propiedades)
 	@ManyToOne(fetch = FetchType.LAZY)// LAZY evita cargar el usuario hasta que se necesite
     @JoinColumn(name = "propietario_id", nullable = false)
-    private Propietario propietario;
+    private Usuario propietario;
 	
 	@Column(name = "titulo", length = 150, nullable = false)// "nullable = false" campo obligatorio
     private String titulo;
 	
-	@Lob // Indica que es un texto largo (Large Object)
-	@Column(name = "descripcion", columnDefinition = "TEXT")
-	private String descripcion;
+	@Lob
+    @Column(name = "descripcion")
+    private String descripcion;
 	
-	@Column(name = "direccion", length = 200)
-	private String direccion;
-	
-	@Column(name = "ciudad", length = 80)
+    @Column(name = "direccion", length = 200, nullable = false)
+    private String direccion;
+    
+    @Column(name = "ciudad", length = 80, nullable = false)
     private String ciudad;
-	
-    @Column(name = "tipo_inmueble", length = 50)
+    
+    @Column(name = "tipo_inmueble", length = 50, nullable = false)
     private String tipoInmueble;
 
-    @Column(name = "habitaciones")
+    @Column(name = "habitaciones", nullable = false)
     private Integer habitaciones;
 
-    @Column(name = "capacidad")
+    @Column(name = "capacidad", nullable = false)
     private Integer capacidad;
 
-    @Column(name = "precio_noche", precision = 10, scale = 2)
+    @Column(name = "precio_noche", precision = 10, scale = 2, nullable = false)
     private BigDecimal precioNoche; // BigDecimal es la opción correcta para que los precios sean de forma precisa
     
-    @Column(name = "politica cancelación", length = 60)
+    @Column(name = "politica_cancelacion", length = 60, nullable = false)
     private String politicaCancelacion;
     
-    @Column(name = "permite_reserva_inmediata")
+    @Column(name = "permite_reserva_inmediata", nullable = false)
     private Boolean permiteReservaInmediata;
     
-    @Column(name = "fecha_alta")
+    @Column(name = "fecha_alta", nullable = false)
     private LocalDateTime fechaAlta;
     
-    @Column(name = "activo")
+    @Column(name = "activo", nullable = false)
     private Boolean activo;
+    
+    // Relación con Reservas
+    @OneToMany(mappedBy = "propiedad", cascade = CascadeType.ALL)
+    private List<Reserva> reservas = new ArrayList<>();
+    
+    // Relación con ListaDeseos (muchos a muchos)
+    @ManyToMany(mappedBy = "propiedades")
+    private List<ListaDeseos> listasDeseos = new ArrayList<>();
     
     // Es necesario crear un constructor vacío para que JPA pueda crear objetos
     public Propiedad() {}
     
     // Constructor con parámetros
-    public Propiedad(Propietario propietario, String titulo, String descripcion, String direccion,
+    public Propiedad(Usuario propietario, String titulo, String descripcion, String direccion,
             String ciudad, String tipoInmueble, Integer habitaciones, Integer capacidad,
             BigDecimal precioNoche, String politicaCancelacion, Boolean permiteReservaInmediata,
             LocalDateTime fechaAlta, Boolean activo) {
@@ -90,10 +101,10 @@ public class Propiedad {
     	this.id = id; 
     }
     
-    public Propietario getPropietario() {
+    public Usuario getPropietario() {
     	return propietario;
     }
-    public void setPropietario(Propietario propietario) { 
+    public void setPropietario(Usuario propietario) { 
     	this.propietario = propietario; 
     }
     
@@ -181,6 +192,20 @@ public class Propiedad {
     	this.activo = activo; 
     }
     
+    public List<Reserva> getReservas() { 
+    	return reservas; 
+    }
+    public void setReservas(List<Reserva> reservas) {
+    	this.reservas = reservas;
+    }
+    
+    public List<ListaDeseos> getListasDeseos() {
+    	return listasDeseos;
+    }
+    public void setListasDeseos(List<ListaDeseos> listasDeseos) {
+    	this.listasDeseos = listasDeseos;
+    }
+    
     // Este método se ejecuta de forma automática antes de insertar la entidad en la BD
     @PrePersist
     
@@ -201,5 +226,4 @@ public class Propiedad {
     }
     	
     }
-    
- 
+

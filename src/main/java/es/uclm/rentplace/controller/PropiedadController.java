@@ -1,87 +1,126 @@
+// src/main/java/es/uclm/rentplace/controller/PropiedadController.java
 package es.uclm.rentplace.controller;
 
 import es.uclm.rentplace.entity.Propiedad;
-import es.uclm.rentplace.entity.Propietario;
-import es.uclm.rentplace.persistence.PropietarioDAO;
+import es.uclm.rentplace.entity.Usuario;
+import es.uclm.rentplace.persistence.usuarioDAO;
 import es.uclm.rentplace.service.PropiedadService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import jakarta.servlet.http.HttpSession;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.util.Optional;
+import java.util.List;
 
 @Controller
 @RequestMapping("/propiedades")
 public class PropiedadController {
 
-    private static final Logger log = LoggerFactory.getLogger(PropiedadController.class);
-
     @Autowired
     private PropiedadService propiedadService;
 
     @Autowired
-    private PropietarioDAO propietarioDAO;
+    private usuarioDAO usuarioDAO;
 
-    // Mostrar formulario
-    @GetMapping("/nueva")
-    public String nuevaPropiedadForm(Model model) {
-        return "add-propiedad";
+    // Listado público de todas las propiedades
+    @GetMapping("/listado")
+    public String listarPropiedades(Model model) {
+        List<Propiedad> propiedades = propiedadService.listarPropiedadesActivas();
+        model.addAttribute("propiedades", propiedades);
+        return "propiedades-list";
     }
 
-    // Procesar el POST del formulario
-    @PostMapping
-    public String crearPropiedad(
+    // Mis propiedades (solo para propietarios)
+    @GetMapping("/my-properties")
+    public String myProperties(HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            model.addAttribute("error", "Debes iniciar sesión para ver tus propiedades.");
+            return "login";
+        }
+
+        Usuario usuario = usuarioDAO.findById(userId).orElse(null);
+        if (usuario == null) {
+            model.addAttribute("error", "Usuario no encontrado.");
+            return "login";
+        }
+
+        // Verificar que el usuario sea propietario
+        if (usuario.getRol() != Usuario.Rol.PROPIETARIO) {
+            model.addAttribute("error", "Solo los propietarios pueden acceder a esta página.");
+            return "profile";
+        }
+
+        List<Propiedad> misPropiedades = propiedadService.obtenerPropiedadesDePropietario(userId);
+        model.addAttribute("misPropiedades", misPropiedades);
+        return "my-properties";
+    }
+
+    // Formulario para añadir nueva propiedad
+    @GetMapping("/add-property")
+    public String addPropertyForm(HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
+        Usuario usuario = usuarioDAO.findById(userId).orElse(null);
+        if (usuario == null || usuario.getRol() != Usuario.Rol.PROPIETARIO) {
+            model.addAttribute("error", "Solo los propietarios pueden añadir propiedades.");
+            return "home";
+        }
+
+        model.addAttribute("propiedad", new Propiedad());
+        return "add-property";
+    }
+
+    // Procesar el formulario de añadir propiedad
+    @PostMapping("/add-property")
+    public String addProperty(
             @RequestParam String titulo,
-            @RequestParam(required = false) String ciudad,
-            @RequestParam(required = false) String tipoInmueble,
+            @RequestParam String descripcion,
+            @RequestParam String direccion,
+            @RequestParam String ciudad,
+            @RequestParam String tipoInmueble,
+            @RequestParam Integer habitaciones,
+            @RequestParam Integer capacidad,
             @RequestParam BigDecimal precioNoche,
-            @RequestParam(required = false) Long propietarioId, // id de Propietario opcional (admin)
+            @RequestParam String politicaCancelacion,
+            @RequestParam Boolean permiteReservaInmediata,
+            @RequestParam(required = false) MultipartFile foto,
             HttpSession session,
-            Model model
-    ) {
-        // 1) Intentar obtener propietarioId desde la sesión (flujo propietario logado)
-        Propietario propietario = null;
+            Model model) {
 
-        // Preferir propietarioId indicado por el formulario (útil para admin/debug)
-        if (propietarioId != null) {
-            propietario = propietarioDAO.findById(propietarioId).orElse(null);
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/login";
         }
 
-        // Si no vino por formulario, intentar obtenerlo desde sesión:
-        if (propietario == null) {
-            Object sessionPropId = session.getAttribute("propietarioId");
-            if (sessionPropId instanceof Number) {
-                long pid = ((Number) sessionPropId).longValue();
-                propietario = propietarioDAO.findById(pid).orElse(null);
-            } else if (sessionPropId instanceof String) {
-                try {
-                    long pid = Long.parseLong((String) sessionPropId);
-                    propietario = propietarioDAO.findById(pid).orElse(null);
-                } catch (NumberFormatException ignored) { /* no válido */ }
-            }
+        Usuario usuario = usuarioDAO.findById(userId).orElse(null);
+        if (usuario == null || usuario.getRol() != Usuario.Rol.PROPIETARIO) {
+            model.addAttribute("error", "Solo los propietarios pueden añadir propiedades.");
+            return "home";
         }
 
-        // Si no se pudo resolver el propietario, mostramos error en el formulario
-        if (propietario == null) {
-            model.addAttribute("error", "No se encontró el propietario (ni propietarioId ni sesión). " +
-                    "Asegúrate de iniciar sesión como propietario o indicar propietarioId.");
-            return "add-propiedad";
+        try {
+            Propiedad propiedad = propiedadService.registrarPropiedad(
+                usuario, titulo, descripcion, direccion, ciudad, tipoInmueble,
+                habitaciones, capacidad, precioNoche, politicaCancelacion, permiteReservaInmediata
+            );
+            
+            // Aquí podrías manejar la subida de fotos si lo implementas
+            // Por ahora, solo creamos la propiedad
+            
+            model.addAttribute("message", "Propiedad registrada exitosamente.");
+            return "redirect:/propiedades/my-properties";
+            
+        } catch (Exception e) {
+            model.addAttribute("error", "Error al registrar la propiedad: " + e.getMessage());
+            model.addAttribute("propiedad", new Propiedad());
+            return "add-property";
         }
-
-        // Guardamos la propiedad usando el servicio (devuelve boolean según tu implementación)
-        boolean ok = propiedadService.registrarPropiedad(titulo, ciudad, tipoInmueble, precioNoche, propietario);
-
-        if (!ok) {
-            model.addAttribute("error", "Datos inválidos o no se pudo crear la propiedad.");
-            return "add-propiedad";
-        }
-
-        log.info("Propiedad creada por propietarioId={} titulo={}", propietario.getId(), titulo);
-        return "redirect:/propiedades/listado";
     }
 }
