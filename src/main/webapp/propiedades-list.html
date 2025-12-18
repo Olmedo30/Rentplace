@@ -1,0 +1,126 @@
+<!-- src/main/resources/templates/propiedades-list.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Explorar Alojamientos - Rentplace</title>
+    <link rel="stylesheet" href="/css/search-style.css">
+    <link rel="stylesheet" href="/css/home-style.css">
+    <link rel="shortcut icon" href="/assets/logo.png" />
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="/assets/logo.png" alt="Rentplace Logo" class="logo-img">
+            <h1>Rentplace</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/home">Inicio</a></li>
+                <li><a href="/propiedades/listado" class="active">Explorar</a></li>
+                <li th:if="${username != null}">
+                    <a href="/profile">Mi Cuenta</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="search-container">
+        <h1>🏠 Todos los Alojamientos</h1>
+        
+        <div class="search-filters">
+            <form action="/buscar" method="get" class="search-form">
+                <div class="form-group">
+                    <input type="text" name="ciudad" placeholder="Buscar por ciudad...">
+                </div>
+                <div class="form-group">
+                    <select name="tipoInmueble">
+                        <option value="">Todos los tipos</option>
+                        <option value="apartamento">Apartamento</option>
+                        <option value="casa">Casa</option>
+                        <option value="habitacion">Habitación</option>
+                        <option value="estudio">Estudio</option>
+                        <option value="chalet">Chalet</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">🔍 Buscar</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="results-container">
+        <h2 th:text="'Alojamientos disponibles (' + ${propiedades.size()} + ')'"></h2>
+        
+        <div th:if="${propiedades.empty}" class="no-results">
+            <p>❌ No hay alojamientos disponibles en este momento.</p>
+        </div>
+        
+        <div class="properties-grid" th:unless="${propiedades.empty}">
+            <div th:each="propiedad : ${propiedades}" class="property-card">
+                <div class="property-image">
+                    <div class="property-type" th:text="${propiedad.tipoInmueble}"></div>
+                </div>
+                
+                <div class="property-info">
+                    <h3 class="property-title" th:text="${propiedad.titulo}"></h3>
+                    <p class="property-location">
+                        <span class="location-icon">📍</span>
+                        <span th:text="${propiedad.ciudad}"></span>
+                    </p>
+                    
+                    <div class="property-details">
+                        <div class="detail">
+                            <span class="detail-icon">🛏️</span>
+                            <span th:text="${propiedad.habitaciones} + ' habitación(es)'"></span>
+                        </div>
+                        <div class="detail">
+                            <span class="detail-icon">👥</span>
+                            <span th:text="${propiedad.capacidad} + ' personas'"></span>
+                        </div>
+                        <div class="detail">
+                            <span class="detail-icon">💰</span>
+                            <span th:text="'€' + ${propiedad.precioNoche} + ' por noche'"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="property-actions">
+                        <a th:href="@{/propiedades/} + ${propiedad.id}" class="btn-detail">Ver detalles</a>
+                        <button th:if="${session.rol == 'INQUILINO'}" 
+                                class="btn-wishlist" 
+                                th:onclick="'addToWishlist(' + ${propiedad.id} + ')'">
+                            ❤️ Lista
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Rentplace - Alquiler de viviendas</p>
+    </footer>
+    
+    <script>
+        function addToWishlist(propiedadId) {
+            fetch(`/lista-deseos/agregar/${propiedadId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    alert('✅ Propiedad agregada a tu lista de deseos');
+                    location.reload();
+                } else {
+                    alert('❌ ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('❌ Error al agregar a la lista de deseos: ' + error.message);
+            });
+        }
+    </script>
+</body>
+</html>

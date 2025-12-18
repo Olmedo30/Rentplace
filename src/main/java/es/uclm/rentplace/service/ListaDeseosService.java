@@ -3,6 +3,7 @@ package es.uclm.rentplace.service;
 import es.uclm.rentplace.entity.ListaDeseos;
 import es.uclm.rentplace.entity.Propiedad;
 import es.uclm.rentplace.entity.Usuario;
+import es.uclm.rentplace.persistence.usuarioDAO;
 import es.uclm.rentplace.persistence.ListaDeseosDAO;
 import es.uclm.rentplace.persistence.PropiedadDAO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,24 @@ public class ListaDeseosService {
     @Autowired
     private PropiedadDAO propiedadDAO;
     
+    @Autowired
+    private usuarioDAO usuarioDAO;
+    
     @Transactional
     public ListaDeseos crearListaDeseosParaUsuario(Usuario usuario) {
         ListaDeseos lista = new ListaDeseos(usuario);
         return listaDeseosDAO.save(lista);
+    }
+    
+    public boolean estaEnListaDeDeseos(Long usuarioId, Long propiedadId) {
+        ListaDeseos lista = listaDeseosDAO.findByUsuarioId(usuarioId).orElse(null);
+        if (lista == null) {
+            return false;
+        }
+        
+        // Verificar si la propiedad está en la lista
+        return lista.getPropiedades().stream()
+                .anyMatch(prop -> prop.getId().equals(propiedadId));
     }
     
     @Transactional

@@ -10,11 +10,11 @@ import java.util.List;
 @Repository
 public interface PagoDAO extends JpaRepository<Pago, Long> {
     
-    // Corrección: Definir el método para buscar pagos por inquilino
+    // Consulta para encontrar pagos por inquilino
     @Query("SELECT p FROM Pago p WHERE p.reserva.inquilino.id = :inquilinoId")
     List<Pago> findByReservaInquilinoId(Long inquilinoId);
     
-    // Corrección: Definir el método para buscar pagos por propietario
+    // Consulta para encontrar pagos por propietario
     @Query("SELECT p FROM Pago p WHERE p.reserva.propiedad.propietario.id = :propietarioId")
     List<Pago> findByReservaPropiedadPropietarioId(Long propietarioId);
 }

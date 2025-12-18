@@ -24,15 +24,6 @@ public class Usuario {
     @Column(nullable = false)
     private String telefono;
 
-    @Column(nullable = false)
-    private String nombre;
-
-    @Column(nullable = false)
-    private String apellidos;
-
-    @Column(nullable = false)
-    private String direccion;
-
     // Campo rol (reemplaza a Propietario e Inquilino)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -50,15 +41,11 @@ public class Usuario {
     public Usuario() {}
 
     // Constructor con parámetros
-    public Usuario(String username, String password, String email, String telefono, 
-                  String nombre, String apellidos, String direccion, Rol rol) {
+    public Usuario(String username, String password, String email, String telefono, Rol rol) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.telefono = telefono;
-        this.nombre = nombre;
-        this.apellidos = apellidos;
-        this.direccion = direccion;
         this.rol = rol;
     }
 
@@ -83,15 +70,6 @@ public class Usuario {
 
     public String getTelefono() { return telefono; }
     public void setTelefono(String telefono) { this.telefono = telefono; }
-
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-
-    public String getApellidos() { return apellidos; }
-    public void setApellidos(String apellidos) { this.apellidos = apellidos; }
-
-    public String getDireccion() { return direccion; }
-    public void setDireccion(String direccion) { this.direccion = direccion; }
 
     public Rol getRol() { return rol; }
     public void setRol(Rol rol) { this.rol = rol; }

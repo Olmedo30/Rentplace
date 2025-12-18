@@ -22,16 +22,12 @@ public class UsuarioService {
 
     // Registrar un nuevo usuario con todos los campos
     @Transactional
-    public boolean registrarUsuario(String username, String password, String email, String telefono, 
-                                    String nombre, String apellidos, String direccion, Usuario.Rol rol) {
+    public boolean registrarUsuario(String username, String password, String email, String telefono, Usuario.Rol rol) {
         // Validar que los campos obligatorios no estén vacíos
         if (username == null || username.trim().isEmpty() ||
             password == null || password.trim().isEmpty() ||
             email == null || email.trim().isEmpty() ||
             telefono == null || telefono.trim().isEmpty() ||
-            nombre == null || nombre.trim().isEmpty() ||
-            apellidos == null || apellidos.trim().isEmpty() ||
-            direccion == null || direccion.trim().isEmpty() ||
             rol == null) {
             return false;
         }
@@ -48,7 +44,7 @@ public class UsuarioService {
         String passwordEncriptada = passwordEncoder.encode(password);
         
         // Crear y guardar usuario
-        Usuario usuario = new Usuario(username, passwordEncriptada, email, telefono, nombre, apellidos, direccion, rol);
+        Usuario usuario = new Usuario(username, passwordEncriptada, email, telefono, rol);
         usuarioPersistence.save(usuario);
         return true;
     }
@@ -90,9 +86,6 @@ public class UsuarioService {
         // Actualizar campos
         usuario.setEmail(email);
         usuario.setTelefono(telefono);
-        usuario.setNombre(nombre);
-        usuario.setApellidos(apellidos);
-        usuario.setDireccion(direccion);
         
         usuarioPersistence.save(usuario);
         return true;

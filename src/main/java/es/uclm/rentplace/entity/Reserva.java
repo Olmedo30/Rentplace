@@ -175,4 +175,9 @@ public BigDecimal calcularTotal() {
                 ", pagado='" + pagado + '\'' +
                 '}';
     }
+
+	public void setPropiedadId(Long propiedadId) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -4,7 +4,6 @@ package es.uclm.rentplace.controller;
 import es.uclm.rentplace.entity.Pago;
 import es.uclm.rentplace.entity.Reserva;
 import es.uclm.rentplace.entity.Usuario;
-import es.uclm.rentplace.service.NotificacionService;
 import es.uclm.rentplace.service.PagoService;
 import es.uclm.rentplace.service.ReservaService;
 import es.uclm.rentplace.persistence.usuarioDAO;
@@ -28,12 +27,8 @@ public class PagoController {
     private ReservaService reservaService;
     
     @Autowired
-    private NotificacionService notificacionService;
-    
-    @Autowired
     private usuarioDAO usuarioDAO;
     
-    // Mostrar formulario de pago
     @GetMapping("/pagar/{reservaId}")
     public String mostrarFormularioPago(@PathVariable Long reservaId, Model model, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
@@ -42,9 +37,9 @@ public class PagoController {
         }
         
         Usuario usuario = usuarioDAO.findById(userId).orElse(null);
-        if (usuario == null || usuario.getRol() != Usuario.Rol.INQUILINO) {
-            model.addAttribute("error", "No tienes permisos para realizar pagos.");
-            return "redirect:/home";
+        if (usuario == null) {
+            model.addAttribute("error", "Usuario no encontrado.");
+            return "redirect:/login";
         }
         
         Reserva reserva = reservaService.obtenerReservaPorId(reservaId);
@@ -68,7 +63,6 @@ public class PagoController {
         return "formulario-pago";
     }
     
-    // Procesar pago
     @PostMapping("/procesar/{reservaId}")
     public String procesarPago(
             @PathVariable Long reservaId,
@@ -96,114 +90,17 @@ public class PagoController {
         
         BigDecimal montoTotal = pagoService.calcularTotalReserva(reserva);
         
-        // Simular pago (en producción esto se haría con una pasarela de pago)
-        boolean pagoExitoso = true;
+        Pago pago = pagoService.crearPago(reserva, montoTotal, metodoPago);
+        pagoService.completarPago(pago.getId());
         
-        if (pagoExitoso) {
-            // Crear y completar el pago
-            Pago pago = pagoService.crearPago(reserva, montoTotal, metodoPago);
-            pagoService.completarPago(pago.getId());
-            
-            // Confirmar reserva si es inmediata
-            if (reserva.getPropiedad().getPermiteReservaInmediata()) {
-                reservaService.confirmarReserva(reserva.getId());
-            }
-            
-            // Notificar al inquilino
-            notificacionService.crearNotificacion(
-                inquilino, 
-                "Pago realizado", 
-                "Tu pago de " + montoTotal + "€ para la reserva " + reservaId + " ha sido completado.",
-                "PAGO"
-            );
-            
-            // Notificar al propietario
-            Usuario propietario = reserva.getPropiedad().getPropietario();
-            notificacionService.crearNotificacion(
-                propietario,
-                "Nuevo pago recibido",
-                "Se ha recibido un pago de " + montoTotal + "€ para tu propiedad: " + reserva.getPropiedad().getTitulo(),
-                "PAGO"
-            );
-            
-            model.addAttribute("message", "Pago realizado exitosamente por " + montoTotal + "€.");
-            return "redirect:/mis-reservas";
-        } else {
-            model.addAttribute("error", "El pago falló. Por favor, intenta de nuevo.");
-            return "redirect:/pagos/pagar/" + reservaId;
+        if (reserva.getPropiedad().getPermiteReservaInmediata()) {
+            reservaService.confirmarReserva(reserva.getId());
         }
+        
+        model.addAttribute("message", "Pago realizado exitosamente por " + montoTotal + "€.");
+        return "redirect:/mis-reservas";
     }
     
-    // Endpoint para pago exitoso (simulación)
-    @GetMapping("/exito")
-    public String pagoSuccess(@RequestParam("session_id") String sessionId, Model model, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/login";
-        }
-        
-        try {
-            Long reservaId = pagoService.confirmPaymentAndReserva(sessionId);
-            if (reservaId != null) {
-                Reserva reserva = reservaService.obtenerReservaPorId(reservaId);
-                if (reserva != null) {
-                    Usuario usuario = usuarioDAO.findById(userId).orElse(null);
-                    if (usuario != null) {
-                        notificacionService.crearNotificacion(
-                            usuario,
-                            "Reserva confirmada",
-                            "Tu reserva " + reservaId + " ha sido confirmada correctamente.",
-                            "RESERVA"
-                        );
-                    }
-                    
-                    model.addAttribute("message", "¡Reserva confirmada! ID de Reserva: " + reservaId);
-                    return "redirect:/mis-reservas";
-                }
-            }
-            
-            model.addAttribute("error", "Pago completado, pero la reserva no pudo ser confirmada. Contacte con soporte.");
-            return "redirect:/home";
-        } catch (Exception e) { 
-            model.addAttribute("error", "Error de verificación de pago. Contacte con soporte.");
-            System.err.println("Error al verificar la sesión de pago: " + e.getMessage());
-            return "redirect:/home";
-        }
-    }
-    
-    // Endpoint para pago cancelado
-    @GetMapping("/cancelado")
-    public String pagoCancelled(@RequestParam Long reservaId, Model model, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/login";
-        }
-        
-        try {
-            Reserva reserva = reservaService.obtenerReservaPorId(reservaId);
-            if (reserva != null) {
-                Usuario usuario = usuarioDAO.findById(userId).orElse(null);
-                if (usuario != null) {
-                    notificacionService.crearNotificacion(
-                        usuario,
-                        "Pago cancelado",
-                        "Tu pago para la reserva " + reservaId + " ha sido cancelado.",
-                        "PAGO"
-                    );
-                }
-                
-                model.addAttribute("error", "El pago ha sido cancelado. Su reserva (ID: " + reservaId + ") sigue en estado pendiente.");
-                return "redirect:/mis-reservas";
-            }
-        } catch (Exception e) {
-            System.err.println("Error al procesar pago cancelado: " + e.getMessage());
-        }
-        
-        model.addAttribute("error", "Error al procesar el pago cancelado. Contacte con soporte.");
-        return "redirect:/home";
-    }
-    
-    // Ver historial de pagos
     @GetMapping("/historial")
     public String verHistorialPagos(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
@@ -217,19 +114,18 @@ public class PagoController {
         }
         
         List<Pago> pagos;
-        if (usuario.getRol() == Usuario.Rol.INQUILINO) {
+        if (usuario.getRol() == Usuario.Rol.INQUILINO) { 
             pagos = pagoService.obtenerPagosDeInquilino(userId);
         } else if (usuario.getRol() == Usuario.Rol.PROPIETARIO) {
             pagos = pagoService.obtenerPagosDePropietario(userId);
         } else {
-            pagos = List.of();
+            pagos = java.util.Collections.emptyList();
         }
         
         model.addAttribute("pagos", pagos);
         return "historial-pagos";
     }
     
-    // Ver detalle de un pago
     @GetMapping("/detalle/{pagoId}")
     public String verDetallePago(@PathVariable Long pagoId, Model model, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
@@ -243,7 +139,6 @@ public class PagoController {
             return "redirect:/pagos/historial";
         }
         
-        // Verificar permisos
         boolean tienePermiso = false;
         if (pago.getReserva().getInquilino().getId().equals(userId)) {
             tienePermiso = true;
@@ -260,7 +155,6 @@ public class PagoController {
         return "detalle-pago";
     }
     
-    // Procesar reembolso
     @PostMapping("/reembolsar/{pagoId}")
     public String procesarReembolso(@PathVariable Long pagoId, HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
@@ -273,43 +167,34 @@ public class PagoController {
             return "redirect:/login";
         }
         
-        // Solo administradores o propietarios pueden reembolsar
-        if (usuario.getRol() != Usuario.Rol.PROPIETARIO && !usuario.getUsername().equals("admin")) {
-            model.addAttribute("error", "No tienes permisos para realizar reembolsos.");
+        Pago pago = pagoService.obtenerPagoPorId(pagoId);
+        if (pago == null) {
+            model.addAttribute("error", "Pago no encontrado.");
             return "redirect:/pagos/historial";
         }
         
+        pagoService.reembolsarPago(pagoId);
+        model.addAttribute("message", "Reembolso procesado exitosamente por " + pago.getMonto() + "€.");
+        return "redirect:/pagos/historial";
+    }
+    
+    @GetMapping("/exito")
+    public String pagoSuccess(@RequestParam("session_id") String sessionId, Model model) {
         try {
-            Pago pago = pagoService.obtenerPagoPorId(pagoId);
-            if (pago == null) {
-                model.addAttribute("error", "Pago no encontrado.");
-                return "redirect:/pagos/historial";
+            Long reservaId = pagoService.confirmPaymentAndReserva(sessionId);
+            if (reservaId != null) {
+                model.addAttribute("message", "¡Reserva confirmada! ID de Reserva: " + reservaId);
+                return "redirect:/mis-reservas";
             }
-            
-            // Verificar que el propietario sea el dueño de la propiedad
-            if (usuario.getRol() == Usuario.Rol.PROPIETARIO && 
-                !pago.getReserva().getPropiedad().getPropietario().getId().equals(userId)) {
-                model.addAttribute("error", "No tienes permisos para reembolsar este pago.");
-                return "redirect:/pagos/historial";
-            }
-            
-            // Procesar reembolso
-            pagoService.reembolsarPago(pagoId);
-            
-            // Notificar al inquilino
-            Usuario inquilino = pago.getReserva().getInquilino();
-            notificacionService.crearNotificacion(
-                inquilino,
-                "Reembolso procesado",
-                "Se ha procesado un reembolso de " + pago.getMonto() + "€ para tu pago " + pagoId,
-                "PAGO"
-            );
-            
-            model.addAttribute("message", "Reembolso procesado exitosamente por " + pago.getMonto() + "€.");
-            return "redirect:/pagos/historial";
-        } catch (Exception e) {
-            model.addAttribute("error", "Error al procesar el reembolso: " + e.getMessage());
-            return "redirect:/pagos/historial";
+        } catch (Exception e) { 
+            model.addAttribute("error", "Error de verificación de pago. Contacte con soporte.");
         }
+        return "redirect:/home";
+    }
+    
+    @GetMapping("/cancelado")
+    public String pagoCancelled(@RequestParam Long reservaId, Model model) {
+        model.addAttribute("error", "El pago ha sido cancelado. Su reserva (ID: " + reservaId + ") sigue en estado pendiente.");
+        return "redirect:/mis-reservas";
     }
 }

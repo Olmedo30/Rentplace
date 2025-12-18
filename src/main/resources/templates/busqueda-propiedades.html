@@ -1,466 +1,176 @@
+<!-- src/main/resources/templates/buscar-propiedades.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscar Alojamientos - RentPlace</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #ffedd5, #fed7aa);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            background: rgba(255, 106, 0, 0.4);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            border-bottom: 1px solid rgba(249, 115, 22, 0.2);
-            border-bottom-left-radius: 10px;
-            border-bottom-right-radius: 10px;
-        }
-
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
-
-        .logo-text {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #1f2937;
-        }
-
-        .main-content {
-            padding-top: 6rem;
-            padding-bottom: 4rem;
-        }
-
-        .search-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .search-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .search-header h1 {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #1f2937;
-            margin-bottom: 1rem;
-        }
-
-        .search-header p {
-            color: #4b5563;
-            font-size: 1.125rem;
-            line-height: 1.6;
-        }
-
-        .search-filters {
-            background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        .filters-grid {
-            display: grid;
-            grid-template-columns: repeat(1, 1fr);
-            gap: 1.5rem;
-        }
-
-        @media (min-width: 768px) {
-            .filters-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .filters-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        .filter-group {
-            margin-bottom: 1rem;
-        }
-
-        .filter-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #1f2937;
-        }
-
-        .filter-input {
-            width: 100%;
-            padding: 0.75rem 1.5rem;
-            border-radius: 9999px;
-            border: 1px solid #e5e7eb;
-            font-size: 1rem;
-            color: #1f2937;
-            transition: border-color 0.3s ease;
-        }
-
-        .filter-input:focus {
-            outline: none;
-            border-color: #f97316;
-            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 9999px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            border: none;
-            font-size: 1rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #f97316, #ea580c);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #ea580c, #c2410c);
-        }
-
-        .filter-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .results-container {
-            background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        .results-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .properties-grid {
-            display: grid;
-            grid-template-columns: repeat(1, 1fr);
-            gap: 1.5rem;
-        }
-
-        @media (min-width: 768px) {
-            .properties-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .properties-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        .property-card {
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .property-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
-        .property-image {
-            height: 200px;
-            width: 100%;
-            background: linear-gradient(135deg, #f97316, #ea580c);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2rem;
-        }
-
-        .property-content {
-            padding: 1.5rem;
-        }
-
-        .property-title {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-        }
-
-        .property-city {
-            color: #6b7280;
-            margin-bottom: 0.75rem;
-        }
-
-        .property-price {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #f97316;
-            margin-bottom: 1rem;
-        }
-
-        .property-type {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            background: rgba(249, 115, 22, 0.1);
-            color: #f97316;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .no-properties-message {
-            text-align: center;
-            padding: 3rem 2rem;
-            color: #6b7280;
-        }
-
-        .no-properties-message i {
-            font-size: 3rem;
-            opacity: 0.5;
-            margin-bottom: 1rem;
-            color: #f97316;
-        }
-
-        .no-properties-message h3 {
-            font-size: 1.5rem;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-        }
-
-        .no-properties-message p {
-            font-size: 1.125rem;
-            line-height: 1.6;
-            margin-bottom: 1rem;
-        }
-
-        footer {
-            background: #1f2937;
-            color: white;
-            padding: 2rem;
-            text-align: center;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-            margin-top: 2rem;
-        }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .footer-copyright {
-            color: #9ca3af;
-            font-size: 0.875rem;
-        }
-    </style>
+    <title>Buscar Alojamientos - Rentplace</title>
+    <link rel="stylesheet" href="/css/search-style.css">
+    <link rel="stylesheet" href="/css/home-style.css">
+    <link rel="shortcut icon" href="/assets/logo.png" />
 </head>
 <body>
-    <!-- Header igual al de la página principal -->
+    <!-- Barra de navegación (igual que en home) -->
     <header>
-    <div class="header-container">
         <div class="logo">
-            <div class="logo-icon">
-                <img src="../assets/logo.png" alt="Rent Place" width="55" height="55">
-            </div>
-            <div class="logo-text">Rent Place</div>
+            <img src="/assets/logo.png" alt="Rentplace Logo" class="logo-img">
+            <h1>Rentplace</h1>
         </div>
-        
-        <!-- Menú para propietarios autenticados -->
-        <nav class="owner-nav">
-            <a href="/home">Inicio</a>
-            <a href="/add-property" class="add-property-btn"> 
-                <i class="fas fa-home"></i> Añadir Propiedad
-            </a>
-            <a href="/my-properties">Mis Propiedades</a>
-            <a href="/profile">Mi Cuenta</a>
+        <nav>
+            <ul>
+                <li><a href="/home">Inicio</a></li>
+                <li><a href="/propiedades/listado">Explorar</a></li>
+                <li th:if="${username != null}">
+                    <a href="#" onclick="document.getElementById('logout-form').submit()">Cerrar sesión</a>
+                    <form id="logout-form" action="/logout" method="post" style="display: none;"></form>
+                </li>
+                <li th:if="${userId != null}">
+                    <a href="/notificaciones">
+                        Notificaciones 
+                        <span th:if="${notificacionesNoLeidas > 0}" th:text="${notificacionesNoLeidas}" class="badge"></span>
+                    </a>
+                </li>
+            </ul>
         </nav>
-        
-        <div class="header-icons">
-            <a href="/buscar" aria-label="Buscar alojamientos" style="text-decoration: none; color: inherit;">
-                <i class="fas fa-search"></i>
-            </a>
-            <button aria-label="Menú">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-        
-        <div class="auth-actions">
-            <form action="/inquilino/convertir" method="post">
-                <button type="submit" class="tenant-btn">
-                    <i class="fas fa-user"></i> Convertirme en Inquilino
-                </button>
-            </form>
-            <a href="/logout" class="logout-btn">Cerrar Sesión</a>
-        </div>
-    </div>
-</header>
+    </header>
 
-    <div class="main-content">
-        <div class="search-container">
-            <div class="search-header">
-                <h1>Encuentra tu Alojamiento Perfecto</h1>
-                <p>Busca y filtra entre miles de propiedades disponibles en todo el mundo</p>
+    <!-- Contenido principal -->
+    <div class="search-container">
+        <h1>🔍 Buscar Alojamientos</h1>
+        
+        <form action="/propiedades/buscar" method="get" class="search-form">
+            <div class="form-group">
+                <label for="ciudad">Ubicación:</label>
+                <input type="text" id="ciudad" name="ciudad" th:value="${criterios.ciudad}" placeholder="Ciudad, zona...">
             </div>
-
-            <div class="search-filters">
-                <form th:action="@{/buscar}" method="get">
-                    <div class="filters-grid">
-                        <div class="filter-group">
-                            <label for="fechaEntrada"><i class="fas fa-calendar-check"></i> Fecha de entrada</label>
-                            <input type="date" id="fechaEntrada" name="fechaEntrada" class="filter-input" 
-                                   th:value="${criterios != null ? criterios.fechaEntrada : ''}">
+            
+            <div class="form-group">
+                <label for="tipoInmueble">Tipo de alojamiento:</label>
+                <select id="tipoInmueble" name="tipoInmueble">
+                    <option value="">Todos los tipos</option>
+                    <option value="apartamento" th:selected="${criterios.tipoInmueble == 'apartamento'}">Apartamento</option>
+                    <option value="casa" th:selected="${criterios.tipoInmueble == 'casa'}">Casa</option>
+                    <option value="habitacion" th:selected="${criterios.tipoInmueble == 'habitacion'}">Habitación</option>
+                    <option value="estudio" th:selected="${criterios.tipoInmueble == 'estudio'}">Estudio</option>
+                    <option value="chalet" th:selected="${criterios.tipoInmueble == 'chalet'}">Chalet</option>
+                </select>
+            </div>
+            
+            <div class="form-group date-group">
+                <div class="date-field">
+                    <label for="fechaEntrada">Fecha de entrada:</label>
+                    <input type="date" id="fechaEntrada" name="fechaEntrada" th:value="${criterios.fechaEntrada}">
+                </div>
+                <div class="date-field">
+                    <label for="fechaSalida">Fecha de salida:</label>
+                    <input type="date" id="fechaSalida" name="fechaSalida" th:value="${criterios.fechaSalida}">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="precioMaximo">Precio máximo por noche (€):</label>
+                <input type="number" id="precioMaximo" name="precioMaximo" th:value="${criterios.precioMaximo}" min="0" step="0.01">
+            </div>
+            
+            <button type="submit" class="btn-primary">🔍 Buscar alojamientos</button>
+        </form>
+    </div>
+    
+    <!-- Resultados de búsqueda -->
+    <div class="results-container" th:if="${!propiedades.empty}">
+        <h2 th:text="'Resultados de búsqueda (' + ${propiedades.size()} + ')'"></h2>
+        
+        <div class="properties-grid">
+            <div th:each="propiedad : ${propiedades}" class="property-card">
+                <div class="property-image">
+                    <div class="property-type" th:text="${propiedad.tipoInmueble}"></div>
+                </div>
+                
+                <div class="property-info">
+                    <h3 class="property-title" th:text="${propiedad.titulo}"></h3>
+                    <p class="property-location">
+                        <span class="location-icon">📍</span>
+                        <span th:text="${propiedad.ciudad}"></span>
+                    </p>
+                    
+                    <div class="property-details">
+                        <div class="detail">
+                            <span class="detail-icon">🛏️</span>
+                            <span th:text="${propiedad.habitaciones} + ' habitación(es)'"></span>
                         </div>
-                        
-                        <div class="filter-group">
-                            <label for="fechaSalida"><i class="fas fa-calendar-times"></i> Fecha de salida</label>
-                            <input type="date" id="fechaSalida" name="fechaSalida" class="filter-input"
-                                   th:value="${criterios != null ? criterios.fechaSalida : ''}">
+                        <div class="detail">
+                            <span class="detail-icon">👥</span>
+                            <span th:text="${propiedad.capacidad} + ' personas'"></span>
                         </div>
-                        
-                        <div class="filter-group">
-						    <label for="tipoInmueble"><i class="fas fa-building"></i> Tipo de alojamiento</label>
-						    <select id="tipoInmueble" name="tipoInmueble" class="filter-input">
-							    <option value="">Todos los tipos</option>
-							    <option value="Hoteles" th:selected="${criterios != null && 'Hoteles'.equals(criterios.tipoInmueble)}">Hoteles</option>
-							    <option value="Apartamentos" th:selected="${criterios != null && 'Apartamentos'.equals(criterios.tipoInmueble)}">Apartamentos</option>
-							    <option value="Casas" th:selected="${criterios != null && 'Casas'.equals(criterios.tipoInmueble)}">Casas</option>
-							    <option value="Villas" th:selected="${criterios != null && 'Villas'.equals(criterios.tipoInmueble)}">Villas</option>
-							</select>
-						</div>
-                        
-                        <div class="filter-group">
-                            <label for="ciudad"><i class="fas fa-map-marker-alt"></i> Ciudad</label>
-                            <input type="text" id="ciudad" name="ciudad" class="filter-input" 
-                                   placeholder="Ej: Madrid, Barcelona..."
-                                   th:value="${criterios != null ? criterios.ciudad : ''}">
+                        <div class="detail">
+                            <span class="detail-icon">💰</span>
+                            <span th:text="'€' + ${propiedad.precioNoche} + ' por noche'"></span>
                         </div>
                     </div>
                     
-                    <div class="filter-buttons">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search"></i> Buscar alojamientos
-                        </button>
-                        <button type="reset" class="btn btn-primary" style="background: linear-gradient(135deg, #fdba74, #f97316);">
-                            <i class="fas fa-times"></i> Limpiar filtros
+                    <div class="property-actions">
+                        <a th:href="@{/propiedades/} + ${propiedad.id}" class="btn-detail">Ver detalles</a>
+                        <button class="btn-wishlist" 
+                                th:onclick="'addToWishlist(' + ${propiedad.id} + ')'">
+                            ❤️ 
+                            <span th:text="${enListaDeseos[propiedad.id]} ? 'En lista' : 'Lista de deseos'"></span>
                         </button>
                     </div>
-                </form>
-            </div>
-
-            <div class="results-container">
-                <div class="results-header">
-                    <h2 th:if="${propiedades != null}" th:text="'Resultados (' + ${propiedades.totalElements} + ')'"></h2>
-                    <h2 th:if="${propiedades == null}">Resultados</h2>
-                </div>
-
-                <!-- Mostrar propiedades si existen -->
-                <div class="properties-grid" th:if="${propiedades != null && !propiedades.empty}">
-                    <div class="property-card" th:each="propiedad : ${propiedades.content}">
-                        <div class="property-image">
-                            <i class="fas fa-image"></i>
-                        </div>
-                        <div class="property-content">
-                            <div class="property-type" th:text="${propiedad.tipoInmueble}"></div>
-                            <h3 class="property-title" th:text="${propiedad.titulo}"></h3>
-                            <div class="property-city" th:text="${propiedad.ciudad}"></div>
-                            <div class="property-price" th:text="'€' + ${#numbers.formatDecimal(propiedad.precioNoche, 1, 'DEFAULT', 2, 'DEFAULT')} + ' por noche'"></div>
-                            <button class="btn btn-primary" style="width: 100%;">
-                                <i class="fas fa-eye"></i> Ver detalles
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Mensaje cuando no hay propiedades -->
-                <div class="no-properties-message" th:if="${propiedades == null || propiedades.empty}">
-                    <i class="fas fa-home"></i>
-                    <h3>No hay propiedades disponibles</h3>
-                    <p>En este momento no hay alojamientos que coincidan con tus criterios de búsqueda.</p>
-                    <p>Prueba con otros filtros o vuelve más tarde.</p>
                 </div>
             </div>
+        </div>
+        
+        <div th:if="${propiedades.empty}" class="no-results">
+            <p>❌ No se encontraron alojamientos con los criterios de búsqueda seleccionados.</p>
+            <button onclick="location.href='/propiedades/buscar'" class="btn-primary">Nueva búsqueda</button>
         </div>
     </div>
-
+    
     <footer>
-        <div class="footer-container">
-            <div class="footer-copyright">
-                © 2025 RentPlace - Todos los derechos reservados
-            </div>
-        </div>
+        <p>&copy; 2025 Rentplace - Alquiler de viviendas</p>
     </footer>
-
+    
     <script>
-        // Validación de fechas
-        document.addEventListener('DOMContentLoaded', function() {
-            const fechaEntrada = document.getElementById('fechaEntrada');
-            const fechaSalida = document.getElementById('fechaSalida');
-            
-            const hoy = new Date();
-            const hoyString = hoy.toISOString().split('T')[0];
-            fechaEntrada.min = hoyString;
-            
-            fechaEntrada.addEventListener('change', function() {
-                if (this.value) {
-                    const fechaEntradaValue = new Date(this.value);
-                    fechaEntradaValue.setDate(fechaEntradaValue.getDate() + 1);
-                    fechaSalida.min = fechaEntradaValue.toISOString().split('T')[0];
+        function addToWishlist(propiedadId) {
+            fetch(`/lista-deseos/agregar/${propiedadId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
                 }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    alert('✅ Propiedad agregada a tu lista de deseos');
+                    location.reload();
+                } else {
+                    alert('❌ ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('❌ Error al agregar a la lista de deseos: ' + error.message);
             });
+        }
+        
+        // Validación de fechas
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const fechaEntrada = new Date(document.getElementById('fechaEntrada').value);
+            const fechaSalida = new Date(document.getElementById('fechaSalida').value);
+            const hoy = new Date();
+            hoy.setHours(0,0,0,0);
+            
+            if (fechaEntrada && fechaSalida) {
+                if (fechaEntrada < hoy) {
+                    e.preventDefault();
+                    alert('❌ La fecha de entrada no puede ser anterior a hoy');
+                    return;
+                }
+                
+                if (fechaSalida <= fechaEntrada) {
+                    e.preventDefault();
+                    alert('❌ La fecha de salida debe ser posterior a la fecha de entrada');
+                    return;
+                }
+            }
         });
     </script>
 </body>

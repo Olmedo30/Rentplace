@@ -4,9 +4,12 @@ package es.uclm.rentplace.controller;
 import es.uclm.rentplace.entity.Usuario;
 import es.uclm.rentplace.persistence.usuarioDAO;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +23,12 @@ public class AuthController {
 
     @Autowired
     private usuarioDAO usuarioPersistence;
+    
+    @Autowired
+    private usuarioDAO usuarioDAO;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // Mostrar formulario de registro
     @GetMapping("/register")
@@ -36,9 +45,6 @@ public class AuthController {
             @RequestParam String confirmPassword,
             @RequestParam String email,
             @RequestParam String telefono,
-            @RequestParam String nombre,
-            @RequestParam String apellidos,
-            @RequestParam String direccion,
             @RequestParam String rol,
             Model model) {
 
@@ -68,7 +74,7 @@ public class AuthController {
         }
 
         // Crear y guardar usuario
-        Usuario nuevo = new Usuario(username, password, email, telefono, nombre, apellidos, direccion, rolEnum);
+        Usuario nuevo = new Usuario(username, password, email, telefono, rolEnum);
         usuarioPersistence.save(nuevo);
         log.info("Usuario guardado: {}", nuevo);
         model.addAttribute("message", "Registro exitoso. Ahora puedes iniciar sesión.");
@@ -96,7 +102,7 @@ public class AuthController {
             if (password.equals(usuario.getPassword())) {
                 session.setAttribute("username", usuario.getUsername());
                 session.setAttribute("userId", usuario.getId());
-                session.setAttribute("rol", usuario.getRol().name());
+                session.setAttribute("rol", usuario.getRol());
                 return "redirect:/home";
             }
         }
@@ -110,5 +116,35 @@ public class AuthController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/login";
+    }
+    
+    @PostMapping("/auth/convertir-rol")
+    @Transactional
+    public String convertirRol(HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            model.addAttribute("error", "Debes iniciar sesión.");
+            return "login";
+        }
+
+        Usuario usuario = usuarioDAO.findById(userId).orElse(null);
+        if (usuario == null) {
+            model.addAttribute("error", "Usuario no encontrado.");
+            return "home";
+        }
+
+        // Alternar entre roles
+        if (usuario.getRol() == Usuario.Rol.INQUILINO) {
+            usuario.setRol(Usuario.Rol.PROPIETARIO);
+            model.addAttribute("message", "¡Ahora eres propietario! Puedes añadir y gestionar tus propiedades.");
+        } else {
+            usuario.setRol(Usuario.Rol.INQUILINO);
+            model.addAttribute("message", "¡Ahora eres inquilino! Puedes buscar y reservar propiedades.");
+        }
+
+        usuarioDAO.save(usuario);
+        session.setAttribute("rol", usuario.getRol().name());
+        
+        return "redirect:/profile";
     }
 }
