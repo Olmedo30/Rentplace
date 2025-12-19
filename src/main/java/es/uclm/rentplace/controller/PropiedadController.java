@@ -34,7 +34,7 @@ public class PropiedadController {
     }
 
     // Mis propiedades (solo para propietarios)
-    @GetMapping("/properties/my-properties")
+    @GetMapping("/my-properties")
     public String myProperties(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
@@ -51,16 +51,16 @@ public class PropiedadController {
         // Verificar que el usuario sea propietario
         if (usuario.getRol() != Usuario.Rol.PROPIETARIO) {
             model.addAttribute("error", "Solo los propietarios pueden acceder a esta página.");
-            return "profile";
+            return "home";
         }
 
         List<Propiedad> misPropiedades = propiedadService.obtenerPropiedadesDePropietario(userId);
         model.addAttribute("misPropiedades", misPropiedades);
-        return "/properties/my-properties";
+        return "my-properties";
     }
 
     // Formulario para añadir nueva propiedad
-    @GetMapping("/properties/add-property")
+    @GetMapping("/add-property")
     public String addPropertyForm(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
@@ -74,11 +74,11 @@ public class PropiedadController {
         }
 
         model.addAttribute("propiedad", new Propiedad());
-        return "/properties/add-property";
+        return "add-property";
     }
 
     // Procesar el formulario de añadir propiedad
-    @PostMapping("/properties/add-property")
+    @PostMapping("/add-property")
     public String addProperty(
             @RequestParam String titulo,
             @RequestParam String descripcion,
@@ -120,7 +120,7 @@ public class PropiedadController {
         } catch (Exception e) {
             model.addAttribute("error", "Error al registrar la propiedad: " + e.getMessage());
             model.addAttribute("propiedad", new Propiedad());
-            return "/propiedades/add-property";
+            return "add-property";
         }
     }
 }
