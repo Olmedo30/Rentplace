@@ -90,7 +90,7 @@ public class AuthController {
         // Codificar la contraseña
         String encodedPassword = passwordEncoder.encode(password);
         
-        Usuario nuevo = new Usuario(username, encodedPassword, email, telefono);
+        Usuario nuevo = new Usuario(username, encodedPassword, email, telefono, false);
         try {
             Usuario guardado = usuarioPersistence.save(nuevo);
             log.info("Usuario guardado: {}", guardado);

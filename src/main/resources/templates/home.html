@@ -40,18 +40,21 @@
 				</button>
 			</div>
 			
-			<div class="auth-actions">
-				<form action="/inquilino/convertir" method="post">
-					<button type="submit" class="tenant-btn">
+			<div class="auth-actions" style="display: flex; align-items: center; gap: 1rem;">
+				<form action="/inquilino/convertir" method="post" style="width: auto;">
+					<button type="submit" class="tenant-btn btn btn-primary">
 						<i class="fas fa-user"></i> Convertirme en Inquilino
 					</button>
 				</form>
-				<a href="/logout" class="logout-btn">Cerrar Sesión</a>
 			</div>
 		</div>
 	</header>
 	
 	<main class="main-content">
+		<section class="user-actions-section">
+			<a href="/logout" class="logout-btn btn btn-primary">Cerrar Sesión</a>
+		</section>
+
 		<section class="hero-content-section">
 			<div class="hero-content-container">
 				<div class="hero-content">

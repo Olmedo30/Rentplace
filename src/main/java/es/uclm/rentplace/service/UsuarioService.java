@@ -24,7 +24,7 @@ public class UsuarioService {
         }
 
         String passwordEncriptada = passwordEncoder.encode(password);
-        Usuario usuario = new Usuario(username, passwordEncriptada, email, telefono);
+        Usuario usuario = new Usuario(username, passwordEncriptada, email, telefono, false);
         usuarioPersistence.save(usuario);
         return true;
     }

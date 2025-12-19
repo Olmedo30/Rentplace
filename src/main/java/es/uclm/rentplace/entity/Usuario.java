@@ -23,15 +23,19 @@ public class Usuario {
     @Column(nullable = false, length = 15)
     private String telefono;
 
+    @Column(nullable = false)
+    private boolean propietario;
+
     // Constructor vacío (obligatorio para JPA)
     public Usuario() {}
 
     // Constructor con parámetros (opcional, útil para pruebas o creación)
-    public Usuario(String username, String password, String email, String telefono) {
+    public Usuario(String username, String password, String email, String telefono, boolean propietario) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.telefono = telefono;
+        this.propietario = propietario;
     }
 
     // Getters y Setters
@@ -50,9 +54,12 @@ public class Usuario {
     public String getTelefono() { return telefono; }
     public void setTelefono(String telefono) { this.telefono = telefono; }
 
+    public boolean isPropietario() { return propietario; }
+    public void setPropietario(boolean propietario) { this.propietario = propietario; }
+
     @Override
     public String toString() {
-        return String.format("Usuario[id=%d, username='%s', email='%s', telefono='%s']",
-                id, username, email, telefono);
+        return String.format("Usuario[id=%d, username='%s', email='%s', telefono='%s', propietario='%b']",
+                id, username, email, telefono, propietario);
     }
 }

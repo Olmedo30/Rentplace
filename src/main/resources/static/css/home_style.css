@@ -95,7 +95,8 @@ nav a:hover {
 
 /* Main Content */
 .main-content {
-	padding-top: 6rem;
+	padding-top: 4rem; /* Reduced to move main content higher */
+	position: relative;
 }
 
 .hero-content-section {
@@ -555,6 +556,27 @@ footer {
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
+}
+
+/* Auth Actions in Header */
+.auth-actions {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+/* User Actions Section in Main Content */
+.user-actions-section {
+	position: absolute;
+	top: 6rem; /* Reverted to original position */
+	right: 2rem;
+	width: calc(100% - 4rem); /* To span width, considering 2rem padding on each side for main-content */
+	z-index: 999; /* Ensure it appears above other content */
+	text-align: right; /* Align content to the right */
+}
+
+.user-actions-section form {
+	width: auto; /* Allow form to shrink to content */
 }
 
 /* Responsive */
