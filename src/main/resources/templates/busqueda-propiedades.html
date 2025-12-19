@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscar Alojamientos - RentPlace</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="shortcut icon" href="../assets/logo.png" />
     <style>
         * {
             margin: 0;
@@ -20,19 +22,33 @@
         }
 
         header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            background: rgba(255, 106, 0, 0.4);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            border-bottom: 1px solid rgba(249, 115, 22, 0.2);
-            border-bottom-left-radius: 10px;
-            border-bottom-right-radius: 10px;
-        }
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			z-index: 1000;
+			background: rgba(255, 106, 0, 0.4);
+			/* Orange with 15% opacity */
+			backdrop-filter: blur(10px);
+			/* Glass effect */
+			-webkit-backdrop-filter: blur(10px);
+			padding: 1rem 2rem;
+			border-bottom: 1px solid rgba(249, 115, 22, 0.2);
+			border-bottom-left-radius: 10px;
+			border-bottom-right-radius: 10px;
+		}
+
+		nav {
+			display: none;
+		}
+			
+		nav a {
+			color: #4b5563;
+			text-decoration: none;
+			margin-left: 1.5rem;
+			font-weight: 500;
+			transition: color 0.3s ease;
+		}
 
         .header-container {
             display: flex;
@@ -306,48 +322,93 @@
             color: #9ca3af;
             font-size: 0.875rem;
         }
-    </style>
+
+        /* =====================================================
+           AÑADIDO – refuerzos sin borrar nada anterior
+           ===================================================== */
+
+        /* Quitar subrayado a cualquier enlace del header */
+        header a {
+            text-decoration: none;
+        }
+
+        /* Refuerzo hover del nav */
+        nav a:hover {
+            color: #f97316;
+        }
+
+        /* Enlaces tipo botón */
+        a.btn {
+            text-decoration: none;
+        }
+
+        /* Owner nav (si existe en el HTML) */
+        .owner-nav a {
+            color: #4b5563;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .owner-nav a:hover {
+            color: #f97316;
+        }
+
+        /* Iconos del header */
+        .header-icons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .header-icons button {
+            background: none;
+            border: none;
+            color: #4b5563;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .header-icons button:hover {
+            color: #f97316;
+        }
+
+        /* Mostrar nav en escritorio (refuerzo) */
+        @media (min-width: 768px) {
+            nav {
+                display: flex;
+            }
+        }
+</style>
+
 </head>
 <body>
-    <!-- Header igual al de la página principal -->
     <header>
-    <div class="header-container">
-        <div class="logo">
-            <div class="logo-icon">
-                <img src="../assets/logo.png" alt="Rent Place" width="55" height="55">
-            </div>
-            <div class="logo-text">Rent Place</div>
-        </div>
-        
-        <!-- Menú para propietarios autenticados -->
-        <nav class="owner-nav">
-            <a href="/home">Inicio</a>
-            <a href="/add-property" class="add-property-btn"> 
-                <i class="fas fa-home"></i> Añadir Propiedad
-            </a>
-            <a href="/my-properties">Mis Propiedades</a>
-            <a href="/profile">Mi Cuenta</a>
-        </nav>
-        
-        <div class="header-icons">
-            <a href="/buscar" aria-label="Buscar alojamientos" style="text-decoration: none; color: inherit;">
-                <i class="fas fa-search"></i>
-            </a>
-            <button aria-label="Menú">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-        
-        <div class="auth-actions">
-            <form action="/inquilino/convertir" method="post">
-                <button type="submit" class="tenant-btn">
-                    <i class="fas fa-user"></i> Convertirme en Inquilino
-                </button>
-            </form>
-            <a href="/logout" class="logout-btn">Cerrar Sesión</a>
-        </div>
-    </div>
-</header>
+		<div class="header-container">
+			<div class="logo">
+				<div class="logo-icon">
+					<img src="../assets/logo.png" alt="Rent Place" width="55" height="55">
+				</div>
+				<div class="logo-text">Rent Place</div>
+			</div>
+			<nav class="owner-nav">
+				<a href="home">Inicio</a>
+				<a href="/add-property" class="add-property-btn"> 
+					<i class="fas fa-home"></i> Añadir Propiedad
+				</a>
+				<a href="/my-properties">Mis Propiedades</a>
+				<a href="/profile">Mi Cuenta</a>
+			</nav>
+			<nav class="owner-nav"> <!--auth-actions-->
+				<a href="/logout" class="logout-btn">Cerrar Sesión</a>
+			</nav>
+			<div class="header-icons">
+				<a href="/buscar" aria-label="Buscar alojamientos" style="text-decoration: none; color: inherit;">
+					<i class="fas fa-search"></i>
+				</a>
+			</div>
+		</div>
+	</header>
 
     <div class="main-content">
         <div class="search-container">
