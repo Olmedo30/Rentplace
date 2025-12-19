@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head>
 	<meta charset="UTF-8">
@@ -14,19 +14,18 @@
 	<header>
 		<div class="header-container">
 			<div class="logo">
-				<div class="logo-icon">
-					<img src="../assets/logo.png" alt="Rent Place" width="55" height="55">
-				</div>
-				<div class="logo-text">Rent Place</div>
+				<a href="/home">
+					<div class="logo-icon">
+						<img src="../assets/logo.png" alt="Rent Place" width="55" height="55">
+					</div>
+					<div class="logo-text">Rent Place</div>
+				</a>
 			</div>
 			
 			<!-- Menú para propietarios autenticados -->
 			<nav class="owner-nav">
-				<a href="home">Inicio</a>
 				<a href="/propiedades/listado">Ver Propiedades</a>
-				<a href="/propiedades/nueva" class="add-property-btn"> 
-					<i class="fas fa-home"></i> Añadir Propiedad
-				</a>
+				                <a href="/propiedades/nueva" class="add-property-btn"> Añadir Propiedad				</a>
 				<a href="/propiedades/my-properties">Mis Propiedades</a>
 				<a href="/profile">Mi Cuenta</a>
 			</nav>
@@ -41,17 +40,22 @@
 			</div>
 			
 			<div class="auth-actions" style="display: flex; align-items: center; gap: 1rem;">
-				<form action="/inquilino/convertir" method="post" style="width: auto;">
-					<button type="submit" class="tenant-btn btn btn-primary">
-						<i class="fas fa-user"></i> Convertirme en Inquilino
-					</button>
-				</form>
+				<div th:if="${isLoggedIn}">
+					<form action="/inquilino/convertir" method="post" style="width: auto;">
+						<button type="submit" class="tenant-btn btn btn-primary">
+							<i class="fas fa-user"></i> Convertirme en Inquilino
+						</button>
+					</form>
+				</div>
+				<div th:unless="${isLoggedIn}">
+					<a href="/login" class="btn btn-primary">Iniciar Sesión</a>
+				</div>
 			</div>
 		</div>
 	</header>
 	
 	<main class="main-content">
-		<section class="user-actions-section">
+		<section th:if="${isLoggedIn}" class="user-actions-section">
 			<a href="/logout" class="logout-btn btn btn-primary">Cerrar Sesión</a>
 		</section>
 
@@ -92,7 +96,10 @@
 					<h2>Explora alrededor del mundo</h2>
 					<p>Si tienes un destino en mente, busca el sitio y te enseñamos
 						todas las opciones</p>
-					<input type="text" placeholder="¿Dónde quieres ir?" class="search-input">
+					<form action="/propiedades/buscar" method="get" class="search-form-home">
+						<input type="text" name="ciudad" placeholder="¿Dónde quieres ir?" class="search-input">
+						<button type="submit" class="btn btn-primary search-button-home">Buscar</button>
+					</form>
 				</div>
 				<div class="explore-image">
 					<div class="circle circle-1 explore-circle-1"></div>

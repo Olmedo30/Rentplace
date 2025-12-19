@@ -133,4 +133,26 @@ public class AuthController {
         model.addAttribute("error", "Nombre de usuario o contraseña incorrectos.");
         return "login";
     }
+
+    // Mostrar página de perfil del usuario
+    @GetMapping("/profile")
+    public String showProfile(HttpSession session, Model model) {
+        String username = (String) session.getAttribute("username");
+        if (username == null) {
+            return "redirect:/login"; // Redirigir a login si no hay sesión
+        }
+        
+        usuarioPersistence.findByUsername(username).ifPresent(usuario -> {
+            model.addAttribute("usuario", usuario);
+        });
+        
+        return "my-account";
+    }
+
+    // Cerrar sesión del usuario
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // Invalida la sesión actual
+        return "redirect:/home"; // Redirige al usuario a la página de inicio
+    }
 }

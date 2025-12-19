@@ -437,6 +437,11 @@ nav a:hover {
 	font-size: 0.875rem;
 }
 
+.page-title-spacing {
+    padding-top: 2rem; /* Reduced top padding */
+    padding-bottom: 2rem; /* Reduced bottom padding */
+}
+
 .categories {
 	display: grid;
 	grid-template-columns: repeat(1, 1fr);

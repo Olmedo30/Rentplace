@@ -130,6 +130,19 @@ public class PropiedadController {
         return "propiedades-list";
     }
 
+    @GetMapping("/buscar")
+    public String buscarPropiedades(@RequestParam(value = "ciudad", required = false) String ciudad, Model model) {
+        List<Propiedad> propiedades;
+        if (ciudad != null && !ciudad.trim().isEmpty()) {
+            propiedades = propiedadService.buscarPropiedadesPorCiudad(ciudad);
+            model.addAttribute("ciudadBusqueda", ciudad); // Para mantener el valor en el input de búsqueda
+        } else {
+            propiedades = propiedadService.listarActivas();
+        }
+        model.addAttribute("propiedades", propiedades);
+        return "propiedades-list";
+    }
+
     @GetMapping("/my-properties")
     public String myProperties(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");

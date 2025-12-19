@@ -17,7 +17,7 @@ public class HomeController {
 	@GetMapping("/home")
 	public String home(HttpSession session, Model model) {
 	    String username = (String) session.getAttribute("username");
-	    model.addAttribute("username", username); // puede ser null
+	    model.addAttribute("isLoggedIn", username != null); 
 	    return "home"; // siempre muestra home.html
 	}
 }

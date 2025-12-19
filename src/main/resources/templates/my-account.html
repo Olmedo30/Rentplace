@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Cuenta - Rent Place</title>
+    <link rel="stylesheet" href="../css/home_style.css">
+    <link rel="shortcut icon" href="../assets/logo.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Optional: Add a specific CSS for my account page if needed -->
+    <!-- <link rel="stylesheet" href="../css/myaccount_style.css"> -->
+</head>
+
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <img src="../assets/logo.png" alt="Rent Place" width="55" height="55">
+                </div>
+                <div class="logo-text">Rent Place</div>
+            </div>
+            
+            <nav class="owner-nav">
+                <a href="home">Inicio</a>
+                <a href="/propiedades/listado">Ver Propiedades</a>
+                <a href="/propiedades/nueva" class="add-property-btn"> 
+                    <i class="fas fa-home"></i> Añadir Propiedad
+                </a>
+                <a href="/propiedades/my-properties">Mis Propiedades</a>
+                <a href="/profile">Mi Cuenta</a>
+            </nav>
+            
+            <div class="header-icons">
+                <button aria-label="Buscar alojamientos">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button aria-label="Menú">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div class="auth-actions" style="display: flex; align-items: center; gap: 1rem;">
+                <form action="/inquilino/convertir" method="post" style="width: auto;">
+                    <button type="submit" class="tenant-btn btn btn-primary">
+                        <i class="fas fa-user"></i> Convertirme en Inquilino
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
+    
+    <main class="main-content">
+        <section class="user-actions-section">
+            <a href="/logout" class="logout-btn btn btn-primary">Cerrar Sesión</a>
+        </section>
+
+        <section class="hero-content-section">
+            <div class="hero-content-container">
+                <div class="hero-content">
+                    <h2>Mi Cuenta</h2>
+                    <p>Aquí puedes ver y actualizar la información de tu perfil.</p>
+
+                    <div class="user-profile-info">
+                        <h3>Información Personal</h3>
+                        <p><strong>Nombre de Usuario:</strong> <span th:text="${usuario.username}"></span></p>
+                        <p><strong>Correo Electrónico:</strong> <span th:text="${usuario.email}"></span></p>
+                        <p><strong>Teléfono:</strong> <span th:text="${usuario.telefono}"></span></p>
+                        <p><strong>Estado:</strong> <span th:text="${usuario.propietario ? 'Propietario' : 'Inquilino'}"></span></p>
+                        
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-logo">
+                <div class="logo-icon">
+                    <img src="../assets/logo.png" alt="Rent Place" width="45" height="45">
+                </div>
+                <span>Rent Place</span>
+            </div>
+            <div class="footer-copyright">© 2025 Rent Place. Todos los derechos reservados.</div>
+        </div>
+    </footer>
+</body>
+
+</html>

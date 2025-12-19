@@ -12,18 +12,18 @@
     <header>
         <div class="header-container">
             <div class="logo">
-                <div class="logo-icon">
-                    <img src="../assets/logo.png" alt="Rent Place" width="55" height="55">
-                </div>
-                <div class="logo-text">Rent Place</div>
+                <a href="/home">
+                    <div class="logo-icon">
+                        <img src="../assets/logo.png" alt="Rent Place" width="55" height="55">
+                    </div>
+                    <div class="logo-text">Rent Place</div>
+                </a>
             </div>
             
             <!-- Menú para propietarios autenticados -->
             <nav class="owner-nav">
-                <a href="/home">Inicio</a>
                 <a href="/propiedades/listado">Ver Propiedades</a>
-                <a href="/propiedades/nueva" class="add-property-btn"> 
-                    <i class="fas fa-home"></i> Añadir Propiedad
+                <a href="/propiedades/nueva" class="add-property-btn"> Añadir Propiedad
                 </a>
                 <a href="/propiedades/my-properties">Mis Propiedades</a>
                 <a href="/profile">Mi Cuenta</a>
@@ -68,7 +68,7 @@
             
             						
             
-            								<section class="propiedades-list-section">    <div class="accommodation-container">
+            								<section class="propiedades-list-section">    <div class="accommodation-container page-title-spacing">
         <div class="accommodation-header">
             <h2 class="accommodation-title">Alojamientos Disponibles</h2>
             <form action="/propiedades/buscar" method="get" class="search-form">

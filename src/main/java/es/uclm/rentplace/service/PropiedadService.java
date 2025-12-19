@@ -81,6 +81,11 @@ public class PropiedadService {
 		public List<Propiedad> buscarPorPrecioMaximo(BigDecimal precioMax) {
 		return propiedadPersistence.findByPrecioNocheLessThanEqual(precioMax);
 		}
+		
+		public List<Propiedad> buscarPropiedadesPorCiudad(String ciudad) {
+		    return propiedadPersistence.findByCiudadContainingIgnoreCaseAndActivoTrue(ciudad);
+		}
+		
 		// Desactivar una propiedad
 		public boolean desactivarPropiedad(Long id) {
 			Propiedad propiedad = propiedadPersistence.findById(id).orElse(null);

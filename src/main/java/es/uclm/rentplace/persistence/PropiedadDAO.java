@@ -18,6 +18,7 @@ public interface PropiedadDAO extends JpaRepository<Propiedad, Long> {
     List<Propiedad> findByPropietarioId(Long propietarioId);
     List<Propiedad> findByActivoTrue();
     List<Propiedad> findByPrecioNocheLessThanEqual(BigDecimal precioMaximo);
+    List<Propiedad> findByCiudadContainingIgnoreCaseAndActivoTrue(String ciudad);
 
     // Buscamos por campos del propietario (Propiedad -> Propietario -> email/nombre)
     List<Propiedad> findByPropietario_Usuario_Email(String email);
