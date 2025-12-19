@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -35,8 +36,8 @@ public class ReservaController {
     @PostMapping("/reservar")
     public String procesarReserva(
             @RequestParam Long alojamientoId,
-            @RequestParam LocalDate fechaEntrada,
-            @RequestParam LocalDate fechaSalida,
+            @RequestParam String fechaEntrada,
+            @RequestParam String fechaSalida,
             @RequestParam Double precioTotal,
             HttpSession session,
             Model model) {
@@ -48,23 +49,50 @@ public class ReservaController {
         }
         
         Usuario usuario = usuarioDAO.findById(userId).orElse(null);
-        if (usuario == null) {
-            model.addAttribute("error", "Error: Usuario no encontrado.");
-            return "home";
+        if (usuario == null || usuario.getRol() != Usuario.Rol.INQUILINO) {
+            model.addAttribute("error", "Solo los inquilinos pueden reservar.");
+            return "redirect:/propiedades/" + alojamientoId;
         }
         
-        if (fechaEntrada.isAfter(fechaSalida) || fechaEntrada.isBefore(LocalDate.now())) {
-            model.addAttribute("error", "Fechas no válidas.");
-            return "alojamiento-detalle";
+        try {
+            // Convertir fechas (asumimos inicio del día)
+            LocalDateTime inicio = LocalDate.parse(fechaEntrada).atStartOfDay();
+            LocalDateTime fin = LocalDate.parse(fechaSalida).atStartOfDay();
+
+            // Validaciones
+            if (!fin.isAfter(inicio) || !inicio.isAfter(LocalDateTime.now())) {
+                model.addAttribute("error", "Fechas no válidas.");
+                return "redirect:/propiedades/" + alojamientoId;
+            }
+
+            // ✅ Verificar disponibilidad
+            List<Reserva> solapadas = reservaService.findSolapadas(alojamientoId, inicio, fin);
+            if (!solapadas.isEmpty()) {
+                model.addAttribute("error", "❌ Las fechas seleccionadas no están disponibles.");
+                return "redirect:/propiedades/" + alojamientoId;
+            }
+
+            // Crear reserva
+            Reserva nuevaReserva = reservaService.crearReserva(
+                usuario, 
+                alojamientoId, 
+                inicio, 
+                fin, 
+                Reserva.PoliticaCancelacion.NO_REEMBOLSABLE // o la que quieras
+            );
+
+            if (nuevaReserva != null) {
+                model.addAttribute("message", "✅ ¡Reserva creada con éxito!");
+            } else {
+                model.addAttribute("error", "❌ Error al crear la reserva.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "❌ Error al procesar la reserva.");
         }
-        
-        java.time.LocalDateTime fechaEntradaCompleta = fechaEntrada.atStartOfDay();
-        java.time.LocalDateTime fechaSalidaCompleta = fechaSalida.atStartOfDay();
-        
-        Reserva nuevaReserva = reservaService.crearReserva(usuario, alojamientoId, fechaEntradaCompleta, fechaSalidaCompleta, Reserva.PoliticaCancelacion.NO_REEMBOLSABLE);
-        
-        model.addAttribute("message", "Solicitud de reserva creada exitosamente. Esperando confirmación del propietario.");
-        return "redirect:/mis-reservas";
+
+        return "redirect:/propiedades/" + alojamientoId;
     }
     
     @GetMapping("/mis-reservas")

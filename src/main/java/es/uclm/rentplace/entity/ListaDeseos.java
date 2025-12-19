@@ -28,6 +28,7 @@ public class ListaDeseos {
     
     public ListaDeseos(Usuario usuario) {
         this.usuario = usuario;
+        this.propiedades = new ArrayList<>();
     }
 
     // Getters y setters

@@ -102,7 +102,7 @@ public class AuthController {
             if (password.equals(usuario.getPassword())) {
                 session.setAttribute("username", usuario.getUsername());
                 session.setAttribute("userId", usuario.getId());
-                session.setAttribute("rol", usuario.getRol());
+                session.setAttribute("rol", usuario.getRol().name());
                 return "redirect:/home";
             }
         }

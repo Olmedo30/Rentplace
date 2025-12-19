@@ -58,6 +58,22 @@ public class PropiedadController {
         model.addAttribute("misPropiedades", misPropiedades);
         return "my-properties";
     }
+    
+    @GetMapping("/{id}")
+    public String verPropiedad(@PathVariable Long id, Model model, HttpSession session) {
+        Propiedad propiedad = propiedadService.obtenerPropiedadPorId(id);
+        if (propiedad == null || !propiedad.getActivo()) {
+            model.addAttribute("error", "La propiedad solicitada no está disponible.");
+            return "redirect:/propiedades/listado";
+        }
+
+        // Pasar datos a la vista
+        model.addAttribute("propiedad", propiedad);
+        model.addAttribute("username", session.getAttribute("username"));
+        model.addAttribute("rol", session.getAttribute("rol")); // Para el botón de wishlist
+
+        return "propiedad-detalle";
+    }
 
     // Formulario para añadir nueva propiedad
     @GetMapping("/add-property")
