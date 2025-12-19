@@ -34,7 +34,7 @@ public class PropiedadController {
     }
 
     // Mis propiedades (solo para propietarios)
-    @GetMapping("/my-properties")
+    @GetMapping("/properties/my-properties")
     public String myProperties(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
@@ -56,11 +56,11 @@ public class PropiedadController {
 
         List<Propiedad> misPropiedades = propiedadService.obtenerPropiedadesDePropietario(userId);
         model.addAttribute("misPropiedades", misPropiedades);
-        return "my-properties";
+        return "/properties/my-properties";
     }
 
     // Formulario para añadir nueva propiedad
-    @GetMapping("/add-property")
+    @GetMapping("/properties/add-property")
     public String addPropertyForm(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
@@ -74,11 +74,11 @@ public class PropiedadController {
         }
 
         model.addAttribute("propiedad", new Propiedad());
-        return "add-property";
+        return "/properties/add-property";
     }
 
     // Procesar el formulario de añadir propiedad
-    @PostMapping("/add-property")
+    @PostMapping("/properties/add-property")
     public String addProperty(
             @RequestParam String titulo,
             @RequestParam String descripcion,
@@ -120,7 +120,7 @@ public class PropiedadController {
         } catch (Exception e) {
             model.addAttribute("error", "Error al registrar la propiedad: " + e.getMessage());
             model.addAttribute("propiedad", new Propiedad());
-            return "add-property";
+            return "/propiedades/add-property";
         }
     }
 }
