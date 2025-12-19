@@ -80,14 +80,14 @@
                    th:text="${rol == 'PROPIETARIO'} ? 
                            'Convertirte en inquilino' : 
                            'Convertirte en propietario'"></p>
-                <form action="/convertir-rol" method="post">
-                    <button type="submit" class="btn-primary">
-                        <span th:with="rol=${session.rol}"
-                              th:text="${rol == 'PROPIETARIO'} ? 
-                                      'Convertir a Inquilino' : 
-                                      'Convertir a Propietario'"></span>
-                    </button>
-                </form>
+               <form th:action="@{/auth/convertir-rol}" method="post">
+				    <button type="submit" class="btn-primary">
+				        <span th:with="rol=${session.rol}"
+				              th:text="${rol == 'PROPIETARIO'} ? 
+				                      'Convertir a Inquilino' : 
+				                      'Convertir a Propietario'"></span>
+				    </button>
+				</form>
             </div>
         </div>
     </div>
