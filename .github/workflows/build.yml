@@ -2,26 +2,42 @@ name: Build
 
 on:
   push:
-    branches: [ main, developer ]
+    branches:
+      - main
+      - developer
   pull_request:
-    branches: [ main, developer ]
+    branches:
+      - main
+      - developer
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      # 1 Checkout del repositorio
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up JDK 17
+      # 2 Configurar Java 21 (Temurin)
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
           cache: 'maven'
 
+      # 3 Verificación CRÍTICA (para evitar el error de Java 17)
+      - name: Verify Java and Maven versions
+        run: |
+          echo "JAVA_HOME=$JAVA_HOME"
+          java -version
+          ./mvnw -version
+
+      # 4 Cache de SonarQube
       - name: Cache SonarQube packages
         uses: actions/cache@v4
         with:
@@ -29,10 +45,13 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
+      # 5 Build + Sonar (USANDO EL WRAPPER)
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-             -Dsonar.projectKey=RentPlace \
-             -Dsonar.projectName='RentPlace'
+        run: |
+          ./mvnw -B verify \
+            org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectKey=RentPlace \
+            -Dsonar.projectName='RentPlace'
