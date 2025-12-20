@@ -1,6 +1,9 @@
-package es.uclm.rentplace.gestores;
+package es.uclm.rentplace.gestorestest;
 
 import org.junit.jupiter.api.Test;
+
+import es.uclm.rentplace.gestores.GestorBusqueda;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;

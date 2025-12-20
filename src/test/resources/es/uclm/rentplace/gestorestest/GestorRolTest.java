@@ -1,6 +1,9 @@
-package es.uclm.rentplace.gestores;
+package es.uclm.rentplace.gestorestest;
 
 import org.junit.jupiter.api.Test;
+
+import es.uclm.rentplace.gestores.GestorRol;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GestorRolTest {
