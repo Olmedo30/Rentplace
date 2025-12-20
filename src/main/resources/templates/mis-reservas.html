@@ -1,0 +1,45 @@
+<!-- src/main/resources/templates/mis-reservas.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Reservas - Rentplace</title>
+    <link rel="stylesheet" href="/css/home-style.css">
+    <link rel="shortcut icon" href="/assets/logo.png" />
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/home">Inicio</a></li>
+                <li><a href="/propiedades/listado">Explorar</a></li>
+                <li><a href="/profile">Mi Cuenta</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container" style="max-width: 1000px; margin: 30px auto; padding: 20px;">
+        <h1>📋 Mis Reservas</h1>
+
+        <div th:if="${reservas.empty}" class="no-reservas">
+            <p>❌ No tienes reservas activas.</p>
+            <a href="/propiedades/listado" class="btn-primary">Explorar alojamientos</a>
+        </div>
+
+        <div th:unless="${reservas.empty}">
+            <div th:each="reserva : ${reservas}" class="reserva-card" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 8px;">
+                <h3 th:text="'Reserva #' + ${reserva.id}"></h3>
+                <p><strong>Alojamiento ID:</strong> <span th:text="${reserva.propiedad?.id}"></span></p>
+                <p><strong>Desde:</strong> <span th:text="${#temporals.format(reserva.fechaEntrada, 'dd/MM/yyyy')}"></span></p>
+                <p><strong>Hasta:</strong> <span th:text="${#temporals.format(reserva.fechaSalida, 'dd/MM/yyyy')}"></span></p>
+                <p><strong>Estado:</strong> <span th:text="${reserva.reservaConfirmada ? (reserva.pagado ? 'Confirmada y pagada' : 'Confirmada, pendiente de pago') : 'Pendiente de confirmación'}"></span></p>
+                <p><strong>Total:</strong> <span th:text="${'€' + reserva.importeTotal}"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Rentplace - Alquiler de viviendas</p>
+    </footer>
+</body>
+</html>
