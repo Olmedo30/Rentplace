@@ -22,6 +22,7 @@
             
             <!-- Menú para propietarios autenticados -->
             <nav class="owner-nav">
+                <a href="/home">Home</a>
                 <a href="/propiedades/listado">Ver Propiedades</a>
                 <a href="/propiedades/nueva" class="add-property-btn"> Añadir Propiedad
                 <a href="/propiedades/my-properties">Mis Propiedades</a>
@@ -37,7 +38,7 @@
                 </button>
             </div>
             
-            									<div class="auth-actions" style="display: flex; align-items: center; gap: 1rem;">
+            									<div class="auth-actions" style="display: flex; align-items: center; gap: 1rem;" th:if="${!is_inquilino}">
             
             										<form action="/inquilino/convertir" method="post" style="width: auto;">
             
@@ -90,7 +91,11 @@
                                 <span th:text="${propiedad.ciudad}">Ciudad</span> 
                                 <span th:if="${propiedad.tipoInmueble}" th:text="'• ' + ${propiedad.tipoInmueble}"></span>
                             </p>
-                            <p class="property-description" th:text="${propiedad.descripcion}">Descripción...</p>
+                            <p class="property-capacity">
+                                <i class="fas fa-users"></i> 
+                                <span th:text="${propiedad.capacidad} + (${propiedad.capacidad == 1 ? ' persona' : ' personas'})"></span>
+                            </p>
+                            
                             <div class="property-price">
                                 <span th:text="${propiedad.precioNoche}">0</span> € <small>/noche</small>
                             </div>

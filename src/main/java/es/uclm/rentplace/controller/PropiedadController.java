@@ -3,6 +3,7 @@ package es.uclm.rentplace.controller;
 import es.uclm.rentplace.entity.Propiedad;
 import es.uclm.rentplace.entity.Propietario;
 import es.uclm.rentplace.entity.Usuario;
+import es.uclm.rentplace.persistence.InquilinoDAO;
 import es.uclm.rentplace.persistence.PropietarioDAO;
 import es.uclm.rentplace.persistence.usuarioDAO;
 import es.uclm.rentplace.service.PropiedadService;
@@ -34,6 +35,9 @@ public class PropiedadController {
 
     @Autowired
     private usuarioDAO usuarioPersistence;
+
+    @Autowired
+    private InquilinoDAO inquilinoDAO;
 
     // Mostrar formulario
     @GetMapping("/nueva")
@@ -124,14 +128,20 @@ public class PropiedadController {
     }
 
     @GetMapping("/listado")
-    public String listarPropiedades(Model model) {
+    public String listarPropiedades(Model model, HttpSession session) {
         List<Propiedad> propiedades = propiedadService.listarActivas();
         model.addAttribute("propiedades", propiedades);
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId != null) {
+            model.addAttribute("is_inquilino", inquilinoDAO.existsByUsuarioId(userId));
+        } else {
+            model.addAttribute("is_inquilino", false);
+        }
         return "propiedades-list";
     }
 
     @GetMapping("/buscar")
-    public String buscarPropiedades(@RequestParam(value = "ciudad", required = false) String ciudad, Model model) {
+    public String buscarPropiedades(@RequestParam(value = "ciudad", required = false) String ciudad, Model model, HttpSession session) {
         List<Propiedad> propiedades;
         if (ciudad != null && !ciudad.trim().isEmpty()) {
             propiedades = propiedadService.buscarPropiedadesPorCiudad(ciudad);
@@ -140,6 +150,12 @@ public class PropiedadController {
             propiedades = propiedadService.listarActivas();
         }
         model.addAttribute("propiedades", propiedades);
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId != null) {
+            model.addAttribute("is_inquilino", inquilinoDAO.existsByUsuarioId(userId));
+        } else {
+            model.addAttribute("is_inquilino", false);
+        }
         return "propiedades-list";
     }
 
@@ -168,6 +184,11 @@ public class PropiedadController {
 
         List<Propiedad> misPropiedades = propiedadService.obtenerPropiedadesDePropietario(propietario);
         model.addAttribute("misPropiedades", misPropiedades);
+        if (userId != null) {
+            model.addAttribute("is_inquilino", inquilinoDAO.existsByUsuarioId(userId));
+        } else {
+            model.addAttribute("is_inquilino", false);
+        }
         return "my-properties";
     }
 }

@@ -35,7 +35,10 @@
                         </div>
                         <div>
                             <i class="fas fa-users fa-2x mb-2 text-secondary"></i>
-                            <div class="fw-bold"><span th:text="${propiedad.capacidad}">0</span> Personas</div>
+                            <div class="fw-bold">
+                                <span th:text="${propiedad.nPersonas}">0</span> 
+                                <span th:text="${propiedad.nPersonas == 1 ? 'persona' : 'personas'}"></span>
+                            </div>
                         </div>
                         <div>
                             <i class="fas fa-bed fa-2x mb-2 text-secondary"></i>
