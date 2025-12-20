@@ -1,5 +1,5 @@
 # Rentplace
-Integrantes: Pablo Gómez García, Álvaro Olmedo Fernández, Pablo Nieto Mayoral y Pablo Sánchez García-Ochoa
+**Integrantes:** Pablo Gómez García, Álvaro Olmedo Fernández, Pablo Nieto Mayoral y Pablo Sánchez García-Ochoa
 Proyecto desarrollado con **Spring Boot** y **Maven**.
 
 ## Requisitos previos
@@ -9,6 +9,7 @@ Antes de ejecutar el proyecto, asegúrate de tener:
 - **Maven**
 - **Git**
 - **Cuenta de GitHub**
+- **JUnit**
 
 ## Ejecución del proyecto
 
