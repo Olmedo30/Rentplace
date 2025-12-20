@@ -47,4 +47,8 @@ public class NotificacionService {
         }
         notificacionDAO.saveAll(notificaciones);
     }
+    
+    public void crearNotificacion(Notificacion notificacion) {
+        notificacionDAO.save(notificacion);
+    }
 }

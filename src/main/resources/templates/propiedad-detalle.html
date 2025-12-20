@@ -71,9 +71,8 @@
                 </div>
                 <div class="card-body">
     <!-- Formulario de reserva (placeholder) -->
-    				<form th:if="${rol == 'INQUILINO'}" 
-      th:action="@{/reservas/reservar}" 
-      method="post">
+    				<form th:if="${username != null && propiedad.propietario.id != userId}" 
+      th:action="@{/reservas/reservar}" method="post">
     <input type="hidden" name="alojamientoId" th:value="${propiedad.id}" />
     
     <div class="row g-2 mb-3">
