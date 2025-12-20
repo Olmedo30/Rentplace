@@ -44,17 +44,31 @@ public class ListaDeseosService {
     
     @Transactional
     public boolean agregarPropiedadALista(Long usuarioId, Long propiedadId) {
-        Optional<ListaDeseos> listaOpt = listaDeseosDAO.findByUsuarioId(usuarioId);
-        if (!listaOpt.isPresent()) {
-            return false;
-        }
-        
+        // 1. Verificar que la propiedad existe
         Propiedad propiedad = propiedadDAO.findById(propiedadId).orElse(null);
         if (propiedad == null) {
             return false;
         }
-        
-        ListaDeseos lista = listaOpt.get();
+
+        // 2. Verificar que el usuario existe
+        Usuario usuario = usuarioDAO.findById(usuarioId).orElse(null);
+        if (usuario == null) {
+            return false;
+        }
+
+        // 3. Obtener o crear la lista de deseos
+        ListaDeseos lista = listaDeseosDAO.findByUsuarioId(usuarioId)
+            .orElseGet(() -> {
+                ListaDeseos nuevaLista = new ListaDeseos(usuario); // ✅ usuario gestionado
+                return listaDeseosDAO.save(nuevaLista);
+            });
+
+        // 4. Evitar duplicados
+        if (lista.getPropiedades().stream().anyMatch(p -> p.getId().equals(propiedadId))) {
+            return true;
+        }
+
+        // 5. Añadir y guardar
         lista.agregarPropiedad(propiedad);
         listaDeseosDAO.save(lista);
         return true;

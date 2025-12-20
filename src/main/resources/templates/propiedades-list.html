@@ -5,15 +5,13 @@
     <meta charset="UTF-8">
     <title>Explorar Alojamientos - Rentplace</title>
     <link rel="stylesheet" href="/css/search-style.css">
-    <link rel="stylesheet" href="/css/home-style.css">
+    <!--<link rel="stylesheet" href="/css/home-style.css">-->
     <link rel="shortcut icon" href="/assets/logo.png" />
+    <th:block th:if="${_csrf != null}">
+	</th:block>
 </head>
 <body>
     <header>
-        <div class="logo">
-            <img src="/assets/logo.png" alt="Rentplace Logo" class="logo-img">
-            <h1>Rentplace</h1>
-        </div>
         <nav>
             <ul>
                 <li><a href="/home">Inicio</a></li>
@@ -84,13 +82,14 @@
                     </div>
                     
                     <div class="property-actions">
-                        <a th:href="@{/propiedades/} + ${propiedad.id}" class="btn-detail">Ver detalles</a>
-                        <button th:if="${session.rol == 'INQUILINO'}" 
-                                class="btn-wishlist" 
-                                th:onclick="'addToWishlist(' + ${propiedad.id} + ')'">
-                            ❤️ Lista
-                        </button>
-                    </div>
+    				<a th:href="@{/propiedades/} + ${propiedad.id}" class="btn-detail">Ver detalles</a> 
+    					<form th:if="${session.rol == 'INQUILINO'}" 
+      						th:action="@{/lista-deseos/agregar/} + ${propiedad.id}" 
+      						method="post" 
+   							style="display: inline;">
+    						<button type="submit" class="btn-wishlist">❤️ Lista</button>
+						</form>
+					</div>
                 </div>
             </div>
         </div>
@@ -99,28 +98,5 @@
     <footer>
         <p>&copy; 2025 Rentplace - Alquiler de viviendas</p>
     </footer>
-    
-    <script>
-        function addToWishlist(propiedadId) {
-            fetch(`/lista-deseos/agregar/${propiedadId}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if(data.success) {
-                    alert('✅ Propiedad agregada a tu lista de deseos');
-                    location.reload();
-                } else {
-                    alert('❌ ' + data.message);
-                }
-            })
-            .catch(error => {
-                alert('❌ Error al agregar a la lista de deseos: ' + error.message);
-            });
-        }
-    </script>
 </body>
 </html>

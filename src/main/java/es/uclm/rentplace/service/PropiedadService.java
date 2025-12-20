@@ -77,4 +77,10 @@ public class PropiedadService {
     public List<String> obtenerCiudadesUnicas() {
         return propiedadDAO.findDistinctCiudadByActivoTrue();
     }
+    public Propiedad obtenerPropiedadPorId(Long id) {
+        return propiedadDAO.findById(id).orElse(null);
+    }
+    public Propiedad actualizarPropiedad(Propiedad propiedad) {
+        return propiedadDAO.save(propiedad);
+    }
 }

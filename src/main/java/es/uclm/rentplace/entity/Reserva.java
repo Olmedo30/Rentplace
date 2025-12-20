@@ -57,7 +57,9 @@ public class Reserva {
   this.reservaConfirmada = false;
   this.pagado = false;
 }
-    
+    public BigDecimal getImporteTotal() {
+        return calcularTotal();
+    }
 public BigDecimal calcularTotal() {
     long dias = java.time.Duration.between(fechaEntrada, fechaSalida).toDays();
     return propiedad.getPrecioNoche().multiply(BigDecimal.valueOf(dias));

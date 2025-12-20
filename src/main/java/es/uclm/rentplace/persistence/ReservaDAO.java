@@ -22,4 +22,19 @@ public interface ReservaDAO extends JpaRepository<Reserva, Long> {
     
     // Método para encontrar reservas por inquilino
     List<Reserva> findByInquilinoId(Long inquilinoId);
+    
+ // Reservas CONFIRMADAS en rango (para reserva inmediata)
+    @Query("SELECT r FROM Reserva r WHERE r.propiedad.id = :propiedadId AND " +
+           "r.reservaConfirmada = true AND " +
+           "((r.fechaEntrada <= :fechaSalida AND r.fechaSalida >= :fechaSalida) OR " +
+           "(r.fechaEntrada <= :fechaEntrada AND r.fechaSalida >= :fechaEntrada) OR " +
+           "(:fechaEntrada <= r.fechaEntrada AND :fechaSalida >= r.fechaSalida))")
+    List<Reserva> findReservasConfirmadasEnRango(Long propiedadId, LocalDateTime fechaEntrada, LocalDateTime fechaSalida);
+
+    // TODAS las reservas (confirmadas + pendientes) en rango (para reserva no inmediata)
+    @Query("SELECT r FROM Reserva r WHERE r.propiedad.id = :propiedadId AND " +
+           "((r.fechaEntrada <= :fechaSalida AND r.fechaSalida >= :fechaSalida) OR " +
+           "(r.fechaEntrada <= :fechaEntrada AND r.fechaSalida >= :fechaEntrada) OR " +
+           "(:fechaEntrada <= r.fechaEntrada AND :fechaSalida >= r.fechaSalida))")
+    List<Reserva> findTodasReservasEnRango(Long propiedadId, LocalDateTime fechaEntrada, LocalDateTime fechaSalida);
 }

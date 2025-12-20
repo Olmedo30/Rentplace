@@ -28,17 +28,6 @@ public class HomeController {
         return "redirect:/propiedades/listado";
     }
     
-    @PostMapping("/convertir-rol")
-    public String convertirRol(HttpSession session, Model model) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-        	return "redirect:/login";
-        }
-        
-        // Esto se implementará en AuthController
-        return "redirect:/auth/convertir-rol";
-        }
-    
     // Nueva ruta para el perfil del usuario
     @GetMapping("/profile")
     public String profile(HttpSession session, Model model) {
@@ -46,8 +35,6 @@ public class HomeController {
         if (userId == null) {
             return "redirect:/login";
         }
-        
-        
         
         String username = (String) session.getAttribute("username");
         model.addAttribute("username", username);

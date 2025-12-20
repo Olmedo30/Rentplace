@@ -26,6 +26,9 @@ public class ReservaService {
     private PropiedadService propiedadService;
     
     @Autowired
+    private NotificacionService notificacionService;
+    
+    @Autowired
     private SolicitudReservaDAO solicitudReservaDAO;
     
     // Método para confirmar una solicitud de reserva
@@ -78,6 +81,15 @@ public class ReservaService {
     public List<Reserva> obtenerReservasDelinquino(Long inquilinoId) {
         return reservaDAO.findByInquilinoId(inquilinoId);
     }
+ // Verificar disponibilidad para reserva INMEDIATA (solo confirmadas)
+    public boolean estaDisponibleInmediata(Long propiedadId, LocalDateTime inicio, LocalDateTime fin) {
+        return reservaDAO.findReservasConfirmadasEnRango(propiedadId, inicio, fin).isEmpty();
+    }
+
+    // Verificar disponibilidad para reserva NO INMEDIATA (confirmadas + pendientes)
+    public boolean estaDisponibleNoInmediata(Long propiedadId, LocalDateTime inicio, LocalDateTime fin) {
+        return reservaDAO.findTodasReservasEnRango(propiedadId, inicio, fin).isEmpty();
+    }
     
     // Método para confirmar una reserva
     @Transactional
@@ -87,6 +99,19 @@ public class ReservaService {
             reserva.setReservaConfirmada(true);
             reservaDAO.save(reserva);
         }
+    }
+    
+    @Transactional
+    public Reserva crearReservaConEstado(Usuario inquilino, Propiedad propiedad, 
+                                       LocalDateTime fechaEntrada, LocalDateTime fechaSalida, 
+                                       Reserva.PoliticaCancelacion politica) {
+        Reserva reserva = new Reserva(inquilino, propiedad, fechaEntrada, fechaSalida, politica);
+        
+        // ✅ Establecer estado según la propiedad
+        boolean esInmediata = Boolean.TRUE.equals(propiedad.getPermiteReservaInmediata());
+        reserva.setReservaConfirmada(esInmediata);
+        
+        return reservaDAO.save(reserva);
     }
     
     // Método para crear una reserva

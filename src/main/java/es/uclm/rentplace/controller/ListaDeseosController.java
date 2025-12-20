@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/lista-deseos")
@@ -44,24 +45,28 @@ public class ListaDeseosController {
     
     // Agregar propiedad a lista de deseos
     @PostMapping("/agregar/{propiedadId}")
-    public String agregarPropiedad(@PathVariable Long propiedadId, HttpSession session, Model model) {
+    public String agregarPropiedad(
+            @PathVariable Long propiedadId, 
+            HttpSession session, 
+            RedirectAttributes redirectAttrs) {
+
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
             return "redirect:/login";
         }
-        
+
         Usuario usuario = usuarioDAO.findById(userId).orElse(null);
         if (usuario == null || usuario.getRol() != Usuario.Rol.INQUILINO) {
-            model.addAttribute("error", "Solo los inquilinos pueden tener lista de deseos.");
+            redirectAttrs.addFlashAttribute("error", "Solo los inquilinos pueden tener lista de deseos.");
             return "redirect:/propiedades/" + propiedadId;
         }
-        
+
         if (listaDeseosService.agregarPropiedadALista(userId, propiedadId)) {
-            model.addAttribute("message", "Propiedad agregada a tu lista de deseos.");
+            redirectAttrs.addFlashAttribute("message", "Propiedad agregada a tu lista de deseos.");
         } else {
-            model.addAttribute("error", "No se pudo agregar la propiedad a tu lista de deseos.");
+            redirectAttrs.addFlashAttribute("error", "No se pudo agregar la propiedad a tu lista de deseos.");
         }
-        
+
         return "redirect:/propiedades/" + propiedadId;
     }
     

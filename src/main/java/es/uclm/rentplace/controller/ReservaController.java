@@ -1,11 +1,15 @@
 // src/main/java/es/uclm/rentplace/controller/ReservaController.java
 package es.uclm.rentplace.controller;
 
+import es.uclm.rentplace.entity.Notificacion;
+import es.uclm.rentplace.entity.Propiedad;
 import es.uclm.rentplace.entity.Reserva;
 import es.uclm.rentplace.entity.Usuario;
 import es.uclm.rentplace.persistence.ReservaDAO;
 import es.uclm.rentplace.persistence.usuarioDAO;
 import es.uclm.rentplace.service.PagoService;
+import es.uclm.rentplace.service.PropiedadService;
+import es.uclm.rentplace.service.NotificacionService;
 import es.uclm.rentplace.service.ReservaService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -24,6 +29,12 @@ public class ReservaController {
     private ReservaService reservaService;
     
     @Autowired
+    private PropiedadService propiedadService;
+    
+    @Autowired
+    private NotificacionService notificacionService;
+    
+    @Autowired
     private ReservaDAO reservaDAO;
     
     @Autowired
@@ -32,39 +43,102 @@ public class ReservaController {
     @Autowired 
     private PagoService pagoService;
     
+ // Reemplazar tu método procesarReserva actual por este:
+
     @PostMapping("/reservar")
     public String procesarReserva(
             @RequestParam Long alojamientoId,
-            @RequestParam LocalDate fechaEntrada,
-            @RequestParam LocalDate fechaSalida,
-            @RequestParam Double precioTotal,
+            @RequestParam String fechaEntrada,
+            @RequestParam String fechaSalida,
             HttpSession session,
             Model model) {
-        
+
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
+            return "redirect:/login";
+        }
+
+        Usuario inquilino = usuarioDAO.findById(userId).orElse(null);
+        if (inquilino == null) {
             model.addAttribute("error", "Debes iniciar sesión para reservar.");
-            return "login"; 
+            return "redirect:/login";
         }
+
+        try {
+            LocalDateTime inicio = LocalDate.parse(fechaEntrada).atStartOfDay();
+            LocalDateTime fin = LocalDate.parse(fechaSalida).atStartOfDay();
+
+            if (!fin.isAfter(inicio) || !inicio.isAfter(LocalDateTime.now())) {
+                model.addAttribute("error", "Fechas no válidas.");
+                return "redirect:/propiedades/" + alojamientoId;
+            }
+
+            // Obtener la propiedad
+            Propiedad propiedad = propiedadService.obtenerPorId(alojamientoId);
+            if (propiedad == null) {
+                model.addAttribute("error", "La propiedad no existe.");
+                return "redirect:/propiedades/" + alojamientoId;
+            }
+            
+            if (propiedad.getPropietario().getId().equals(inquilino.getId())) {
+                model.addAttribute("error", "No puedes reservar tu propia propiedad.");
+                return "redirect:/propiedades/" + alojamientoId;
+            }
+
+            // ✅ Verificar disponibilidad según el tipo de reserva
+            boolean disponible;
+            boolean esInmediata = Boolean.TRUE.equals(propiedad.getPermiteReservaInmediata());
+            
+            if (esInmediata) {
+                disponible = reservaService.estaDisponibleInmediata(alojamientoId, inicio, fin);
+            } else {
+                disponible = reservaService.estaDisponibleNoInmediata(alojamientoId, inicio, fin);
+            }
+
+            if (!disponible) {
+                model.addAttribute("error", "❌ Las fechas seleccionadas no están disponibles.");
+                return "redirect:/propiedades/" + alojamientoId;
+            }
+
+            // ✅ Crear la reserva
+            Reserva nuevaReserva = reservaService.crearReservaConEstado(
+            	    inquilino, 
+            	    propiedad,
+            	    inicio, 
+            	    fin, 
+            	    Reserva.PoliticaCancelacion.NO_REEMBOLSABLE
+            );
+
+            // ✅ Notificaciones según el tipo
+            if (esInmediata) {
+                // Notificar al inquilino (reserva confirmada)
+                notificacionService.crearNotificacion(
+                    inquilino, 
+                    "Reserva confirmada", 
+                    "Tu reserva para '" + propiedad.getTitulo() + "' del " + 
+                    fechaEntrada + " al " + fechaSalida + " ha sido confirmada.", 
+                    "RESERVA"
+                );
+                model.addAttribute("message", "✅ ¡Reserva confirmada! Las fechas están bloqueadas.");
+            } else {
+            	String mensaje = "El inquilino " + inquilino.getUsername() + 
+                        " quiere reservar tu propiedad '" + propiedad.getTitulo() + "' del " + 
+                        fechaEntrada + " al " + fechaSalida + ".";
         
-        Usuario usuario = usuarioDAO.findById(userId).orElse(null);
-        if (usuario == null) {
-            model.addAttribute("error", "Error: Usuario no encontrado.");
-            return "home";
+        // Notificar al propietario (solicitud pendiente)
+        Notificacion notif = new Notificacion(
+            propiedad.getPropietario(), "Nueva solicitud de reserva", mensaje, "SOLICITUD_RESERVA");
+        		notif.setReserva(nuevaReserva);
+        		notificacionService.crearNotificacion(notif); 
+        		model.addAttribute("message", "✅ Solicitud enviada. Esperando confirmación del propietario.");
+            	}
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "❌ Error al procesar la reserva.");
         }
-        
-        if (fechaEntrada.isAfter(fechaSalida) || fechaEntrada.isBefore(LocalDate.now())) {
-            model.addAttribute("error", "Fechas no válidas.");
-            return "alojamiento-detalle";
-        }
-        
-        java.time.LocalDateTime fechaEntradaCompleta = fechaEntrada.atStartOfDay();
-        java.time.LocalDateTime fechaSalidaCompleta = fechaSalida.atStartOfDay();
-        
-        Reserva nuevaReserva = reservaService.crearReserva(usuario, alojamientoId, fechaEntradaCompleta, fechaSalidaCompleta, Reserva.PoliticaCancelacion.NO_REEMBOLSABLE);
-        
-        model.addAttribute("message", "Solicitud de reserva creada exitosamente. Esperando confirmación del propietario.");
-        return "redirect:/mis-reservas";
+
+        return "redirect:/propiedades/" + alojamientoId;
     }
     
     @GetMapping("/mis-reservas")
@@ -79,23 +153,55 @@ public class ReservaController {
         return "mis-reservas";
     }
     
-    @PostMapping("/confirmar-solicitud/{solicitudId}")
-    public String confirmarSolicitud(@PathVariable Long solicitudId, HttpSession session, Model model) {
-        if (reservaService.confirmarSolicitudReserva(solicitudId)) {
-            model.addAttribute("message", "Solicitud de reserva confirmada exitosamente.");
-        } else {
-            model.addAttribute("error", "No se pudo confirmar la solicitud de reserva.");
+    @PostMapping("/confirmar-reserva/{reservaId}")
+    public String confirmarReserva(@PathVariable Long reservaId, HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("userId");
+        Reserva reserva = reservaService.obtenerReservaPorId(reservaId);
+        
+        if (reserva == null || userId == null || 
+            !reserva.getPropiedad().getPropietario().getId().equals(userId)) {
+            model.addAttribute("error", "No tienes permiso para confirmar esta reserva.");
+            return "redirect:/notificaciones";
         }
+
+        reserva.setReservaConfirmada(true);
+        reservaDAO.save(reserva);
+        
+        // Notificar al inquilino
+        notificacionService.crearNotificacion(
+            reserva.getInquilino(),
+            "Reserva confirmada",
+            "El propietario ha confirmado tu reserva para '" + reserva.getPropiedad().getTitulo() + "'.",
+            "RESERVA"
+        );
+        
+        model.addAttribute("message", "✅ Reserva confirmada exitosamente.");
         return "redirect:/notificaciones";
     }
-    
-    @PostMapping("/rechazar-solicitud/{solicitudId}")
-    public String rechazarSolicitud(@PathVariable Long solicitudId, HttpSession session, Model model) {
-        if (reservaService.rechazarSolicitudReserva(solicitudId)) {
-            model.addAttribute("message", "Solicitud de reserva rechazada exitosamente.");
-        } else {
-            model.addAttribute("error", "No se pudo rechazar la solicitud de reserva.");
+
+    @PostMapping("/rechazar-reserva/{reservaId}")
+    public String rechazarReserva(@PathVariable Long reservaId, HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("userId");
+        Reserva reserva = reservaService.obtenerReservaPorId(reservaId);
+        
+        if (reserva == null || userId == null || 
+            !reserva.getPropiedad().getPropietario().getId().equals(userId)) {
+            model.addAttribute("error", "No tienes permiso para rechazar esta reserva.");
+            return "redirect:/notificaciones";
         }
+
+        reserva.setReservaConfirmada(false); // O podrías eliminarla, según tu lógica
+        reservaDAO.save(reserva);
+        
+        // Notificar al inquilino
+        notificacionService.crearNotificacion(
+            reserva.getInquilino(),
+            "Reserva rechazada",
+            "El propietario ha rechazado tu solicitud de reserva para '" + reserva.getPropiedad().getTitulo() + "'.",
+            "RESERVA"
+        );
+        
+        model.addAttribute("message", "❌ Reserva rechazada.");
         return "redirect:/notificaciones";
     }
 }

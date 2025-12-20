@@ -10,10 +10,6 @@
 </head>
 <body>
     <header>
-        <div class="logo">
-            <img src="/assets/logo.png" alt="Rentplace Logo" class="logo-img">
-            <h1>Rentplace</h1>
-        </div>
         <nav>
             <ul>
                 <li><a href="/home">Inicio</a></li>
@@ -40,17 +36,19 @@
         <div class="profile-info">
             <h2>Bienvenido, <span th:text="${username}"></span></h2>
             <p>Desde aquí puedes gestionar tu cuenta y tus propiedades.</p>
+             <p th:with="rol=${session.rol}" th:text="${rol == 'PROPIETARIO'} ? 'Eres propietario' : 'Eres inquilino'"></p>
+        </div>
         </div>
 
         <div class="profile-actions">
         <!-- Acciones para PROPIETARIOS -->
-            <div th:if="${session.rol == 'PROPIETARIO'}" class="action-card">
+            <div class="action-card">
                 <h3>🏠 Mis Propiedades</h3>
                 <p>Administra las propiedades que tienes en Rentplace</p>
                 <a href="/propiedades/my-properties" class="btn-primary">Ver mis propiedades</a>
             </div>
 
-             <div th:if="${session.rol == 'PROPIETARIO'}" class="action-card">
+             <div class="action-card">
                 <h3>🆕 Añadir Propiedad</h3>
                 <p>Publica una nueva vivienda en Rentplace</p>
                 <a href="/propiedades/add-property" class="btn-primary">Añadir propiedad</a>
@@ -58,7 +56,7 @@
 
 
 				<!-- Acciones para INQUILINOS -->
-            <div th:if="${session.rol == 'INQUILINO'}" class="action-card">
+            <div class="action-card">
                 <h3>❤️ Lista de Deseos</h3>
                 <p>Consulta tus propiedades favoritas</p>
                 <a href="/lista-deseos" class="btn-primary">Ver lista de deseos</a>
@@ -78,14 +76,14 @@
                    th:text="${rol == 'PROPIETARIO'} ? 
                            'Convertirte en inquilino' : 
                            'Convertirte en propietario'"></p>
-                <form action="/convertir-rol" method="post">
-                    <button type="submit" class="btn-primary">
-                        <span th:with="rol=${session.rol}"
-                              th:text="${rol == 'PROPIETARIO'} ? 
-                                      'Convertir a Inquilino' : 
-                                      'Convertir a Propietario'"></span>
-                    </button>
-                </form>
+               <form th:action="@{/auth/convertir-rol}" method="post">
+				    <button type="submit" class="btn-primary">
+				        <span th:with="rol=${session.rol}"
+				              th:text="${rol == 'PROPIETARIO'} ? 
+				                      'Convertir a Inquilino' : 
+				                      'Convertir a Propietario'"></span>
+				    </button>
+				</form>
             </div>
         </div>
     </div>

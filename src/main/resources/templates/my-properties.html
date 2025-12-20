@@ -6,18 +6,14 @@
     <title>Mis Propiedades - Rentplace</title>
     <link rel="stylesheet" href="/css/properties-style.css">
     <link rel="stylesheet" href="/css/home-style.css">
-    <link rel="shortcut icon" href="/assets/logo.png" />
+    <link rel="shortcut icon" href="/assets/logo.png"/>
 </head>
 <body>
     <header>
-        <div class="logo">
-            <img src="/assets/logo.png" alt="Rentplace Logo" class="logo-img">
-            <h1>Rentplace</h1>
-        </div>
         <nav>
             <ul>
                 <li><a href="/home">Inicio</a></li>
-                <li><a href="/propiedades/listado">Explorar</a></li>
+                <li><a href="/fecha-entrada">Explorar</a></li>
                 <li><a href="/profile">Mi Cuenta</a></li>
                 <li th:if="${username != null}">
                     <a href="#" onclick="document.getElementById('logout-form').submit()">Cerrar sesión</a>

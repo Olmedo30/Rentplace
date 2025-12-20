@@ -1,10 +1,77 @@
+<!-- src/main/resources/templates/lista-deseos.html -->
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta charset="UTF-8">
+    <title>Lista de Deseos - Rentplace</title>
+    <link rel="stylesheet" href="/css/search-style.css">
+    <link rel="stylesheet" href="/css/home-style.css">
+    <link rel="shortcut icon" href="/assets/logo.png" />
 </head>
 <body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/home">Inicio</a></li>
+                <li><a href="/fecha-entrada">Explorar</a></li>
+                <li><a href="/profile">Mi Cuenta</a></li>
+            </ul>
+        </nav>
+    </header>
 
+    <div class="results-container">
+        <h1>❤️ Mi Lista de Deseos</h1>
+        
+        <div th:if="${propiedades.empty}" class="no-results">
+            <p>❌ Tu lista de deseos está vacía.</p>
+            <a href="/propiedades/listado" class="btn-primary">Explorar alojamientos</a>
+        </div>
+        
+        <div class="properties-grid" th:unless="${propiedades.empty}">
+            <div th:each="propiedad : ${propiedades}" class="property-card">
+                <div class="property-image">
+                    <div class="property-type" th:text="${propiedad.tipoInmueble}"></div>
+                </div>
+                
+                <div class="property-info">
+                    <h3 class="property-title" th:text="${propiedad.titulo}"></h3>
+                    <p class="property-location">
+                        <span class="location-icon">📍</span>
+                        <span th:text="${propiedad.ciudad}"></span>
+                    </p>
+                    
+                    <div class="property-details">
+                        <div class="detail">
+                            <span class="detail-icon">🛏️</span>
+                            <span th:text="${propiedad.habitaciones} + ' habitación(es)'"></span>
+                        </div>
+                        <div class="detail">
+                            <span class="detail-icon">👥</span>
+                            <span th:text="${propiedad.capacidad} + ' personas'"></span>
+                        </div>
+                        <div class="detail">
+                            <span class="detail-icon">💰</span>
+                            <span th:text="'€' + ${propiedad.precioNoche} + ' por noche'"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="property-actions">
+                        <a th:href="@{/propiedades/} + ${propiedad.id}" class="btn-detail">Ver detalles</a>
+                        <form th:action="@{/lista-deseos/eliminar/} + ${propiedad.id}" method="post" style="display: inline;">
+                            <button type="submit" class="btn-wishlist" style="background: #e74c3c;">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/propiedades/listado" class="btn-primary">➕ Añadir más a la lista</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Rentplace - Alquiler de viviendas</p>
+    </footer>
 </body>
 </html>

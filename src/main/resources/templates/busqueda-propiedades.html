@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscar Alojamientos - RentPlace</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="shortcut icon" href="../assets/logo.png" />
     <style>
         * {
             margin: 0;
@@ -20,19 +22,31 @@
         }
 
         header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            background: rgba(255, 106, 0, 0.4);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            border-bottom: 1px solid rgba(249, 115, 22, 0.2);
-            border-bottom-left-radius: 10px;
-            border-bottom-right-radius: 10px;
-        }
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			z-index: 1000;
+			background: rgba(255, 106, 0, 0.4);
+			backdrop-filter: blur(10px);
+			-webkit-backdrop-filter: blur(10px);
+			padding: 1rem 2rem;
+			border-bottom: 1px solid rgba(249, 115, 22, 0.2);
+			border-bottom-left-radius: 10px;
+			border-bottom-right-radius: 10px;
+		}
+
+		nav {
+			display: none;
+		}
+			
+		nav a {
+			color: #4b5563;
+			text-decoration: none;
+			margin-left: 1.5rem;
+			font-weight: 500;
+			transition: color 0.3s ease;
+		}
 
         .header-container {
             display: flex;
@@ -171,6 +185,30 @@
             gap: 1rem;
             margin-top: 1.5rem;
         }
+		
+		.btn-wishlist {
+			    background: #e74c3c;
+			    color: white;
+			    padding: 0.75rem 1.5rem; /* ← Igual que .btn */
+			    border-radius: 9999px;
+			    font-weight: 500;
+			    cursor: pointer;
+			    transition: background-color 0.3s ease, transform 0.3s ease;
+			    border: none;
+			    font-size: 1rem;
+			    display: inline-block;
+			    text-align: center;
+			    text-decoration: none;
+			    width: 100%;
+			    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+			}
+			
+			/* Para evitar que el texto se desplace al hacer hover */
+			.btn-wishlist:hover {
+			    background: #c0392b;
+			    transform: translateY(-2px);
+			    box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15);
+			}
 
         .results-container {
             background: white;
@@ -212,6 +250,27 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+        
+        .property-actions {
+		    display: flex;
+		    flex-direction: column;
+		    gap: 5px;
+		    margin-top: 15px;
+		    align-items: stretch; /* ← Asegura que los hijos ocupen toda la altura disponible */
+		}
+		
+		@media (min-width: 768px) {
+		    .property-actions {
+		        flex-direction: row;
+		        gap: 10px;
+		        align-items: center; /* ← Alinea verticalmente en el centro */
+		    }
+		    
+		    .btn-wishlist {
+		        width: auto;
+		        flex: 1;
+		    }
+		}
 
         .property-card:hover {
             transform: translateY(-4px);
@@ -306,48 +365,84 @@
             color: #9ca3af;
             font-size: 0.875rem;
         }
-    </style>
+
+        header a {
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            color: #f97316;
+        }
+
+        a.btn {
+            text-decoration: none;
+        }
+
+        .owner-nav a {
+            color: #4b5563;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .owner-nav a:hover {
+            color: #f97316;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .header-icons button {
+            background: none;
+            border: none;
+            color: #4b5563;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .header-icons button:hover {
+            color: #f97316;
+        }
+
+        @media (min-width: 768px) {
+            nav {
+                display: flex;
+            }
+        }
+</style>
+
 </head>
 <body>
-    <!-- Header igual al de la página principal -->
     <header>
-    <div class="header-container">
-        <div class="logo">
-            <div class="logo-icon">
-                <img src="../assets/logo.png" alt="Rent Place" width="55" height="55">
-            </div>
-            <div class="logo-text">Rent Place</div>
-        </div>
-        
-        <!-- Menú para propietarios autenticados -->
-        <nav class="owner-nav">
-            <a href="/home">Inicio</a>
-            <a href="/add-property" class="add-property-btn"> 
-                <i class="fas fa-home"></i> Añadir Propiedad
-            </a>
-            <a href="/my-properties">Mis Propiedades</a>
-            <a href="/profile">Mi Cuenta</a>
-        </nav>
-        
-        <div class="header-icons">
-            <a href="/buscar" aria-label="Buscar alojamientos" style="text-decoration: none; color: inherit;">
-                <i class="fas fa-search"></i>
-            </a>
-            <button aria-label="Menú">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-        
-        <div class="auth-actions">
-            <form action="/inquilino/convertir" method="post">
-                <button type="submit" class="tenant-btn">
-                    <i class="fas fa-user"></i> Convertirme en Inquilino
-                </button>
-            </form>
-            <a href="/logout" class="logout-btn">Cerrar Sesión</a>
-        </div>
-    </div>
-</header>
+		<div class="header-container">
+			<div class="logo">
+				<div class="logo-icon">
+					<img src="../assets/logo.png" alt="Rent Place" width="55" height="55">
+				</div>
+				<div class="logo-text">Rent Place</div>
+			</div>
+			<nav class="owner-nav">
+				<a href="home">Inicio</a>
+				<a href="/propiedades/add-property" class="add-property-btn"> 
+					<i class="fas fa-home"></i> Añadir Propiedad
+				</a>
+				<a href="/propiedades/my-properties">Mis Propiedades</a>
+				<a href="/profile">Mi Cuenta</a>
+				<a href="/notificaciones">🔔 Notificaciones</a>
+			</nav>
+			<nav class="owner-nav">
+				<a href="/logout" class="logout-btn">Cerrar Sesión</a>
+			</nav>
+			<div class="header-icons">
+				<a href="/buscar" aria-label="Buscar alojamientos" style="text-decoration: none; color: inherit;">
+					<i class="fas fa-search"></i>
+				</a>
+			</div>
+		</div>
+	</header>
 
     <div class="main-content">
         <div class="search-container">
@@ -407,7 +502,6 @@
                     <h2 th:if="${propiedades == null}">Resultados</h2>
                 </div>
 
-                <!-- Mostrar propiedades si existen -->
                 <div class="properties-grid" th:if="${propiedades != null && !propiedades.empty}">
                     <div class="property-card" th:each="propiedad : ${propiedades.content}">
                         <div class="property-image">
@@ -418,14 +512,21 @@
                             <h3 class="property-title" th:text="${propiedad.titulo}"></h3>
                             <div class="property-city" th:text="${propiedad.ciudad}"></div>
                             <div class="property-price" th:text="'€' + ${#numbers.formatDecimal(propiedad.precioNoche, 1, 'DEFAULT', 2, 'DEFAULT')} + ' por noche'"></div>
-                            <button class="btn btn-primary" style="width: 100%;">
-                                <i class="fas fa-eye"></i> Ver detalles
-                            </button>
+                            <div class="property-actions">
+							    <a th:href="@{/propiedades/{id}(id=${propiedad.id})}" 
+							       class="btn btn-primary">
+							        <i class="fas fa-eye"></i> Ver detalles
+							    </a>
+							    <form th:if="${session.rol == 'INQUILINO'}" 
+							          th:action="@{/lista-deseos/agregar/} + ${propiedad.id}" 
+							          method="post">
+							        <button type="submit" class="btn-wishlist">❤️ Lista</button>
+							    </form>
+							</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Mensaje cuando no hay propiedades -->
                 <div class="no-properties-message" th:if="${propiedades == null || propiedades.empty}">
                     <i class="fas fa-home"></i>
                     <h3>No hay propiedades disponibles</h3>

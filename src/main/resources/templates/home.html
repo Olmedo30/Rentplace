@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
 	<meta charset="UTF-8">
@@ -23,29 +23,20 @@
 			<!-- Menú para propietarios autenticados -->
 			<nav class="owner-nav">
 				<a href="home">Inicio</a>
-				<a href="/add-property" class="add-property-btn"> 
+				<a href="/propiedades/add-property" class="add-property-btn"> 
 					<i class="fas fa-home"></i> Añadir Propiedad
 				</a>
-				<a href="/my-properties">Mis Propiedades</a>
+				<a href="/propiedades/my-properties">Mis Propiedades</a>
 				<a href="/profile">Mi Cuenta</a>
+				<a href="/notificaciones">🔔 Notificaciones</a>
 			</nav>
-			
+			<nav class="owner-nav"> <!--auth-actions-->
+				<a href="/logout" class="logout-btn">Cerrar Sesión</a>
+			</nav>
 			<div class="header-icons">
 				<a href="/buscar" aria-label="Buscar alojamientos" style="text-decoration: none; color: inherit;">
 					<i class="fas fa-search"></i>
 				</a>
-				<button aria-label="Menú">
-					<i class="fas fa-bars"></i>
-				</button>
-			</div>
-			
-			<div class="auth-actions">
-				<form action="/inquilino/convertir" method="post">
-					<button type="submit" class="tenant-btn">
-						<i class="fas fa-user"></i> Convertirme en Inquilino
-					</button>
-				</form>
-				<a href="/logout" class="logout-btn">Cerrar Sesión</a>
 			</div>
 		</div>
 	</header>

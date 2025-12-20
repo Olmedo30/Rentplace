@@ -6,18 +6,14 @@
     <title>Añadir Propiedad - Rentplace</title>
     <link rel="stylesheet" href="/css/add-property-style.css">
     <link rel="stylesheet" href="/css/home-style.css">
-    <link rel="shortcut icon" href="/assets/logo.png" />
+    <link rel="shortcut icon" href="/assets/logo.png"/>
 </head>
 <body>
     <header>
-        <div class="logo">
-            <img src="/assets/logo.png" alt="Rentplace Logo" class="logo-img">
-            <h1>Rentplace</h1>
-        </div>
         <nav>
             <ul>
                 <li><a href="/home">Inicio</a></li>
-                <li><a href="/propiedades/listado">Explorar</a></li>
+                <li><a href="/fecha-entrada">Explorar</a></li>
                 <li><a href="/profile">Mi Cuenta</a></li>
                 <li th:if="${username != null}">
                     <a href="#" onclick="document.getElementById('logout-form').submit()">Cerrar sesión</a>
@@ -28,25 +24,26 @@
     </header>
 
     <div class="add-property-container">
-        <h1>➕ Añadir Nueva Propiedad</h1>
+        <h1 th:text="${esEdicion != null && esEdicion} ? '✏️ Editar Propiedad' : '➕ Añadir Nueva Propiedad'">➕ Añadir Nueva Propiedad</h1>
         
         <div th:if="${error}" class="error-message">
             <p th:text="${error}"></p>
         </div>
         
-        <form action="/propiedades/add-property" method="post" enctype="multipart/form-data" class="property-form">
+        <form th:action="${esEdicion != null && esEdicion} ? '/propiedades/editar/' + ${propiedad.id} : '/propiedades/add-property'" 
+        method="post" enctype="multipart/form-data" class="property-form">
             <div class="form-section">
                 <h2>Información Básica</h2>
                 
                 <div class="form-group">
                     <label for="titulo">Título *</label>
-                    <input type="text" id="titulo" name="titulo" required maxlength="150">
+                    <input type="text" id="titulo" name="titulo" required maxlength="150" th:value="${propiedad?.titulo}">
                     <small>Un título descriptivo para tu propiedad (máx. 150 caracteres)</small>
                 </div>
                 
                 <div class="form-group">
                     <label for="descripcion">Descripción</label>
-                    <textarea id="descripcion" name="descripcion" rows="4" maxlength="500"></textarea>
+                    <textarea id="descripcion" name="descripcion" rows="4" maxlength="500"th:text="${propiedad?.descripcion}"></textarea>
                     <small>Describe las características de tu propiedad (máx. 500 caracteres)</small>
                 </div>
                 
@@ -62,13 +59,13 @@
                 
                 <div class="form-group">
                     <label for="direccion">Dirección *</label>
-                    <input type="text" id="direccion" name="direccion" required maxlength="200">
+                    <input type="text" id="direccion" name="direccion" required maxlength="200"  th:value="${propiedad?.direccion}">
                     <small>Dirección completa de la propiedad</small>
                 </div>
                 
                 <div class="form-group">
                     <label for="ciudad">Ciudad *</label>
-                    <input type="text" id="ciudad" name="ciudad" required maxlength="80">
+                    <input type="text" id="ciudad" name="ciudad" required maxlength="80" th:value="${propiedad?.ciudad}">
                     <small>Ciudad donde se encuentra la propiedad</small>
                 </div>
             </div>
@@ -80,24 +77,23 @@
                     <label for="tipoInmueble">Tipo de inmueble *</label>
                     <select id="tipoInmueble" name="tipoInmueble" required>
                         <option value="">Selecciona un tipo</option>
-                        <option value="apartamento">Apartamento</option>
-                        <option value="casa">Casa</option>
-                        <option value="habitacion">Habitación individual</option>
-                        <option value="chalet">Chalet</option>
-                        <option value="estudio">Estudio</option>
+                        <option value="Hoteles" th:selected="${propiedad?.tipoInmueble == 'Hoteles'}">Hoteles</option>
+                        <option value="Apartamentos" th:selected="${propiedad?.tipoInmueble == 'Apartamentos'}">Apartamentos</option>
+    					<option value="Casas" th:selected="${propiedad?.tipoInmueble == 'Casas'}">Casas</option>
+    					<option value="Villas" th:selected="${propiedad?.tipoInmueble == 'Villas'}">Villas</option>
                     </select>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="habitaciones">Habitaciones *</label>
-                        <input type="number" id="habitaciones" name="habitaciones" min="1" max="10" required>
+                        <input type="number" id="habitaciones" name="habitaciones" min="1" max="10" required th:value="${propiedad?.habitaciones}">
                         <small>Número de habitaciones</small>
                     </div>
                     
                     <div class="form-group">
                         <label for="capacidad">Capacidad *</label>
-                        <input type="number" id="capacidad" name="capacidad" min="1" max="20" required>
+                        <input type="number" id="capacidad" name="capacidad" min="1" max="20" required th:value="${propiedad?.capacidad}">
                         <small>Número máximo de personas</small>
                     </div>
                 </div>
@@ -108,7 +104,7 @@
                 
                 <div class="form-group">
                     <label for="precioNoche">Precio por noche (€) *</label>
-                    <input type="number" id="precioNoche" name="precioNoche" step="0.01" min="0" required>
+                    <input type="number" id="precioNoche" name="precioNoche" step="0.01" min="0" required  th:value="${propiedad?.precioNoche}">
                     <small>Precio en euros por noche</small>
                 </div>
                 
@@ -116,21 +112,21 @@
                     <label for="politicaCancelacion">Política de cancelación *</label>
                     <select id="politicaCancelacion" name="politicaCancelacion" required>
                         <option value="">Selecciona una política</option>
-                        <option value="NO_REEMBOLSABLE">No reembolsable</option>
-                        <option value="REEMBOLSABLE">Reembolsable</option>
-                        <option value="REEMBOLSABLE_50_PER">Reembolsable 50%</option>
-                    </select>
+                        <option value="NO_REEMBOLSABLE" th:selected="${propiedad?.politicaCancelacion == 'NO_REEMBOLSABLE'}">No reembolsable</option>
+    					<option value="REEMBOLSABLE" th:selected="${propiedad?.politicaCancelacion == 'REEMBOLSABLE'}">Reembolsable</option>
+    					<option value="REEMBOLSABLE_50_PER" th:selected="${propiedad?.politicaCancelacion == 'REEMBOLSABLE_50_PER'}">Reembolsable 50%</option>
+					</select>
                 </div>
                 
                 <div class="form-group checkbox-group">
-                    <input type="checkbox" id="permiteReservaInmediata" name="permiteReservaInmediata" value="true">
+                    <input type="checkbox" id="permiteReservaInmediata" name="permiteReservaInmediata" value="true" th:checked="${propiedad?.permiteReservaInmediata == true}">
                     <label for="permiteReservaInmediata">Permitir reserva inmediata</label>
                     <small>Los inquilinos podrán reservar directamente sin confirmación previa</small>
                 </div>
             </div>
             
             <div class="form-actions">
-                <button type="submit" class="btn-submit">✅ Publicar Propiedad</button>
+                <button type="submit" class="btn-submit"th:text="${esEdicion != null && esEdicion} ? '💾 Guardar Cambios' : '✅ Publicar Propiedad'">✅ Publicar Propiedad</button>
                 <a href="/propiedades/my-properties" class="btn-cancel">❌ Cancelar</a>
             </div>
         </form>

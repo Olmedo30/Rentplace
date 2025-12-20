@@ -15,6 +15,10 @@ public class Notificacion {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
     
+    @ManyToOne
+    @JoinColumn(name = "reserva_id")
+    private Reserva reserva;
+    
     @Column(name = "titulo", length = 100, nullable = false)
     private String titulo;
     
@@ -62,6 +66,9 @@ public class Notificacion {
     
     public String getTipo() { return tipo; }
     public void setTipo(String tipo) { this.tipo = tipo; }
+    
+    public Reserva getReserva() { return reserva; }
+    public void setReserva(Reserva reserva) { this.reserva = reserva; }
     
     // Métodos de negocio
     public void marcarComoLeida() {

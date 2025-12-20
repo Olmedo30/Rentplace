@@ -37,6 +37,7 @@ public interface PropiedadDAO extends JpaRepository<Propiedad, Long>, JpaSpecifi
     // Todas las propiedades de un propietario (para gestión)
     List<Propiedad> findByPropietarioId(Long propietarioId);
     
+    
     // Búsqueda avanzada con filtros múltiples
     @Query("SELECT p FROM Propiedad p WHERE " +
            "(:ciudad IS NULL OR LOWER(p.ciudad) LIKE LOWER(CONCAT('%', :ciudad, '%'))) AND " +
