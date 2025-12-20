@@ -9,15 +9,32 @@
 </head>
 <body>
     <header>
-        <nav>
-            <ul>
-                <li><a href="/home">Inicio</a></li>
-                <li><a href="/propiedades/listado">Explorar</a></li>
-                <li><a href="/profile">Mi Cuenta</a></li>
-                <li><a href="/notificaciones" class="active">🔔 Notificaciones</a></li>
-            </ul>
-        </nav>
-    </header>
+		<div class="header-container">
+			<div class="logo">
+				<div class="logo-icon">
+					<img src="../assets/logo.png" alt="Rent Place" width="55" height="55">
+				</div>
+				<div class="logo-text">Rent Place</div>
+			</div>
+			<nav class="owner-nav">
+				<a href="home">Inicio</a>
+				<a href="/propiedades/add-property" class="add-property-btn"> 
+					<i class="fas fa-home"></i> Añadir Propiedad
+				</a>
+				<a href="/propiedades/my-properties">Mis Propiedades</a>
+				<a href="/profile">Mi Cuenta</a>
+				<a href="/notificaciones">🔔 Notificaciones</a>
+			</nav>
+			<nav class="owner-nav"> <!--auth-actions-->
+				<a href="/logout" class="logout-btn">Cerrar Sesión</a>
+			</nav>
+			<div class="header-icons">
+				<a href="/buscar" aria-label="Buscar alojamientos" style="text-decoration: none; color: inherit;">
+					<i class="fas fa-search"></i>
+				</a>
+			</div>
+		</div>
+	</header>
 
     <div class="notifications-container">
         <h1>🔔 Mis Notificaciones</h1>

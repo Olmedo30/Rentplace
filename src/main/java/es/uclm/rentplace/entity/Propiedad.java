@@ -48,7 +48,7 @@ public class Propiedad {
     private Integer capacidad;
 
     @Column(name = "precio_noche", precision = 10, scale = 2, nullable = false)
-    private BigDecimal precioNoche; // BigDecimal es la opción correcta para que los precios sean de forma precisa
+    private BigDecimal precioNoche;
     
     @Column(name = "politica_cancelacion", length = 60, nullable = false)
     private String politicaCancelacion;

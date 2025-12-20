@@ -28,9 +28,7 @@
 			width: 100%;
 			z-index: 1000;
 			background: rgba(255, 106, 0, 0.4);
-			/* Orange with 15% opacity */
 			backdrop-filter: blur(10px);
-			/* Glass effect */
 			-webkit-backdrop-filter: blur(10px);
 			padding: 1rem 2rem;
 			border-bottom: 1px solid rgba(249, 115, 22, 0.2);
@@ -187,6 +185,30 @@
             gap: 1rem;
             margin-top: 1.5rem;
         }
+		
+		.btn-wishlist {
+			    background: #e74c3c;
+			    color: white;
+			    padding: 0.75rem 1.5rem; /* ← Igual que .btn */
+			    border-radius: 9999px;
+			    font-weight: 500;
+			    cursor: pointer;
+			    transition: background-color 0.3s ease, transform 0.3s ease;
+			    border: none;
+			    font-size: 1rem;
+			    display: inline-block;
+			    text-align: center;
+			    text-decoration: none;
+			    width: 100%;
+			    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+			}
+			
+			/* Para evitar que el texto se desplace al hacer hover */
+			.btn-wishlist:hover {
+			    background: #c0392b;
+			    transform: translateY(-2px);
+			    box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15);
+			}
 
         .results-container {
             background: white;
@@ -228,6 +250,27 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+        
+        .property-actions {
+		    display: flex;
+		    flex-direction: column;
+		    gap: 5px;
+		    margin-top: 15px;
+		    align-items: stretch; /* ← Asegura que los hijos ocupen toda la altura disponible */
+		}
+		
+		@media (min-width: 768px) {
+		    .property-actions {
+		        flex-direction: row;
+		        gap: 10px;
+		        align-items: center; /* ← Alinea verticalmente en el centro */
+		    }
+		    
+		    .btn-wishlist {
+		        width: auto;
+		        flex: 1;
+		    }
+		}
 
         .property-card:hover {
             transform: translateY(-4px);
@@ -323,26 +366,18 @@
             font-size: 0.875rem;
         }
 
-        /* =====================================================
-           AÑADIDO – refuerzos sin borrar nada anterior
-           ===================================================== */
-
-        /* Quitar subrayado a cualquier enlace del header */
         header a {
             text-decoration: none;
         }
 
-        /* Refuerzo hover del nav */
         nav a:hover {
             color: #f97316;
         }
 
-        /* Enlaces tipo botón */
         a.btn {
             text-decoration: none;
         }
 
-        /* Owner nav (si existe en el HTML) */
         .owner-nav a {
             color: #4b5563;
             text-decoration: none;
@@ -354,7 +389,6 @@
             color: #f97316;
         }
 
-        /* Iconos del header */
         .header-icons {
             display: flex;
             gap: 1rem;
@@ -373,7 +407,6 @@
             color: #f97316;
         }
 
-        /* Mostrar nav en escritorio (refuerzo) */
         @media (min-width: 768px) {
             nav {
                 display: flex;
@@ -393,13 +426,14 @@
 			</div>
 			<nav class="owner-nav">
 				<a href="home">Inicio</a>
-				<a href="/add-property" class="add-property-btn"> 
+				<a href="/propiedades/add-property" class="add-property-btn"> 
 					<i class="fas fa-home"></i> Añadir Propiedad
 				</a>
-				<a href="/my-properties">Mis Propiedades</a>
+				<a href="/propiedades/my-properties">Mis Propiedades</a>
 				<a href="/profile">Mi Cuenta</a>
+				<a href="/notificaciones">🔔 Notificaciones</a>
 			</nav>
-			<nav class="owner-nav"> <!--auth-actions-->
+			<nav class="owner-nav">
 				<a href="/logout" class="logout-btn">Cerrar Sesión</a>
 			</nav>
 			<div class="header-icons">
@@ -468,7 +502,6 @@
                     <h2 th:if="${propiedades == null}">Resultados</h2>
                 </div>
 
-                <!-- Mostrar propiedades si existen -->
                 <div class="properties-grid" th:if="${propiedades != null && !propiedades.empty}">
                     <div class="property-card" th:each="propiedad : ${propiedades.content}">
                         <div class="property-image">
@@ -479,14 +512,21 @@
                             <h3 class="property-title" th:text="${propiedad.titulo}"></h3>
                             <div class="property-city" th:text="${propiedad.ciudad}"></div>
                             <div class="property-price" th:text="'€' + ${#numbers.formatDecimal(propiedad.precioNoche, 1, 'DEFAULT', 2, 'DEFAULT')} + ' por noche'"></div>
-                            <button class="btn btn-primary" style="width: 100%;">
-                                <i class="fas fa-eye"></i> Ver detalles
-                            </button>
+                            <div class="property-actions">
+							    <a th:href="@{/propiedades/{id}(id=${propiedad.id})}" 
+							       class="btn btn-primary">
+							        <i class="fas fa-eye"></i> Ver detalles
+							    </a>
+							    <form th:if="${session.rol == 'INQUILINO'}" 
+							          th:action="@{/lista-deseos/agregar/} + ${propiedad.id}" 
+							          method="post">
+							        <button type="submit" class="btn-wishlist">❤️ Lista</button>
+							    </form>
+							</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Mensaje cuando no hay propiedades -->
                 <div class="no-properties-message" th:if="${propiedades == null || propiedades.empty}">
                     <i class="fas fa-home"></i>
                     <h3>No hay propiedades disponibles</h3>

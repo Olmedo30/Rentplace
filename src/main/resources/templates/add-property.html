@@ -13,7 +13,7 @@
         <nav>
             <ul>
                 <li><a href="/home">Inicio</a></li>
-                <li><a href="/propiedades/listado">Explorar</a></li>
+                <li><a href="/fecha-entrada">Explorar</a></li>
                 <li><a href="/profile">Mi Cuenta</a></li>
                 <li th:if="${username != null}">
                     <a href="#" onclick="document.getElementById('logout-form').submit()">Cerrar sesión</a>
@@ -77,11 +77,10 @@
                     <label for="tipoInmueble">Tipo de inmueble *</label>
                     <select id="tipoInmueble" name="tipoInmueble" required>
                         <option value="">Selecciona un tipo</option>
-                        <option value="apartamento" th:selected="${propiedad?.tipoInmueble == 'apartamento'}">Apartamento</option>
-    					<option value="casa" th:selected="${propiedad?.tipoInmueble == 'casa'}">Casa</option>
-    					<option value="habitacion" th:selected="${propiedad?.tipoInmueble == 'habitacion'}">Habitación individual</option>
-    					<option value="chalet" th:selected="${propiedad?.tipoInmueble == 'chalet'}">Chalet</option>
-    					<option value="estudio" th:selected="${propiedad?.tipoInmueble == 'estudio'}">Estudio</option>
+                        <option value="Hoteles" th:selected="${propiedad?.tipoInmueble == 'Hoteles'}">Hoteles</option>
+                        <option value="Apartamentos" th:selected="${propiedad?.tipoInmueble == 'Apartamentos'}">Apartamentos</option>
+    					<option value="Casas" th:selected="${propiedad?.tipoInmueble == 'Casas'}">Casas</option>
+    					<option value="Villas" th:selected="${propiedad?.tipoInmueble == 'Villas'}">Villas</option>
                     </select>
                 </div>
                 
