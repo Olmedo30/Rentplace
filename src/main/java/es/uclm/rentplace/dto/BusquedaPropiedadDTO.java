@@ -18,19 +18,35 @@ public class BusquedaPropiedadDTO {
     
     // Getters y setters
     public String getCiudad() {
-        return ciudad != null ? ciudad : "";
+        if (ciudad != null) {
+            return ciudad;
+        } else {
+            return "";
+        }
     }
-    
+
     public void setCiudad(String ciudad) {
-        this.ciudad = ciudad != null ? ciudad : "";
+        if (ciudad != null) {
+            this.ciudad = ciudad;
+        } else {
+            this.ciudad = "";
+        }
     }
     
     public String getTipoInmueble() {
-        return tipoInmueble != null ? tipoInmueble : "";
+        if (tipoInmueble != null) {
+            return tipoInmueble;
+        } else {
+            return "";
+        }
     }
-    
+
     public void setTipoInmueble(String tipoInmueble) {
-        this.tipoInmueble = tipoInmueble != null ? tipoInmueble : "";
+        if (tipoInmueble != null) {
+            this.tipoInmueble = tipoInmueble;
+        } else {
+            this.tipoInmueble = "";
+        }
     }
     
     public LocalDate getFechaEntrada() {
