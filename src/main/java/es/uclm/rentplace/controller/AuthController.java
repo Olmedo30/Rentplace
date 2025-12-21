@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class AuthController {
+	private static final String VIEW_REGISTER = "register";
+    private static final String ATTR_ERROR = "error";
 
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
@@ -34,7 +36,7 @@ public class AuthController {
     @GetMapping("/register")
     public String showSignup(Model model) {
         model.addAttribute("usuario", new Usuario());
-        return "register";
+        return VIEW_REGISTER;
     }
 
     // Procesar registro
@@ -49,19 +51,19 @@ public class AuthController {
             Model model) {
 
         // Validar contraseñas
-        if (!password.equals(confirmPassword)) {
-            model.addAttribute("error", "Las contraseñas no coinciden.");
-            return "register";
-        }
+    	   if (!password.equals(confirmPassword)) {
+    	        model.addAttribute(ATTR_ERROR, "Las contraseñas no coinciden.");
+    	        return VIEW_REGISTER;
+    	}
 
         // Validar existencia
         if (usuarioPersistence.existsByUsername(username)) {
-            model.addAttribute("error", "El nombre de usuario ya está en uso.");
-            return "register";
+            model.addAttribute(ATTR_ERROR, "El nombre de usuario ya está en uso.");
+            return VIEW_REGISTER;
         }
         if (usuarioPersistence.existsByEmail(email)) {
-            model.addAttribute("error", "El correo electrónico ya está registrado.");
-            return "register";
+            model.addAttribute(ATTR_ERROR, "El correo electrónico ya está registrado.");
+            return VIEW_REGISTER;
         }
 
         // Convertir rol
@@ -69,8 +71,8 @@ public class AuthController {
         try {
             rolEnum = Usuario.Rol.valueOf(rol);
         } catch (IllegalArgumentException e) {
-            model.addAttribute("error", "Rol inválido.");
-            return "register";
+            model.addAttribute(ATTR_ERROR, "Rol inválido.");
+            return VIEW_REGISTER;
         }
 
         // Crear y guardar usuario
@@ -107,7 +109,7 @@ public class AuthController {
             }
         }
 
-        model.addAttribute("error", "Nombre de usuario o contraseña incorrectos.");
+        model.addAttribute(ATTR_ERROR, "Nombre de usuario o contraseña incorrectos.");
         return "login";
     }
     
@@ -123,13 +125,13 @@ public class AuthController {
     public String convertirRol(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
-            model.addAttribute("error", "Debes iniciar sesión.");
+            model.addAttribute(ATTR_ERROR, "Debes iniciar sesión.");
             return "login";
         }
 
         Usuario usuario = usuarioDAO.findById(userId).orElse(null);
         if (usuario == null) {
-            model.addAttribute("error", "Usuario no encontrado.");
+            model.addAttribute(ATTR_ERROR, "Usuario no encontrado.");
             return "home";
         }
 

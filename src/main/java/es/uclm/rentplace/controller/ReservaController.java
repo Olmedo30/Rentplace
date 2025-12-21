@@ -24,6 +24,8 @@ import java.util.List;
 @Controller
 @RequestMapping("/reservas")
 public class ReservaController {
+	private static final String ATTR_ERROR = "error";
+	private static final String REDIRECT_PROPIEDADES = "redirect:/propiedades/";
     
     @Autowired
     private ReservaService reservaService;
@@ -60,7 +62,7 @@ public class ReservaController {
 
         Usuario inquilino = usuarioDAO.findById(userId).orElse(null);
         if (inquilino == null) {
-            model.addAttribute("error", "Debes iniciar sesión para reservar.");
+            model.addAttribute(ATTR_ERROR, "Debes iniciar sesión para reservar.");
             return "redirect:/login";
         }
 
@@ -69,20 +71,20 @@ public class ReservaController {
             LocalDateTime fin = LocalDate.parse(fechaSalida).atStartOfDay();
 
             if (!fin.isAfter(inicio) || !inicio.isAfter(LocalDateTime.now())) {
-                model.addAttribute("error", "Fechas no válidas.");
-                return "redirect:/propiedades/" + alojamientoId;
+                model.addAttribute(ATTR_ERROR, "Fechas no válidas.");
+                return REDIRECT_PROPIEDADES + alojamientoId;
             }
 
             // Obtener la propiedad
             Propiedad propiedad = propiedadService.obtenerPorId(alojamientoId);
             if (propiedad == null) {
-                model.addAttribute("error", "La propiedad no existe.");
-                return "redirect:/propiedades/" + alojamientoId;
+                model.addAttribute(ATTR_ERROR, "La propiedad no existe.");
+                return REDIRECT_PROPIEDADES + alojamientoId;
             }
             
             if (propiedad.getPropietario().getId().equals(inquilino.getId())) {
-                model.addAttribute("error", "No puedes reservar tu propia propiedad.");
-                return "redirect:/propiedades/" + alojamientoId;
+                model.addAttribute(ATTR_ERROR, "No puedes reservar tu propia propiedad.");
+                return REDIRECT_PROPIEDADES + alojamientoId;
             }
 
             // ✅ Verificar disponibilidad según el tipo de reserva
@@ -96,8 +98,8 @@ public class ReservaController {
             }
 
             if (!disponible) {
-                model.addAttribute("error", "❌ Las fechas seleccionadas no están disponibles.");
-                return "redirect:/propiedades/" + alojamientoId;
+                model.addAttribute(ATTR_ERROR, "❌ Las fechas seleccionadas no están disponibles.");
+                return REDIRECT_PROPIEDADES + alojamientoId;
             }
 
             // ✅ Crear la reserva
@@ -135,10 +137,10 @@ public class ReservaController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            model.addAttribute("error", "❌ Error al procesar la reserva.");
+            model.addAttribute(ATTR_ERROR, "❌ Error al procesar la reserva.");
         }
 
-        return "redirect:/propiedades/" + alojamientoId;
+        return REDIRECT_PROPIEDADES + alojamientoId;
     }
     
     @GetMapping("/mis-reservas")
@@ -160,7 +162,7 @@ public class ReservaController {
         
         if (reserva == null || userId == null || 
             !reserva.getPropiedad().getPropietario().getId().equals(userId)) {
-            model.addAttribute("error", "No tienes permiso para confirmar esta reserva.");
+            model.addAttribute(ATTR_ERROR, "No tienes permiso para confirmar esta reserva.");
             return "redirect:/notificaciones";
         }
 
@@ -186,7 +188,7 @@ public class ReservaController {
         
         if (reserva == null || userId == null || 
             !reserva.getPropiedad().getPropietario().getId().equals(userId)) {
-            model.addAttribute("error", "No tienes permiso para rechazar esta reserva.");
+            model.addAttribute(ATTR_ERROR, "No tienes permiso para rechazar esta reserva.");
             return "redirect:/notificaciones";
         }
 

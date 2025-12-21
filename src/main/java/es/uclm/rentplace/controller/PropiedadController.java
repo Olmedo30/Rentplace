@@ -18,6 +18,13 @@ import java.util.List;
 @Controller
 @RequestMapping("/propiedades")
 public class PropiedadController {
+	
+	private static final String REDIRECT_LOGIN = "redirect:/login";
+	private static final String SESSION_USER_ID = "userId";
+	private static final String ATTR_ERROR = "error";
+	private static final String ATTR_PROPIEDAD = "propiedad";
+	private static final String ATTR_LOGIN = "login";
+	private static final String REDIRECT_PROPERTIES = "redirect:/propiedades/my-properties";
 
     @Autowired
     private PropiedadService propiedadService;
@@ -36,21 +43,21 @@ public class PropiedadController {
     // Mis propiedades (solo para propietarios)
     @GetMapping("/my-properties")
     public String myProperties(HttpSession session, Model model) {
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         if (userId == null) {
-            model.addAttribute("error", "Debes iniciar sesión para ver tus propiedades.");
-            return "login";
+            model.addAttribute(ATTR_ERROR, "Debes iniciar sesión para ver tus propiedades.");
+            return ATTR_LOGIN;
         }
 
         Usuario usuario = usuarioDAO.findById(userId).orElse(null);
         if (usuario == null) {
-            model.addAttribute("error", "Usuario no encontrado.");
-            return "login";
+            model.addAttribute(ATTR_ERROR, "Usuario no encontrado.");
+            return ATTR_LOGIN;
         }
 
         // Verificar que el usuario sea propietario
         if (usuario.getRol() != Usuario.Rol.PROPIETARIO) {
-            model.addAttribute("error", "Solo los propietarios pueden acceder a esta página.");
+            model.addAttribute(ATTR_ERROR, "Solo los propietarios pueden acceder a esta página.");
             return "home";
         }
 
@@ -63,13 +70,13 @@ public class PropiedadController {
     public String verPropiedad(@PathVariable Long id, Model model, HttpSession session) {
         Propiedad propiedad = propiedadService.obtenerPropiedadPorId(id);
         if (propiedad == null || !propiedad.getActivo()) {
-            model.addAttribute("error", "La propiedad solicitada no está disponible.");
-            model.addAttribute("userId", session.getAttribute("userId"));
+            model.addAttribute(ATTR_ERROR, "La propiedad solicitada no está disponible.");
+            model.addAttribute(SESSION_USER_ID, session.getAttribute(SESSION_USER_ID));
             return "redirect:/propiedades/listado";
         }
 
         // Pasar datos a la vista
-        model.addAttribute("propiedad", propiedad);
+        model.addAttribute(ATTR_PROPIEDAD, propiedad);
         model.addAttribute("username", session.getAttribute("username"));
         model.addAttribute("rol", session.getAttribute("rol")); // Para el botón de wishlist
 
@@ -79,18 +86,18 @@ public class PropiedadController {
     // Formulario para añadir nueva propiedad
     @GetMapping("/add-property")
     public String addPropertyForm(HttpSession session, Model model) {
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         if (userId == null) {
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
         }
 
         Usuario usuario = usuarioDAO.findById(userId).orElse(null);
         if (usuario == null || usuario.getRol() != Usuario.Rol.PROPIETARIO) {
-            model.addAttribute("error", "Solo los propietarios pueden añadir propiedades.");
+            model.addAttribute(ATTR_ERROR, "Solo los propietarios pueden añadir propiedades.");
             return "home";
         }
 
-        model.addAttribute("propiedad", new Propiedad());
+        model.addAttribute(ATTR_PROPIEDAD, new Propiedad());
         return "add-property";
     }
 
@@ -111,14 +118,14 @@ public class PropiedadController {
             HttpSession session,
             Model model) {
 
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         if (userId == null) {
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
         }
 
         Usuario usuario = usuarioDAO.findById(userId).orElse(null);
         if (usuario == null || usuario.getRol() != Usuario.Rol.PROPIETARIO) {
-            model.addAttribute("error", "Solo los propietarios pueden añadir propiedades.");
+            model.addAttribute(ATTR_ERROR, "Solo los propietarios pueden añadir propiedades.");
             return "home";
         }
 
@@ -134,40 +141,40 @@ public class PropiedadController {
             // Por ahora, solo creamos la propiedad
             
             model.addAttribute("message", "Propiedad registrada exitosamente.");
-            return "redirect:/propiedades/my-properties";
+            return REDIRECT_PROPERTIES;
             
         } catch (Exception e) {
-            model.addAttribute("error", "Error al registrar la propiedad: " + e.getMessage());
-            model.addAttribute("propiedad", new Propiedad());
+            model.addAttribute(ATTR_ERROR, "Error al registrar la propiedad: " + e.getMessage());
+            model.addAttribute(ATTR_PROPIEDAD, new Propiedad());
             return "add-property";
         }
     }
     
     @GetMapping("/editar/{id}")
     public String mostrarFormularioEdicion(@PathVariable Long id, HttpSession session, Model model) {
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         if (userId == null) {
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
         }
 
         Usuario usuario = usuarioDAO.findById(userId).orElse(null);
         if (usuario == null || usuario.getRol() != Usuario.Rol.PROPIETARIO) {
-            model.addAttribute("error", "Solo los propietarios pueden editar propiedades.");
+            model.addAttribute(ATTR_ERROR, "Solo los propietarios pueden editar propiedades.");
             return "home";
         }
 
         Propiedad propiedad = propiedadService.obtenerPropiedadPorId(id);
         if (propiedad == null) {
-            model.addAttribute("error", "La propiedad no existe.");
-            return "redirect:/propiedades/my-properties";
+            model.addAttribute(ATTR_ERROR, "La propiedad no existe.");
+            return REDIRECT_PROPERTIES;
         }
      // Verificar que el usuario es el dueño
         if (!propiedad.getPropietario().getId().equals(userId)) {
-            model.addAttribute("error", "No tienes permiso para editar esta propiedad.");
-            return "redirect:/propiedades/my-properties";
+            model.addAttribute(ATTR_ERROR, "No tienes permiso para editar esta propiedad.");
+            return REDIRECT_PROPERTIES;
         }
 
-        model.addAttribute("propiedad", propiedad);
+        model.addAttribute(ATTR_PROPIEDAD, propiedad);
         model.addAttribute("esEdicion", true); // ← Flag para distinguir en la plantilla
         return "add-property"; // Reutilizamos la misma plantilla
     }
@@ -189,26 +196,26 @@ public class PropiedadController {
             HttpSession session,
             Model model) {
 
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         if (userId == null) {
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
         }
 
         Usuario usuario = usuarioDAO.findById(userId).orElse(null);
         if (usuario == null || usuario.getRol() != Usuario.Rol.PROPIETARIO) {
-            model.addAttribute("error", "Solo los propietarios pueden editar propiedades.");
+            model.addAttribute(ATTR_ERROR, "Solo los propietarios pueden editar propiedades.");
             return "home";
         }
 
         Propiedad propiedadExistente = propiedadService.obtenerPropiedadPorId(id);
         if (propiedadExistente == null) {
-            model.addAttribute("error", "La propiedad no existe.");
-            return "redirect:/propiedades/my-properties";
+            model.addAttribute(ATTR_ERROR, "La propiedad no existe.");
+            return REDIRECT_PROPERTIES;
         }
 
         if (!propiedadExistente.getPropietario().getId().equals(userId)) {
-            model.addAttribute("error", "No tienes permiso para editar esta propiedad.");
-            return "redirect:/propiedades/my-properties";
+            model.addAttribute(ATTR_ERROR, "No tienes permiso para editar esta propiedad.");
+            return REDIRECT_PROPERTIES;
         }
         try {
             // Actualizar los campos
@@ -226,11 +233,11 @@ public class PropiedadController {
             propiedadService.actualizarPropiedad(propiedadExistente);
             
             model.addAttribute("message", "Propiedad actualizada exitosamente.");
-            return "redirect:/propiedades/my-properties";
+            return REDIRECT_PROPERTIES;
             
         } catch (Exception e) {
-            model.addAttribute("error", "Error al actualizar la propiedad: " + e.getMessage());
-            model.addAttribute("propiedad", propiedadExistente);
+            model.addAttribute(ATTR_ERROR, "Error al actualizar la propiedad: " + e.getMessage());
+            model.addAttribute(ATTR_PROPIEDAD, propiedadExistente);
             model.addAttribute("esEdicion", true);
             return "add-property";
         }

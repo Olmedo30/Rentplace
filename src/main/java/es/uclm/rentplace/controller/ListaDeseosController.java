@@ -13,6 +13,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/lista-deseos")
 public class ListaDeseosController {
+	
+	private static final String ATTR_ERROR = "error";
+	private static final String ATTR_MESSAGE = "message";
     
     @Autowired
     private ListaDeseosService listaDeseosService;
@@ -35,7 +38,7 @@ public class ListaDeseosController {
         
      // Verificar que es inquilino
         if (usuario.getRol() != Usuario.Rol.INQUILINO) {
-            model.addAttribute("error", "Solo los inquilinos tienen lista de deseos.");
+            model.addAttribute(ATTR_ERROR, "Solo los inquilinos tienen lista de deseos.");
             return "profile";
         }
         
@@ -57,14 +60,14 @@ public class ListaDeseosController {
 
         Usuario usuario = usuarioDAO.findById(userId).orElse(null);
         if (usuario == null || usuario.getRol() != Usuario.Rol.INQUILINO) {
-            redirectAttrs.addFlashAttribute("error", "Solo los inquilinos pueden tener lista de deseos.");
+            redirectAttrs.addFlashAttribute(ATTR_ERROR, "Solo los inquilinos pueden tener lista de deseos.");
             return "redirect:/propiedades/" + propiedadId;
         }
 
         if (listaDeseosService.agregarPropiedadALista(userId, propiedadId)) {
-            redirectAttrs.addFlashAttribute("message", "Propiedad agregada a tu lista de deseos.");
+            redirectAttrs.addFlashAttribute(ATTR_MESSAGE, "Propiedad agregada a tu lista de deseos.");
         } else {
-            redirectAttrs.addFlashAttribute("error", "No se pudo agregar la propiedad a tu lista de deseos.");
+            redirectAttrs.addFlashAttribute(ATTR_ERROR, "No se pudo agregar la propiedad a tu lista de deseos.");
         }
 
         return "redirect:/propiedades/" + propiedadId;
@@ -80,14 +83,14 @@ public class ListaDeseosController {
         
         Usuario usuario = usuarioDAO.findById(userId).orElse(null);
         if (usuario == null || usuario.getRol() != Usuario.Rol.INQUILINO) {
-            model.addAttribute("error", "Solo los inquilinos pueden gestionar la lista de deseos.");
+            model.addAttribute(ATTR_ERROR, "Solo los inquilinos pueden gestionar la lista de deseos.");
             return "redirect:/lista-deseos";
         }
         
         if (listaDeseosService.eliminarPropiedadDeLista(userId, propiedadId)) {
-            model.addAttribute("message", "Propiedad eliminada de tu lista de deseos.");
+            model.addAttribute(ATTR_MESSAGE, "Propiedad eliminada de tu lista de deseos.");
         } else {
-            model.addAttribute("error", "No se pudo eliminar la propiedad de tu lista de deseos.");
+            model.addAttribute(ATTR_ERROR, "No se pudo eliminar la propiedad de tu lista de deseos.");
         }
         
         return "redirect:/lista-deseos";

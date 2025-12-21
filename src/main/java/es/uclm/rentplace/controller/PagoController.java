@@ -19,6 +19,10 @@ import java.util.List;
 @Controller
 @RequestMapping("/pagos")
 public class PagoController {
+	private static final String SESSION_USER_ID = "userId";
+    private static final String REDIRECT_LOGIN = "redirect:/login";
+    private static final String ATTR_ERROR = "error";
+    private static final String REDIRECT_HOME = "redirect:/home";
     
     @Autowired
     private PagoService pagoService;
@@ -31,30 +35,30 @@ public class PagoController {
     
     @GetMapping("/pagar/{reservaId}")
     public String mostrarFormularioPago(@PathVariable Long reservaId, Model model, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         if (userId == null) {
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
         }
         
         Usuario usuario = usuarioDAO.findById(userId).orElse(null);
         if (usuario == null) {
-            model.addAttribute("error", "Usuario no encontrado.");
-            return "redirect:/login";
+            model.addAttribute(ATTR_ERROR, "Usuario no encontrado.");
+            return REDIRECT_LOGIN;
         }
         
         Reserva reserva = reservaService.obtenerReservaPorId(reservaId);
         if (reserva == null) {
-            model.addAttribute("error", "Reserva no encontrada.");
-            return "redirect:/home";
+            model.addAttribute(ATTR_ERROR, "Reserva no encontrada.");
+            return REDIRECT_HOME;
         }
         
         if (!reserva.getInquilino().getId().equals(userId)) {
-            model.addAttribute("error", "No tienes permisos para pagar esta reserva.");
-            return "redirect:/home";
+            model.addAttribute(ATTR_ERROR, "No tienes permisos para pagar esta reserva.");
+            return REDIRECT_HOME;
         }
         
         if (reserva.getPagado()) {
-            model.addAttribute("error", "Esta reserva ya ha sido pagada.");
+            model.addAttribute(ATTR_ERROR, "Esta reserva ya ha sido pagada.");
             return "redirect:/mis-reservas";
         }
         
@@ -70,22 +74,22 @@ public class PagoController {
             HttpSession session,
             Model model) {
         
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         if (userId == null) {
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
         }
         
         Usuario inquilino = usuarioDAO.findById(userId).orElse(null);
         Reserva reserva = reservaService.obtenerReservaPorId(reservaId);
         
         if (inquilino == null || reserva == null) {
-            model.addAttribute("error", "Usuario o reserva no encontrados.");
-            return "redirect:/home";
+            model.addAttribute(ATTR_ERROR, "Usuario o reserva no encontrados.");
+            return REDIRECT_HOME;
         }
         
         if (!reserva.getInquilino().getId().equals(userId)) {
-            model.addAttribute("error", "No tienes permisos para pagar esta reserva.");
-            return "redirect:/home";
+            model.addAttribute(ATTR_ERROR, "No tienes permisos para pagar esta reserva.");
+            return REDIRECT_HOME;
         }
         
         BigDecimal montoTotal = pagoService.calcularTotalReserva(reserva);
@@ -103,14 +107,14 @@ public class PagoController {
     
     @GetMapping("/historial")
     public String verHistorialPagos(HttpSession session, Model model) {
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         if (userId == null) {
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
         }
         
         Usuario usuario = usuarioDAO.findById(userId).orElse(null);
         if (usuario == null) {
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
         }
         
         List<Pago> pagos;
@@ -128,14 +132,14 @@ public class PagoController {
     
     @GetMapping("/detalle/{pagoId}")
     public String verDetallePago(@PathVariable Long pagoId, Model model, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         if (userId == null) {
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
         }
         
         Pago pago = pagoService.obtenerPagoPorId(pagoId);
         if (pago == null) {
-            model.addAttribute("error", "Pago no encontrado.");
+            model.addAttribute(ATTR_ERROR, "Pago no encontrado.");
             return "redirect:/pagos/historial";
         }
         
@@ -145,7 +149,7 @@ public class PagoController {
         
         
         if (!tienePermiso) {
-            model.addAttribute("error", "No tienes permisos para ver este pago.");
+            model.addAttribute(ATTR_ERROR, "No tienes permisos para ver este pago.");
             return "redirect:/pagos/historial";
         }
         
@@ -155,19 +159,19 @@ public class PagoController {
     
     @PostMapping("/reembolsar/{pagoId}")
     public String procesarReembolso(@PathVariable Long pagoId, HttpSession session, Model model) {
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         if (userId == null) {
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
         }
         
         Usuario usuario = usuarioDAO.findById(userId).orElse(null);
         if (usuario == null) {
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
         }
         
         Pago pago = pagoService.obtenerPagoPorId(pagoId);
         if (pago == null) {
-            model.addAttribute("error", "Pago no encontrado.");
+            model.addAttribute(ATTR_ERROR, "Pago no encontrado.");
             return "redirect:/pagos/historial";
         }
         
@@ -185,14 +189,14 @@ public class PagoController {
                 return "redirect:/mis-reservas";
             }
         } catch (Exception e) { 
-            model.addAttribute("error", "Error de verificación de pago. Contacte con soporte.");
+            model.addAttribute(ATTR_ERROR, "Error de verificación de pago. Contacte con soporte.");
         }
-        return "redirect:/home";
+        return REDIRECT_HOME;
     }
     
     @GetMapping("/cancelado")
     public String pagoCancelled(@RequestParam Long reservaId, Model model) {
-        model.addAttribute("error", "El pago ha sido cancelado. Su reserva (ID: " + reservaId + ") sigue en estado pendiente.");
+        model.addAttribute(ATTR_ERROR, "El pago ha sido cancelado. Su reserva (ID: " + reservaId + ") sigue en estado pendiente.");
         return "redirect:/mis-reservas";
     }
 }
