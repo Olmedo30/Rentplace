@@ -1,198 +1,186 @@
 package es.uclm.rentplace.gestores;
 
-import es.uclm.rentplace.entity.ListaDeseos;
-import es.uclm.rentplace.entity.Propiedad;
-import es.uclm.rentplace.entity.Usuario;
-import es.uclm.rentplace.persistence.ListaDeseosDAO;
-import es.uclm.rentplace.persistence.PropiedadDAO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
-@Service
-public class GestorListaDeseos { 
+public class GestorListaDeseos {
 
-    @Autowired
-	public ListaDeseosDAO listaDeseosDAO;
-    
-    @Autowired
-	public PropiedadDAO propiedadDAO;
+    //Entidades internas 
 
-    
-     // Obtiene la lista de deseos de un usuario
-     
-    public ListaDeseos obtenerListaDeseosPorUsuario(Long usuarioId) {
-        if (usuarioId == null || usuarioId <= 0) {
-            throw new IllegalArgumentException("ID de usuario inválido.");
+    public static class Usuario {
+        public enum Rol { INQUILINO, PROPIETARIO }
+
+        private final Long id;
+        private final Rol rol;
+
+        public Usuario(Long id, Rol rol) {
+            this.id = id;
+            this.rol = rol;
         }
-        return listaDeseosDAO.findByUsuarioId(usuarioId).orElse(null);
+
+        public Long getId() { return id; }
+        public Rol getRol() { return rol; }
     }
 
-    
-     // Verifica si un usuario tiene lista de deseos
-     
-    public boolean usuarioTieneListaDeseos(Long usuarioId) {
-        if (usuarioId == null || usuarioId <= 0) {
-            throw new IllegalArgumentException("ID de usuario inválido.");
+    public static class Propiedad {
+        private final Long id;
+
+        public Propiedad(Long id) {
+            this.id = id;
         }
-        return listaDeseosDAO.existsByUsuarioId(usuarioId);
+
+        public Long getId() { return id; }
     }
 
-    
-     //Crea una nueva lista de deseos para un usuario
-     
-    public ListaDeseos crearListaDeseos(Usuario usuario) {
-        if (usuario == null) {
-            throw new IllegalArgumentException("El usuario no puede ser nulo.");
+    public static class ListaDeseos {
+        private final Usuario usuario;
+        private final List<Propiedad> propiedades = new ArrayList<>();
+
+        public ListaDeseos(Usuario usuario) {
+            this.usuario = usuario;
         }
-        if (usuario.getId() == null || usuario.getId() <= 0) {
-            throw new IllegalArgumentException("El usuario debe tener un ID válido.");
+
+        public Usuario getUsuario() { return usuario; }
+        public List<Propiedad> getPropiedades() { return new ArrayList<>(propiedades); }
+
+        public void agregarPropiedad(Propiedad p) {
+            if (!propiedades.contains(p)) {
+                propiedades.add(p);
+            }
         }
-        
-        // Verificar si ya tiene lista de deseos
-        if (listaDeseosDAO.existsByUsuarioId(usuario.getId())) {
-            throw new IllegalArgumentException("El usuario ya tiene una lista de deseos.");
+
+        public void eliminarPropiedad(Propiedad p) {
+            propiedades.remove(p);
         }
-        
-        ListaDeseos nuevaLista = new ListaDeseos(usuario);
-        return listaDeseosDAO.save(nuevaLista);
+
+        public boolean contienePropiedad(Long propiedadId) {
+            return propiedades.stream().anyMatch(p -> p.getId().equals(propiedadId));
+        }
     }
 
-    
-     // Agrega una propiedad a la lista de deseos
-     
-    public boolean agregarPropiedadALista(Long usuarioId, Long propiedadId) {
-        if (usuarioId == null || usuarioId <= 0) {
-            throw new IllegalArgumentException("ID de usuario inválido.");
-        }
-        if (propiedadId == null || propiedadId <= 0) {
-            throw new IllegalArgumentException("ID de propiedad inválido.");
-        }
-        
-        // Obtener la lista de deseos
-        ListaDeseos lista = listaDeseosDAO.findByUsuarioId(usuarioId).orElse(null);
-        if (lista == null) {
-            return false;
-        }
-        
-        // Obtener la propiedad
-        Propiedad propiedad = propiedadDAO.findById(propiedadId).orElse(null);
-        if (propiedad == null) {
-            return false;
-        }
-        
-        // Verificar si ya está en la lista
-        if (lista.getPropiedades().contains(propiedad)) {
-            return false;
-        }
-        
-        lista.agregarPropiedad(propiedad);
-        listaDeseosDAO.save(lista);
-        return true;
+    //DAO 
+
+    public interface ListaDeseosDAO {
+        ListaDeseos save(ListaDeseos lista);
+        Optional<ListaDeseos> findByUsuarioId(Long usuarioId);
+        boolean existsByUsuarioId(Long usuarioId);
     }
 
-    
-     // Elimina una propiedad de la lista de deseos
-     
-    public boolean eliminarPropiedadDeLista(Long usuarioId, Long propiedadId) {
-        if (usuarioId == null || usuarioId <= 0) {
-            throw new IllegalArgumentException("ID de usuario inválido.");
+    public static class InMemoryListaDeseosDAO implements ListaDeseosDAO {
+        private final Map<Long, ListaDeseos> storage = new ConcurrentHashMap<>();
+
+        @Override
+        public ListaDeseos save(ListaDeseos lista) {
+            storage.put(lista.getUsuario().getId(), lista);
+            return lista;
         }
-        if (propiedadId == null || propiedadId <= 0) {
-            throw new IllegalArgumentException("ID de propiedad inválido.");
+
+        @Override
+        public Optional<ListaDeseos> findByUsuarioId(Long usuarioId) {
+            return Optional.ofNullable(storage.get(usuarioId));
         }
-        
-        // Obtener la lista de deseos
-        ListaDeseos lista = listaDeseosDAO.findByUsuarioId(usuarioId).orElse(null);
-        if (lista == null) {
-            return false;
+
+        @Override
+        public boolean existsByUsuarioId(Long usuarioId) {
+            return storage.containsKey(usuarioId);
         }
-        
-        // Obtener la propiedad
-        Propiedad propiedad = propiedadDAO.findById(propiedadId).orElse(null);
-        if (propiedad == null) {
-            return false;
-        }
-        
-        // Verificar si está en la lista
-        if (!lista.getPropiedades().contains(propiedad)) {
-            return false;
-        }
-        
-        lista.eliminarPropiedad(propiedad);
-        listaDeseosDAO.save(lista);
-        return true;
     }
 
-    
-     // Obtiene todas las propiedades de la lista de deseos de un usuario
-     
-    public List<Propiedad> obtenerPropiedadesDeLista(Long usuarioId) {
-        if (usuarioId == null || usuarioId <= 0) {
-            throw new IllegalArgumentException("ID de usuario inválido.");
-        }
-        
-        ListaDeseos lista = listaDeseosDAO.findByUsuarioId(usuarioId).orElse(null);
-        if (lista == null) {
-            return List.of();
-        }
-        
-        return lista.getPropiedades();
-    }
+    //Servicio 
 
-    
-     // Verifica si una propiedad está en la lista de deseos de un usuario
-     
-    public boolean propiedadEstaEnLista(Long usuarioId, Long propiedadId) {
-        if (usuarioId == null || usuarioId <= 0) {
-            throw new IllegalArgumentException("ID de usuario inválido.");
-        }
-        if (propiedadId == null || propiedadId <= 0) {
-            throw new IllegalArgumentException("ID de propiedad inválido.");
-        }
-        
-        ListaDeseos lista = listaDeseosDAO.findByUsuarioId(usuarioId).orElse(null);
-        if (lista == null) {
-            return false;
-        }
-        
-        return lista.getPropiedades().stream()
-                .anyMatch(p -> p.getId().equals(propiedadId));
-    }
+    public static class ListaDeseosService {
+        private final ListaDeseosDAO listaDeseosDAO;
+        private final java.util.function.Function<Long, Usuario> usuarioProvider;
+        private final java.util.function.Function<Long, Propiedad> propiedadProvider;
 
-    
-     // Obtiene el número de propiedades en la lista de deseos
-     
-    public int contarPropiedadesEnLista(Long usuarioId) {
-        if (usuarioId == null || usuarioId <= 0) {
-            throw new IllegalArgumentException("ID de usuario inválido.");
+        public ListaDeseosService(
+                ListaDeseosDAO listaDeseosDAO,
+                java.util.function.Function<Long, Usuario> usuarioProvider,
+                java.util.function.Function<Long, Propiedad> propiedadProvider) {
+            this.listaDeseosDAO = listaDeseosDAO;
+            this.usuarioProvider = usuarioProvider;
+            this.propiedadProvider = propiedadProvider;
         }
-        
-        ListaDeseos lista = listaDeseosDAO.findByUsuarioId(usuarioId).orElse(null);
-        if (lista == null) {
-            return 0;
-        }
-        
-        return lista.getPropiedades().size();
-    }
 
-    
-     //Limpia todas las propiedades de la lista de deseos
-     
-    public boolean limpiarListaDeseos(Long usuarioId) {
-        if (usuarioId == null || usuarioId <= 0) {
-            throw new IllegalArgumentException("ID de usuario inválido.");
+        private boolean esInquilino(Long usuarioId) {
+            Usuario u = usuarioProvider.apply(usuarioId);
+            return u != null && u.getRol() == Usuario.Rol.INQUILINO;
         }
-        
-        ListaDeseos lista = listaDeseosDAO.findByUsuarioId(usuarioId).orElse(null);
-        if (lista == null) {
-            return false;
+
+        public boolean agregarPropiedadALista(Long usuarioId, Long propiedadId) {
+            // Validar que el usuario existe y es inquilino
+            if (!esInquilino(usuarioId)) {
+                return false;
+            }
+
+            // Validar que la propiedad existe
+            Propiedad propiedad = propiedadProvider.apply(propiedadId);
+            if (propiedad == null) {
+                return false;
+            }
+
+            // Obtener o crear lista
+            ListaDeseos lista = listaDeseosDAO.findByUsuarioId(usuarioId)
+                .orElseGet(() -> {
+                    Usuario u = usuarioProvider.apply(usuarioId);
+                    return new ListaDeseos(u);
+                });
+
+            // Evitar duplicados
+            if (lista.contienePropiedad(propiedadId)) {
+                return true; // ya estaba, pero no es error
+            }
+
+            lista.agregarPropiedad(propiedad);
+            listaDeseosDAO.save(lista);
+            return true;
         }
-        
-        lista.getPropiedades().clear();
-        listaDeseosDAO.save(lista);
-        return true;
+
+        public boolean eliminarPropiedadDeLista(Long usuarioId, Long propiedadId) {
+            // Solo inquilinos pueden tener lista, pero si no existe, falla silenciosamente
+            if (!esInquilino(usuarioId)) {
+                return false;
+            }
+
+            Propiedad propiedad = propiedadProvider.apply(propiedadId);
+            if (propiedad == null) {
+                return false;
+            }
+
+            Optional<ListaDeseos> listaOpt = listaDeseosDAO.findByUsuarioId(usuarioId);
+            if (listaOpt.isEmpty()) {
+                return false; // no hay lista → no se puede eliminar
+            }
+
+            ListaDeseos lista = listaOpt.get();
+            if (!lista.contienePropiedad(propiedadId)) {
+                return false; // no estaba → consideramos "fallo" o al menos no éxito
+            }
+
+            lista.eliminarPropiedad(propiedad);
+            listaDeseosDAO.save(lista);
+            return true;
+        }
+
+        public List<Propiedad> obtenerPropiedadesDeLista(Long usuarioId) {
+            if (!esInquilino(usuarioId)) {
+                return List.of();
+            }
+            return listaDeseosDAO.findByUsuarioId(usuarioId)
+                    .map(ListaDeseos::getPropiedades)
+                    .orElse(List.of());
+        }
+
+        public boolean estaEnListaDeDeseos(Long usuarioId, Long propiedadId) {
+            if (!esInquilino(usuarioId)) {
+                return false;
+            }
+            return listaDeseosDAO.findByUsuarioId(usuarioId)
+                    .map(lista -> lista.contienePropiedad(propiedadId))
+                    .orElse(false);
+        }
     }
 }
