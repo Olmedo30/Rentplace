@@ -168,14 +168,17 @@ public BigDecimal calcularTotal() {
     
     @Override
     public String toString() {
+        String username = "N/A";
+        if (inquilino != null) {
+            username = inquilino.getUsername();
+        }
         return "Reserva{" +
                 "id=" + id +
-                ", usuario=" + (inquilino != null ? inquilino.getUsername() : "N/A") +
+                ", usuario=" + username +
                 ", fechaEntrada=" + fechaEntrada +
                 ", fechaSalida=" + fechaSalida +
                 ", pago=" + pago +
-                ", pagado='" + pagado + '\'' +
-                '}';
+                ", pagado='" + pagado + '\'' +'}';
     }
 
 	public void setPropiedadId(Long propiedadId) {

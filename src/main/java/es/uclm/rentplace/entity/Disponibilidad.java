@@ -61,10 +61,13 @@ public class Disponibilidad {
 
     @Override
     public String toString() {
-        return String.format("Disponibilidad[id=%d propiedadId=%s %s -> %s disponible=%s]",
-                id,
-                propiedad == null ? "null" : String.valueOf(propiedad.getId()),
-                fechaInicio, fechaFin,
-                disponible);
+        String propiedadIdStr;
+        if (propiedad == null) {
+            propiedadIdStr = "null";
+        } else {
+            propiedadIdStr = String.valueOf(propiedad.getId());
+        }
+        
+        return String.format("Disponibilidad[id=%d propiedadId=%s %s -> %s disponible=%s]",id,propiedadIdStr,fechaInicio, fechaFin,disponible);
     }
 }

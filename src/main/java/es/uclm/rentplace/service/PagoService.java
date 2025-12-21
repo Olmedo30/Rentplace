@@ -74,7 +74,9 @@ public class PagoService {
     
     // Método para calcular el total de una reserva
     public BigDecimal calcularTotalReserva(Reserva reserva) {
-        if (reserva == null) return BigDecimal.ZERO;
+    	if (reserva == null) {
+            return BigDecimal.ZERO;
+    }
         
         long dias = java.time.temporal.ChronoUnit.DAYS.between(
             reserva.getFechaEntrada().toLocalDate(), 

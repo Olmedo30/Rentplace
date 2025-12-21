@@ -98,6 +98,7 @@ public class ListaDeseosService {
     
     public List<Propiedad> obtenerPropiedadesDeLista(Long usuarioId) {
         ListaDeseos lista = listaDeseosDAO.findByUsuarioId(usuarioId).orElse(null);
-        return lista != null ? lista.getPropiedades() : List.of();
-    }
-}
+        if (lista != null) {
+            return lista.getPropiedades();
+        } else { return List.of(); }
+    }}
