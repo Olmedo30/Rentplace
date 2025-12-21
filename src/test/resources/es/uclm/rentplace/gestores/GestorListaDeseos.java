@@ -15,10 +15,10 @@ import java.util.Optional;
 public class GestorListaDeseos { 
 
     @Autowired
-    private ListaDeseosDAO listaDeseosDAO;
+	public ListaDeseosDAO listaDeseosDAO;
     
     @Autowired
-    private PropiedadDAO propiedadDAO;
+	public PropiedadDAO propiedadDAO;
 
     
      // Obtiene la lista de deseos de un usuario

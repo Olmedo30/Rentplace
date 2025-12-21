@@ -12,7 +12,7 @@ import java.util.List;
 public class GestorPropiedad {
 
     @Autowired
-    private PropiedadDAO propiedadDAO;
+	public PropiedadDAO propiedadDAO;
 
     // Buscar propiedades activas
     public List<Propiedad> buscarPropiedadesActivas() {

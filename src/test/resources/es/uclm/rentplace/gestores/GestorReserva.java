@@ -15,7 +15,7 @@ import java.util.List;
 public class GestorReserva {
 
     @Autowired
-    private ReservaDAO reservaDAO;
+	public ReservaDAO reservaDAO;
 
     
      // Busca reservas que se solapen con el rango de fechas dado
@@ -154,4 +154,5 @@ public class GestorReserva {
         reservaDAO.save(reserva);
     }
 }
+
 

@@ -14,7 +14,7 @@ import java.util.List;
 public class GestorDisponibilidad {
 
     @Autowired
-    private DisponibilidadDAO disponibilidadDAO;
+	public DisponibilidadDAO disponibilidadDAO;
 
     public List<Disponibilidad> buscarDisponibilidadesPorPropiedad(Long propiedadId) {
         if (propiedadId == null || propiedadId <= 0) {
