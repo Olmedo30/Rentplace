@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -35,10 +34,20 @@ public class BusquedaController {
         
     	// Asegurar que siempre hay un objeto criterios
     	BusquedaPropiedadDTO criterios = new BusquedaPropiedadDTO();
-    	criterios.setCiudad(ciudad != null ? ciudad : "");
-    	criterios.setTipoInmueble(tipoInmueble != null ? tipoInmueble : "");
+    	if (ciudad != null) {
+    	    criterios.setCiudad(ciudad);
+    	} else {
+    	    criterios.setCiudad("");
+    	}
+
+    	if (tipoInmueble != null) {
+    	    criterios.setTipoInmueble(tipoInmueble);
+    	} else {
+    	    criterios.setTipoInmueble("");
+    	}
         
         Pageable pageable = PageRequest.of(page, size, Sort.by("precioNoche").ascending());
+        
         
         try {
             Page<Propiedad> propiedades = busquedaService.buscarPropiedades(criterios, pageable);
