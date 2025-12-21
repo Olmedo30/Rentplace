@@ -21,6 +21,7 @@ public class RentplaceApplication {
 	public PasswordEncoder passwordencoder() {
 		return new BCryptPasswordEncoder();
 	}
+	/*
 	@PreDestroy
 	public void shutdownDerby() {
 	    try {
@@ -32,4 +33,5 @@ public class RentplaceApplication {
 	        }
 	    }
 	}
+	*/
 }

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<title>Login</title>
-<link rel="stylesheet" href="../css/login_style.css">
-<link rel="shortcut icon" href="../assets/logo.png" />
+	<meta charset="UTF-8">
+	<title>Login</title>
+	<link rel="stylesheet" href="../css/login_style.css">
+	<link rel="shortcut icon" href="../assets/logo.png" />
 </head>
+
 <body>
 	<div class="login-container">
 		<h1>
@@ -17,12 +19,10 @@
 		<div class="inlogin-container">
 			<form action="/login" method="post">
 				<p>
-					<label>Nombre de usuario</label> <input type="text" name="username"
-						required />
+					<label>Nombre de usuario</label> <input type="text" name="username" required />
 				</p>
 				<p>
-					<label>Contraseña</label> <input type="password" name="password"
-						required />
+					<label>Contraseña</label> <input type="password" name="password" required />
 				</p>
 
 				<button type="submit">Entrar</button>
@@ -36,4 +36,5 @@
 		</div>
 	</div>
 </body>
+
 </html>

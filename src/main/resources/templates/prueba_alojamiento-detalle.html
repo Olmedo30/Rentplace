@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle de Alojamiento y Reserva</title>
+</head>
+<body>
+    <h1>Detalle del Alojamiento #1</h1>
+    <p>Precio por noche (simulado): 150.00 €</p>
+    
+    <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+    <p th:if="${message}" th:text="${message}" style="color: green;"></p>
+
+    <h2>Formulario de Reserva</h2>
+    <form action="/reservar" method="post">
+        <input type="hidden" name="alojamientoId" value="1"/>
+        <input type="hidden" name="precioTotal" value="300.00"/> <p>
+            <label>Fecha de Entrada:</label>
+            <input type="date" name="fechaEntrada" required/>
+        </p>
+        <p>
+            <label>Fecha de Salida:</label>
+            <input type="date" name="fechaSalida" required/>
+        </p>
+
+        <button type="submit">Pagar y Reservar (300.00 €)</button>
+    </form>
+    
+    <p><a href="/home">Volver al inicio</a></p>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!-- src/main/resources/templates/notificaciones.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Notificaciones - Rentplace</title>
+    <link rel="stylesheet" href="/css/home_style.css">
+    <link rel="shortcut icon" href="/assets/logo.png" />
+</head>
+<body>
+    <header>
+		<div class="header-container">
+			<div class="logo">
+				<div class="logo-icon">
+					<img src="../assets/logo.png" alt="Rent Place" width="55" height="55">
+				</div>
+				<div class="logo-text">Rent Place</div>
+			</div>
+			<nav class="owner-nav">
+				<a href="home">Inicio</a>
+				<a href="/propiedades/add-property" class="add-property-btn"> 
+					<i class="fas fa-home"></i> Añadir Propiedad
+				</a>
+				<a href="/propiedades/my-properties">Mis Propiedades</a>
+				<a href="/profile">Mi Cuenta</a>
+				<a href="/notificaciones">🔔 Notificaciones</a>
+			</nav>
+			<nav class="owner-nav"> <!--auth-actions-->
+				<a href="/logout" class="logout-btn">Cerrar Sesión</a>
+			</nav>
+			<div class="header-icons">
+				<a href="/buscar" aria-label="Buscar alojamientos" style="text-decoration: none; color: inherit;">
+					<i class="fas fa-search"></i>
+				</a>
+			</div>
+		</div>
+	</header>
+
+    <div class="notifications-container">
+        <h1>🔔 Mis Notificaciones</h1>
+        
+        <div th:if="${notificaciones.empty}" class="no-notifications">
+            <p>No tienes notificaciones.</p>
+        </div>
+        
+        <div class="notifications-list" th:unless="${notificaciones.empty}">
+            <div th:each="notif : ${notificaciones}" class="notification-item" 
+                 th:classappend="${notif.leida} ? 'read' : 'unread'">
+                
+                <div class="notification-content">
+                    <h3 th:text="${notif.titulo}">Título</h3>
+                    <p th:text="${notif.mensaje}">Mensaje</p>
+                    <small th:text="${#temporals.format(notif.fechaEnvio, 'dd/MM/yyyy HH:mm')}">Fecha</small>
+                </div>
+                
+                <div class="notification-actions">
+                    <!-- Botones para solicitudes de reserva -->
+                    <div th:if="${notif.tipo == 'SOLICITUD_RESERVA'}">
+                        <form th:action="@{/reservas/confirmar-reserva/{reservaId}(reservaId=${notif.reserva.id})}" 
+                              method="post" style="display: inline;">
+                            <button type="submit" class="btn-accept">✅ Confirmar</button>
+                        </form>
+                        <form th:action="@{/reservas/rechazar-reserva/{reservaId}(reservaId=${notif.reserva.id})}" 
+                              method="post" style="display: inline;">
+                            <button type="submit" class="btn-reject">❌ Rechazar</button>
+                        </form>
+                    </div>
+                    
+                    <!-- Botón para marcar como leída -->
+                    <form th:unless="${notif.leida}" 
+                          th:action="@{/notificaciones/marcar-leida}" 
+                          method="post" style="display: inline;">
+                        <input type="hidden" name="notificacionId" th:value="${notif.id}" />
+                        <button type="submit" class="btn-mark-read">✓ Marcar como leída</button>
+                    </form>
+                </div>
+            </div>
+            
+            <form th:if="${notificaciones.![leida == false].size() > 0}" 
+                  th:action="@{/notificaciones/marcar-todas-leidas}" 
+                  method="post" style="text-align: center; margin-top: 20px;">
+                <button type="submit" class="btn-mark-all">✓ Marcar todas como leídas</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Rentplace - Alquiler de viviendas</p>
+    </footer>
+
+    <style>
+        .notifications-container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .notification-item {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f8f9fa;
+        }
+
+        .notification-item.unread {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+        }
+
+        .notification-item.read {
+            opacity: 0.7;
+        }
+
+        .notification-content h3 {
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+        }
+
+        .notification-content p {
+            color: #555;
+            margin: 0 0 10px 0;
+        }
+
+        .notification-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-accept {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .btn-reject {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .btn-mark-read, .btn-mark-all {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .no-notifications {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+    </style>
+</body>
+</html>

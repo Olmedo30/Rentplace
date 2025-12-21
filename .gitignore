@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Derby Database (embebida) ###
+rentplaceDB/
+derby.log

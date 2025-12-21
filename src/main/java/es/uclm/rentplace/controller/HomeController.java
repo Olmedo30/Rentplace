@@ -1,23 +1,44 @@
+// src/main/java/es/uclm/rentplace/controller/HomeController.java
 package es.uclm.rentplace.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class HomeController {
 
-	@GetMapping("/")
-	public String redirectToHome() {
-	    return "redirect:/home";
-	}
+    @GetMapping("/")
+    public String redirectToHome() {
+        return "redirect:/home";
+    }
 
-	@GetMapping("/home")
-	public String home(HttpSession session, Model model) {
-	    String username = (String) session.getAttribute("username");
-	    model.addAttribute("username", username); // puede ser null
-	    return "home"; // siempre muestra home.html
-	}
+    @GetMapping("/home")
+    public String home(HttpSession session, Model model) {
+        String username = (String) session.getAttribute("username");
+        model.addAttribute("username", username);
+        return "home";
+    }
+ // Nueva ruta para el listado de todas las viviendas
+    @GetMapping("/listado")
+    public String listadoPropiedades(Model model) {
+        // Esto se implementará en PropiedadController
+        return "redirect:/propiedades/listado";
+    }
+    
+    // Nueva ruta para el perfil del usuario
+    @GetMapping("/profile")
+    public String profile(HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/login";
+        }
+        
+        String username = (String) session.getAttribute("username");
+        model.addAttribute("username", username);
+        model.addAttribute("userId", userId);
+        return "profile";
+    }
 }

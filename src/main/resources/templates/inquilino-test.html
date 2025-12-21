@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Convertirse en Inquilino</title>
+    <link rel="stylesheet" href="/css/register_style.css">
+    <link rel="shortcut icon" href="/assets/logo.png" />
+</head>
+<body>
+    <div class="register-container">
+        <h1><b>Convertirse en Inquilino</b></h1>
+        <hr>
+        <hr class="dec">
+
+        <div class="inregister-container">
+            <form action="/become-inquilino" method="post">
+                <p>
+                    <label>Nombre completo</label>
+                    <input type="text" name="nombre" required />
+                </p>
+                <p>
+                    <label>Correo electrónico</label>
+                    <input type="email" name="email" required />
+                </p>
+                <p>
+                    <label>Teléfono</label>
+                    <input type="tel" name="telefono" required />
+                </p>
+
+                <button type="submit">Registrarse como Inquilino</button>
+            </form>
+
+            <p th:if="${error}" th:text="${error}" class="error-message"></p>
+            <p th:if="${message}" th:text="${message}" class="success-message"></p>
+
+            <p style="text-align: center;">
+                <a href="/home">Volver al inicio</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

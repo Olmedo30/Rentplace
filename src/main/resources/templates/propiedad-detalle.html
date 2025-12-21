@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${propiedad.titulo}">Detalle</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<nav class="navbar navbar-light bg-light border-bottom">
+<div th:if="${message}" class="alert alert-success container mt-3" role="alert">
+    <i class="fas fa-check-circle me-2"></i>
+    <span th:text="${message}"></span>
+</div>
+<div th:if="${error}" class="alert alert-danger container mt-3" role="alert">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    <span th:text="${error}"></span>
+</div>
+  <div class="container">
+    <a class="navbar-brand" href="/home">RentPlace</a>
+    <a href="/fecha-entrada" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left"></i> Volver al listado</a>
+  </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <h1 class="display-5 fw-bold mb-2" th:text="${propiedad.titulo}">Título</h1>
+            <p class="text-muted fs-5 mb-4">
+                <i class="fas fa-map-marker-alt"></i> 
+                <span th:text="${propiedad.direccion}">Dirección</span>, <span th:text="${propiedad.ciudad}">Ciudad</span>
+            </p>
+
+            <img src="/assets/casa.png" class="img-fluid rounded w-100 mb-4 bg-light border" style="max-height: 450px; object-fit: cover;" alt="Propiedad">
+            
+            <div class="card mb-4 border-0 bg-light">
+                <div class="card-body">
+                    <div class="d-flex justify-content-around text-center">
+                        <div>
+                            <i class="fas fa-home fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold" th:text="${propiedad.tipoInmueble}">Tipo</div>
+                        </div>
+                        <div>
+                            <i class="fas fa-users fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold"><span th:text="${propiedad.capacidad}">0</span> Personas</div>
+                        </div>
+                        <div>
+                            <i class="fas fa-bed fa-2x mb-2 text-secondary"></i>
+                            <div class="fw-bold"><span th:text="${propiedad.habitaciones}">0</span> Habitaciones</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="mb-3">Sobre este alojamiento</h3>
+            <p class="lead text-break" th:text="${propiedad.descripcion}">Descripción completa...</p>
+            
+            <hr class="my-4">
+            
+            <h5><i class="fas fa-shield-alt"></i> Política de cancelación</h5>
+            <p th:text="${propiedad.politicaCancelacion}">No especificada</p>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow border-0 sticky-top" style="top: 2rem; z-index: 100;">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                    <h3 class="card-title mb-0">
+                        <span class="fw-bold" th:text="${propiedad.precioNoche}">0</span>€ <small class="text-muted fs-6 fw-normal">/ noche</small>
+                    </h3>
+                </div>
+                <div class="card-body">
+    <!-- Formulario de reserva (placeholder) -->
+    				<form th:if="${username != null && propiedad.propietario.id != userId}" 
+      th:action="@{/reservas/reservar}" method="post">
+    <input type="hidden" name="alojamientoId" th:value="${propiedad.id}" />
+    
+    <div class="row g-2 mb-3">
+        <div class="col-6">
+            <label class="form-label small fw-bold">LLEGADA</label>
+            <input type="date" name="fechaEntrada" class="form-control" required>
+        </div>
+        <div class="col-6">
+            <label class="form-label small fw-bold">SALIDA</label>
+            <input type="date" name="fechaSalida" class="form-control" required>
+        </div>
+    </div>
+    
+    <!-- Campo oculto para precio total (opcional, pero útil) -->
+    <input type="hidden" name="precioTotal" 
+           th:value="${propiedad.precioNoche}" />
+    
+    <button type="submit" class="btn btn-success w-100 btn-lg rounded-3 mb-3">
+        <i class="fas fa-calendar-check me-2"></i>Reservar ahora
+    </button>
+</form>
+    	<!-- ❤️ Botón de lista de deseos (solo para inquilinos) -->
+   	 	<form 	th:if="${rol == 'INQUILINO'}" 
+          	th:action="@{/lista-deseos/agregar/} + ${propiedad.id}" 
+          	method="post" 
+          	class="mt-3">
+        	<button type="submit" class="btn btn-outline-danger w-100">
+            <i class="fas fa-heart me-2"></i>Añadir a lista de deseos
+        	</button>
+    			</form>
+    				<div class="text-center text-muted small mt-3">
+        				No se hará ningún cargo todavía.
+    				</div>
+				</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
