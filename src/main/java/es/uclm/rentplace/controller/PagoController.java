@@ -139,12 +139,10 @@ public class PagoController {
             return "redirect:/pagos/historial";
         }
         
-        boolean tienePermiso = false;
-        if (pago.getReserva().getInquilino().getId().equals(userId)) {
-            tienePermiso = true;
-        } else if (pago.getReserva().getPropiedad().getPropietario().getId().equals(userId)) {
-            tienePermiso = true;
-        }
+        boolean tienePermiso = 
+         (pago.getReserva().getInquilino().getId().equals(userId)) || (pago.getReserva().getPropiedad().getPropietario().getId().equals(userId)); 
+            
+        
         
         if (!tienePermiso) {
             model.addAttribute("error", "No tienes permisos para ver este pago.");
